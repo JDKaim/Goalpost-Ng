@@ -1,0 +1,6 @@
+<p-confirmDialog #confirmDialog styleClass="w-30rem" [key]="key" [appendTo]="appendTo">
+  <ng-template pTemplate="footer">
+    <p-button icon="pi pi-trash" label="{{confirmText}}" styleClass="{{confirmStyleClass}}" (onClick)="confirmDialog.accept()"></p-button>
+    <p-button icon="pi pi-undo" label="{{rejectText}}" styleClass="{{rejectStyleClass}}" (onClick)="confirmDialog.reject()"></p-button>
+  </ng-template>
+</p-confirmDialog>

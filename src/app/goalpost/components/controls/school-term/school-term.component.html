@@ -1,0 +1,15 @@
+<h3>{{schoolTerm.title}}</h3>
+<table class="table">
+  <thead>
+    <th>Course</th>
+    <th>Percentage</th>
+    <th>Grade</th>
+  </thead>
+  <tbody>
+    <tr *ngFor="let course of schoolTerm.courses">
+      <td>{{course.title}}</td>
+      <td>{{course.percentage | percent:'1.2'}}</td>
+      <td>{{course.percentage | letterGrade}}</td>
+    </tr>
+  </tbody>
+</table>

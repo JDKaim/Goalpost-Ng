@@ -1,0 +1,55 @@
+<p-card>
+  <ng-template pTemplate="header">
+    <h1>
+      <span *ngIf="id; else create">Edit School Year</span>
+      <ng-template #create>Create School Year</ng-template>
+    </h1>
+  </ng-template>
+
+  <form [formGroup]="form" (ngSubmit)="(form.valid)">
+    <div class="p-fluid">
+      <div class="field">
+        <label htmlFor="title">Title</label>
+        <input
+          pInputText
+          id="title"
+          formControlName="title"
+          placeholder="Enter a title"
+        />
+      </div>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-content-end">
+      <ng-container *ngIf="id; else createButtons">
+        <p-button
+          *ngIf="id"
+          styleClass="p-button-success"
+          icon="pi pi-save"
+          label="Save"
+          [disabled]="!form.valid || !form.dirty"
+          (onClick)="onSaveClicked()"
+        />
+        <p-button
+          styleClass="p-button-danger ml-1"
+          icon="pi pi-trash"
+          label="Delete"
+          (onClick)="onDeleteClicked()"
+        />
+      </ng-container>
+      <ng-template #createButtons>
+        <p-button
+          *ngIf="!id"
+          styleClass="p-button-success"
+          icon="pi pi-plus"
+          label="Create"
+          [disabled]="!form.valid"
+          (onClick)="onCreateClicked()"
+        />
+      </ng-template>
+    </div>
+  </ng-template>
+</p-card>
+
+<confirm-dialog key="cancel" confirmText="Yes, Delete" confirmStyleClass="p-button-danger" rejectText="No, Nevermind" appendTo="body" />

@@ -1,0 +1,33 @@
+<p-card *ngIf="student$ | async as student">
+  <ng-template pTemplate="header">
+    <h1>Hello, {{ student.name }}!</h1>
+  </ng-template>
+
+  <ul>
+    <li *ngFor="let schoolYear of student.schoolYears">
+      <a [routerLink]="['school-year', schoolYear.id]">{{
+        schoolYear.title
+      }}</a>
+    </li>
+  </ul>
+  <a [routerLink]="['school-year']">Add school year</a>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-content-end">
+      <p-button
+        styleClass="p-button-danger"
+        icon="pi pi-sync"
+        label="Reset Student"
+        (onClick)="onResetStudentClicked()"
+      />
+    </div>
+  </ng-template>
+</p-card>
+
+<confirm-dialog
+  key="cancel"
+  confirmText="Yes, Reset"
+  confirmStyleClass="p-button-danger"
+  rejectText="No, Nevermind"
+  appendTo="body"
+/>

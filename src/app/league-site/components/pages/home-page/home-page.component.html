@@ -1,0 +1,8 @@
+<h1>Home Page</h1>
+@if (league$ | async; as league) {
+<ul>
+  @for(team of league.teams; track $index) {
+  <li>{{ team.name }}</li>
+  }
+</ul>
+}

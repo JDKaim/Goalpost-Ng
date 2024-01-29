@@ -15,6 +15,13 @@ import { StudentPageComponent } from '@goalpost';
             {
               path: '',
               loadChildren: () =>
+                import('./league-site/components/pages/league-site-routing.module').then(
+                  (m) => m.LeagueSiteRoutingModule
+                ),
+            },
+            {
+              path: 'goalpost',
+              loadChildren: () =>
                 import('./goalpost/components/goalpost-routing.module').then(
                   (m) => m.GoalpostRoutingModule
                 ),

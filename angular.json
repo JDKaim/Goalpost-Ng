@@ -74,14 +74,14 @@
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
-                        "browserTarget": "goalpost-primeng:build"
+                        "buildTarget": "goalpost-primeng:build"
                     },
                     "configurations": {
                         "production": {
-                            "browserTarget": "goalpost-primeng:build:production"
+                            "buildTarget": "goalpost-primeng:build:production"
                         },
                         "development": {
-                            "browserTarget": "goalpost-primeng:build:development"
+                            "buildTarget": "goalpost-primeng:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -89,7 +89,7 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "goalpost-primeng:build"
+                        "buildTarget": "goalpost-primeng:build"
                     }
                 },
                 "test": {

@@ -1,0 +1,1 @@
+export type PlayType = "rushing" | "passing" | "punt" | "one-point-pass" | "two-point-pass" | "one-point-rush" | "two-point-rush";

@@ -1,4 +1,11 @@
 <h1>Home Page</h1>
+@for (player of gameStats.homeTeamStats.playerStats; track $index) {
+  <div>
+    {{player.playerGame.id}} - {{player.passingCompletions}}/{{player.passingAttempts}} for {{player.passingYardage}} yards 
+  </div>
+}
+
+
 @if (league$ | async; as league) {
 <ul>
   @for(team of league.teams; track $index) {

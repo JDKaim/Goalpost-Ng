@@ -9,12 +9,12 @@ import { League } from '../models/league';
   providedIn: 'root',
 })
 export class LeagueService {
-  private static LeagueStorageKey = 'student';
+  private static LeagueStorageKey = 'league';
 
   #subject = new ReplaySubject<League>(1);
 
   #league: League = {
-    teams: [{ name: 'Washington' }, { name: 'Oregon' }],
+    teams: [{ name: 'Washington', id: '0' }, { name: 'Oregon', id: '1' }],
   };
 
   constructor() {
@@ -22,7 +22,7 @@ export class LeagueService {
     this.#subject.next(this.#loadData());
     interval(5000).subscribe({
       next: () => {
-        this.#league.teams.push({ name: 'Washington State' });
+        this.#league.teams.push({ name: 'Washington State', id: '2' });
         this.#subject.next(this.#league);
       },
     });

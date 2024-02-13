@@ -1,0 +1,31 @@
+<p-card header="Create Team" styleClass="w-30rem">
+  <form [formGroup]="form" (ngSubmit)="(form.valid)">
+    <div class="p-fluid">
+      <div class="field">
+        <label htmlFor="id">ID</label>
+        <input
+          pInputText
+          id="id"
+          formControlName="id"
+          placeholder="Enter an id (2-3 char)"
+        />
+      </div>
+      <div class="field">
+        <label htmlFor="name">Name</label>
+        <input
+          pInputText
+          id="name"
+          formControlName="name"
+          placeholder="Enter a name (5-25 char)"
+        />
+      </div>
+    </div>
+  </form>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-content-end">
+      <p-button label="Save" icon="pi pi-check" severity="success" [disabled]="!form.valid || !form.dirty" (onClick)="createTeam()"/>
+      <p-button label="Cancel" icon="pi pi-times" severity="danger" class="ml-2" [routerLink]="['/']"/>
+    </div>
+</ng-template>
+</p-card>

@@ -9,7 +9,7 @@
 @if (league$ | async; as league) {
 <ul>
   @for(team of league.teams; track $index) {
-  <li>{{ team.name }}</li>
+  <li><a [routerLink]="['/', 'teams', team.id]">{{ team.name }}</a></li>
   }
 </ul>
 }

@@ -59,7 +59,7 @@
                                 }
                             ],
                             "outputHashing": "all",
-                            "outputPath": "./dist"
+                            "outputPath": "./docs"
                         },
                         "development": {
                             "buildOptimizer": false,

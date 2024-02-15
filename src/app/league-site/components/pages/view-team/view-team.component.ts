@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, inject } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { Observable } from 'rxjs';
@@ -17,10 +17,17 @@ import { LeagueService } from 'src/app/league-site/services/league-service';
 })
 export class ViewTeamComponent implements OnInit {
   #leagueService = inject(LeagueService);
+  #router = inject(Router);
   @Input() id!: string;
   team$ = new Observable<Team | undefined>();
 
   ngOnInit(): void {
     this.team$ = this.#leagueService.watchTeam$(this.id);
+  }
+
+  deleteTeam(): void {
+    this.#leagueService.deleteTeam(this.id).subscribe({
+      next: () => this.#router.navigate(['/'])
+    });
   }
 }

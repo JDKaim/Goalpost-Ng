@@ -46,6 +46,12 @@ export class LeagueService {
       map((league) => league.teams.find((team) => team.id === id))
     );
   }
+  
+  watchTeams$() {
+    return this.watchLeague$().pipe(
+      map((league) => league.teams)
+    );
+  }
 
   #saveData(league: League) {
     localStorage.setItem(
@@ -57,8 +63,8 @@ export class LeagueService {
   resetLeague() {
     this.#league = {
       teams: [
-        { name: 'Washington', id: '0' },
-        { name: 'Oregon', id: '1' },
+        { name: 'Washington', id: 'WASH' },
+        { name: 'Oregon', id: 'ORE' },
       ],
     };
     this.#saveData(this.#league);
@@ -80,13 +86,24 @@ export class LeagueService {
     }
     if (
       this.#league.teams.find(
-        (curTeam) => curTeam.id === team.id || curTeam.name === team.name
-      )
+        (curTeam) => curTeam.name === team.name)
     ) {
-      throw new Error('Team already exists.');
+      throw new Error('Team name already exists.');
+    }
+    if (
+      this.#league.teams.find(
+        (curTeam) => curTeam.id === team.id)
+    ) {
+      throw new Error('Team ID already exists.');
     }
     this.#league.teams.push({ ...team });
     this.#subject.next(this.#league);
     return of(team);
+  }
+
+  deleteTeam(id: string) {
+    this.#league.teams = this.#league.teams.filter((team) => team.id != id);
+    this.#subject.next(this.#league);
+    return of(true);
   }
 }

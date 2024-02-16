@@ -1,5 +1,6 @@
+@if (team$ | async; as team) {
 <div class="flex gap-3">
-  <p-card header="Create Team" class="w-30rem">
+  <p-card [header]="'Edit Team - ' + team.id" class="w-30rem">
     <form [formGroup]="form" (ngSubmit)="(form.valid)">
       <div class="p-fluid">
         <div class="field">
@@ -28,26 +29,43 @@
         </div>
       </div>
     </form>
-    
+
     @if(errors.length) {
-      <p-messages [(value)]="errors" [enableService]="false"></p-messages>
+    <p-messages [(value)]="errors" [enableService]="false"></p-messages>
     }
 
     <ng-template pTemplate="footer">
       <div class="flex justify-content-end">
-        <p-button label="Save" icon="pi pi-check" severity="success" [disabled]="!form.valid || !form.dirty" (onClick)="createTeamClicked()"/>
-        <p-button label="Cancel" icon="pi pi-times" severity="danger" class="ml-2" [routerLink]="['/']"/>
+        <p-button
+          label="Save"
+          icon="pi pi-check"
+          severity="success"
+          [disabled]="!form.valid || !form.dirty"
+          (onClick)="editTeamClicked()"
+        />
+        <p-button
+          label="Cancel"
+          icon="pi pi-times"
+          severity="danger"
+          class="ml-2"
+          [routerLink]="['/']"
+        />
       </div>
-  </ng-template>
+    </ng-template>
   </p-card>
 
   <p-card header="Current Teams" class="w-15rem">
     @if (teams$ | async; as teams) {
-      <ul>
-        @for(team of teams; track $index) {
-        <li><a [routerLink]="['/', 'teams', team.id]">{{ team.id }} - {{ team.name }}</a></li>
-        }
-      </ul>
+    <ul>
+      @for(team of teams; track $index) {
+      <li>
+        <a [routerLink]="['/', 'teams', team.id]"
+          >{{ team.id }} - {{ team.name }}</a
+        >
+      </li>
       }
+    </ul>
+    }
   </p-card>
 </div>
+}

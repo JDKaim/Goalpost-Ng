@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, DestroyRef, Input, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Message } from 'primeng/api';
@@ -10,11 +10,13 @@ import { MessagesModule } from 'primeng/messages';
 import { LeagueService } from 'src/app/league-site/services/league-service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TooltipModule } from 'primeng/tooltip';
+import { Observable, tap } from 'rxjs';
+import { Team } from 'src/app/league-site/models/team';
 
 @Component({
   standalone: true,
-  selector: 'create-team',
-  templateUrl: './create-team.component.html',
+  selector: 'edit-team',
+  templateUrl: './edit-team.component.html',
   imports: [
     CommonModule,
     RouterModule,
@@ -23,12 +25,13 @@ import { TooltipModule } from 'primeng/tooltip';
     ReactiveFormsModule,
     InputTextModule,
     MessagesModule,
-    TooltipModule
+    TooltipModule,
   ],
 })
-export class CreateTeamComponent {
+export class EditTeamComponent {
   #leagueService = inject(LeagueService);
   #router = inject(Router);
+  @Input() id!: string;
   #fb = inject(FormBuilder);
   form = this.#fb.group({
     id: this.#fb.nonNullable.control('', [
@@ -45,8 +48,21 @@ export class CreateTeamComponent {
 
   teams$ = this.#leagueService.watchTeams$();
   errors = new Array<Message>();
+  team$ = new Observable<Team | undefined>();
 
-  createTeamClicked() {
+  ngOnInit(): void {
+    this.team$ = this.#leagueService.watchTeam$(this.id).pipe(
+      tap((team) => {
+        if (!team) {
+          return;
+        }
+        this.form.controls.id.setValue(team.id);
+        this.form.controls.name.setValue(team.name);
+      })
+    );
+  }
+
+  editTeamClicked() {
     if (!this.form.valid) {
       throw new Error('Form is not valid.');
     }
@@ -54,12 +70,16 @@ export class CreateTeamComponent {
     this.errors = [];
     try {
       this.#leagueService
-        .createTeam({ id: team.id!, name: team.name! })
+        .editTeam(this.id, { id: team.id!, name: team.name! })
         .subscribe({
-          // next: (team) => this.#router.navigate(['/', 'teams', team.id]),
+          next: (team) => this.#router.navigate(['/', 'teams', team.id]),
         });
     } catch (e: any) {
-      this.errors.push( { severity: 'error', summary: 'Error', detail: e.message });
+      this.errors.push({
+        severity: 'error',
+        summary: 'Error',
+        detail: e.message,
+      });
     }
   }
 }

@@ -7,6 +7,7 @@ import { EditTeamComponent } from './edit-team/edit-team.component';
 import { CreatePlayerComponent } from './create-player/create-player.component';
 import { ViewPlayerComponent } from './view-player/view-player.component';
 import { EditPlayerComponent } from './edit-player/edit-player.component';
+import { CreateGameComponent } from './create-game/create-game.component';
 
 @NgModule({
     imports: [RouterModule.forChild([
@@ -15,6 +16,7 @@ import { EditPlayerComponent } from './edit-player/edit-player.component';
         { path: 'players/:id', component: ViewPlayerComponent},
         { path: 'create-team', component: CreateTeamComponent},
         { path: 'create-player', component: CreatePlayerComponent},
+        { path: 'create-game', component: CreateGameComponent},
         { path: 'edit-team/:id', component: EditTeamComponent},
         { path: 'edit-player/:id', component: EditPlayerComponent},
     ])],

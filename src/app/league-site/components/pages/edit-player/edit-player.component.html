@@ -1,0 +1,59 @@
+@if (player$ | async; as player) {
+<div class="flex gap-3">
+  <p-card [header]="'Edit Player - ' + player.id" class="w-30rem">
+    <form [formGroup]="form" (ngSubmit)="(form.valid)">
+      <div class="p-fluid">
+        <div class="field">
+          <label htmlFor="name">Name</label>
+          <input
+            pInputText
+            id="name"
+            formControlName="name"
+            placeholder="Enter a name"
+            pTooltip="4-25 characters"
+            tooltipPosition="bottom"
+            [maxlength]="25"
+          />
+        </div>
+      </div>
+    </form>
+
+    @if(errors.length) {
+    <p-messages [(value)]="errors" [enableService]="false"></p-messages>
+    }
+
+    <ng-template pTemplate="footer">
+      <div class="flex justify-content-end">
+        <p-button
+          label="Save"
+          icon="pi pi-check"
+          severity="success"
+          [disabled]="!form.valid || !form.dirty"
+          (onClick)="editPlayerClicked()"
+        />
+        <p-button
+          label="Cancel"
+          icon="pi pi-times"
+          severity="danger"
+          class="ml-2"
+          [routerLink]="['/']"
+        />
+      </div>
+    </ng-template>
+  </p-card>
+
+  <p-card header="Current Players" class="w-15rem">
+    @if (players$ | async; as players) {
+    <ul>
+      @for(player of players; track $index) {
+      <li>
+        <a [routerLink]="['/', 'players', player.id]"
+          >{{ player.name }}</a
+        >
+      </li>
+      }
+    </ul>
+    }
+  </p-card>
+</div>
+}

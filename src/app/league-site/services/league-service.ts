@@ -13,6 +13,8 @@ import { League } from '../models/league';
 import { Team } from '../models/team';
 import { CreateTeam } from '../models/create-team';
 import { EditTeam } from '../models/edit-team';
+import { CreatePlayer } from '../models/create-player';
+import { EditPlayer } from '../models/edit-player';
 
 // NOTE: This service is overly complicated because of the way it's dealing with local data. If dealing with
 // a proper database or backend service this would probablyend up a bit cleaner.
@@ -49,8 +51,18 @@ export class LeagueService {
     );
   }
 
+  watchPlayer$(id: string) {
+    return this.watchLeague$().pipe(
+      map((league) => league.players.find((player) => player.id === id))
+    );
+  }
+
   watchTeams$() {
     return this.watchLeague$().pipe(map((league) => league.teams));
+  }
+
+  watchPlayers$() {
+    return this.watchLeague$().pipe(map((league) => league.players));
   }
 
   #saveData(league: League) {
@@ -66,6 +78,10 @@ export class LeagueService {
         { name: 'Washington', id: 'WASH' },
         { name: 'Oregon', id: 'ORE' },
       ],
+      players: [
+        { name: 'Michael Penix, Jr.', id: '009' },
+        { name: 'Bo Nix', id: '010' },
+      ],
     };
     this.#saveData(this.#league);
   }
@@ -73,11 +89,13 @@ export class LeagueService {
   #loadData() {
     const json = localStorage.getItem(LeagueService.LeagueStorageKey);
     try {
-      return JSON.parse(json!) as League;
-    } catch {
-      this.resetLeague();
-      return this.#league;
-    }
+      this.#league = JSON.parse(json!) as League;
+      if (this.#league) {
+        return this.#league;
+      }
+    } catch {}
+    this.resetLeague();
+    return this.#league;
   }
 
   createTeam(team: CreateTeam) {
@@ -95,6 +113,25 @@ export class LeagueService {
     this.#league.teams.push({ ...team });
     this.#subject.next(this.#league);
     return of(team);
+  }
+
+  createPlayer(player: CreatePlayer) {
+    player.id = player.id.trim();
+    player.name = player.name.trim();
+    if (!player.id || !player.name) {
+      throw new Error('Player must have ID and name.');
+    }
+    if (
+      this.#league.players.find((curPlayer) => curPlayer.name === player.name)
+    ) {
+      throw new Error('Player name already exists.');
+    }
+    if (this.#league.players.find((curPlayer) => curPlayer.id === player.id)) {
+      throw new Error('Player ID already exists.');
+    }
+    this.#league.players.push({ ...player });
+    this.#subject.next(this.#league);
+    return of(player);
   }
 
   editTeam(id: string, newTeam: EditTeam) {
@@ -122,8 +159,32 @@ export class LeagueService {
     return of(team);
   }
 
+  editPlayer(id: string, newPlayer: EditPlayer) {
+    newPlayer.id = newPlayer.id.trim();
+    newPlayer.name = newPlayer.name.trim();
+    const player = this.#league.players.find((player) => player.id === id);
+    if (!player) {
+      throw new Error('Player being edited does not exist.');
+    }
+    if (
+      player.name != newPlayer.name &&
+      this.#league.players.some((curPlayer) => curPlayer.name === newPlayer.name)
+    ) {
+      throw new Error('Player name already exists.');
+    }
+    player.name = newPlayer.name;
+    this.#subject.next(this.#league);
+    return of(player);
+  }
+
   deleteTeam(id: string) {
     this.#league.teams = this.#league.teams.filter((team) => team.id != id);
+    this.#subject.next(this.#league);
+    return of(true);
+  }
+
+  deletePlayer(id: string) {
+    this.#league.players = this.#league.players.filter((player) => player.id != id);
     this.#subject.next(this.#league);
     return of(true);
   }

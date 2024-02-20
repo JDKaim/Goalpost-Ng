@@ -1,4 +1,4 @@
-export interface Player {
+export interface EditPlayer {
   id: string;
   name: string;
 }

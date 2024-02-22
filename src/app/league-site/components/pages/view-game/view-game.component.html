@@ -1,0 +1,45 @@
+@if (game$ | async; as game) {
+<div class="flex gap-3 mb-3">
+  <p-card class="w-30rem align-items-center">
+    <div class="p-card-title text-center align-items-center">View Game</div>
+    <div class="text-center font-semibold text-900">{{ game | game }}</div>
+    <div class="text-center text-600 mb-3">Game ID: {{ game.id }}</div>
+    <div class="text-center">
+      <p-button
+        size="small"
+        icon="pi pi-pencil"
+        severity="primary"
+        [routerLink]="['/', 'edit-game', game.id]"
+      />
+    </div>
+  </p-card>
+
+  <p-card
+    [header]="'Away Team - ' + game.awayTeamId + ' [' + game.awayScore + ']'"
+    class="w-30rem"
+  >
+    @if (awayRoster$ | async; as players) { @for(player of players; track
+    $index) {
+    <div class="flex gap-2 align-items-center mb-1">
+      <a [routerLink]="['/', 'players', player.id]">{{ player.name }}</a>
+    </div>
+    } @empty {
+    <div>No Players.</div>
+    }}
+  </p-card>
+
+  <p-card
+    [header]="'Home Team - ' + game.homeTeamId + ' [' + game.homeScore + ']'"
+    class="w-30rem"
+  >
+    @if (homeRoster$ | async; as players) { @for(player of players; track
+    $index) {
+    <div class="flex gap-2 align-items-center mb-1">
+      <a [routerLink]="['/', 'players', player.id]">{{ player.name }}</a>
+    </div>
+    } @empty {
+    <div>No Players.</div>
+    }}
+  </p-card>
+</div>
+}

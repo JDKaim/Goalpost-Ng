@@ -1,0 +1,135 @@
+@if (game$ | async; as game) {
+<div class="flex gap-3 mb-3">
+  <p-card class="w-30rem">
+    <div class="p-card-title text-center">Edit Game</div>
+    <div class="text-center font-semibold text-900">{{ game | game }}</div>
+    <div class="text-center text-600 mb-3">Game ID: {{ game.id }}</div>
+    <div class="text-center">
+      <p-button
+        size="small"
+        icon="pi pi-eye"
+        severity="primary"
+        [routerLink]="['/', 'games', game.id]"
+      />
+    </div>
+    <form [formGroup]="form" (ngSubmit)="(form.valid)">
+      <div class="p-fluid">
+        <div class="field">
+          <label htmlFor="startTime">Start Time</label>
+          <p-calendar
+            formControlName="startTime"
+            [showIcon]="true"
+            [showTime]="true"
+            hourFormat="12"
+          ></p-calendar>
+        </div>
+        <div class="field">
+          <label htmlFor="location">Location</label>
+          <input
+            pInputText
+            id="location"
+            formControlName="location"
+            placeholder="Enter a Location"
+            pTooltip="1-100 characters"
+            tooltipPosition="bottom"
+            [maxlength]="100"
+          />
+        </div>
+        <div class="field">
+          <label htmlFor="status">Status</label>
+          <input
+            pInputText
+            id="status"
+            formControlName="status"
+            placeholder="Enter a Status"
+            pTooltip="1-10 characters"
+            tooltipPosition="bottom"
+            [maxlength]="10"
+          />
+        </div>
+      </div>
+    </form>
+
+    @if(errors.length) {
+    <p-messages [(value)]="errors" [enableService]="false"></p-messages>
+    }
+
+    <ng-template pTemplate="footer">
+      <div class="flex justify-content-end">
+        <p-button
+          label="Save"
+          icon="pi pi-check"
+          severity="success"
+          [disabled]="!form.valid || !form.dirty"
+          (onClick)="editGameClicked()"
+        />
+        <p-button
+          label="Cancel"
+          icon="pi pi-times"
+          severity="danger"
+          class="ml-2"
+          [routerLink]="['/']"
+        />
+      </div>
+    </ng-template>
+  </p-card>
+
+  <p-card [header]="'Away Team - ' + game.awayTeamId" class="w-30rem">
+    @if (awayRoster$ | async; as players) { @for(player of players; track
+    $index) {
+    <div class="flex gap-2 align-items-center mb-1">
+      <p-button
+        size="small"
+        icon="pi pi-times"
+        severity="danger"
+        (onClick)="removePlayerClicked(player.id, false)"
+      />
+      <a [routerLink]="['/', 'players', player.id]">{{ player.name }}</a>
+    </div>
+    } @empty {
+    <div>No Players.</div>
+    }}
+  </p-card>
+
+  <p-card [header]="'Home Team - ' + game.homeTeamId" class="w-30rem">
+    @if (homeRoster$ | async; as players) { @for(player of players; track
+    $index) {
+    <div class="flex gap-2 align-items-center mb-1">
+      <p-button
+        size="small"
+        icon="pi pi-times"
+        severity="danger"
+        (onClick)="removePlayerClicked(player.id, true)"
+      />
+      <a [routerLink]="['/', 'players', player.id]">{{ player.name }}</a>
+    </div>
+    } @empty {
+    <div>No Players.</div>
+    }}
+  </p-card>
+</div>
+<div>
+  <p-card header="Current Players" class="w-full">
+    <div class="flex gap-3">
+      @if (players$ | async; as players) { @for(player of players; track $index)
+      {
+      <div class="flex gap-2 align-items-center mb-1">
+        <p-button
+          size="small"
+          icon="pi pi-briefcase"
+          severity="danger"
+          (onClick)="addPlayerClicked(player.id, false)"
+        />
+        <p-button
+          size="small"
+          icon="pi pi-home"
+          severity="success"
+          (onClick)="addPlayerClicked(player.id, true)"
+        />
+        <a [routerLink]="['/', 'players', player.id]">{{ player.name }}</a>
+      </div>
+      } }
+    </div>
+  </p-card>
+</div>
+}

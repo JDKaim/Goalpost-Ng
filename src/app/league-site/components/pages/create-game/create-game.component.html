@@ -15,15 +15,19 @@
           />
         </div>
         <div class="field">
-          <label htmlFor="name">Name</label>
+          <label htmlFor="startTime">Start Time</label>
+          <p-calendar formControlName="startTime" [showIcon]="true" [showTime]="true" hourFormat="12"></p-calendar>
+        </div>
+        <div class="field">
+          <label htmlFor="location">Location</label>
           <input
             pInputText
-            id="name"
-            formControlName="name"
-            placeholder="Enter a name"
-            pTooltip="4-25 characters"
+            id="location"
+            formControlName="location"
+            placeholder="Enter a Location"
+            pTooltip="1-100 characters"
             tooltipPosition="bottom"
-            [maxlength]="25"
+            [maxlength]="100"
           />
         </div>
         <div class="field">

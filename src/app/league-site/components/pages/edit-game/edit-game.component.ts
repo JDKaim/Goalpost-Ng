@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, DestroyRef, Input, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Message } from 'primeng/api';
@@ -10,13 +11,17 @@ import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessagesModule } from 'primeng/messages';
 import { TooltipModule } from 'primeng/tooltip';
+import { Observable, combineLatest, map, takeUntil, tap } from 'rxjs';
 import { mustBeDifferentValidator } from 'src/app/league-site/helpers/custom-validators';
+import { Game } from 'src/app/league-site/models/game';
+import { Player } from 'src/app/league-site/models/player';
+import { GamePipe } from 'src/app/league-site/pipes/game.pipe';
 import { LeagueService } from 'src/app/league-site/services/league-service';
 
 @Component({
   standalone: true,
-  selector: 'create-game',
-  templateUrl: './create-game.component.html',
+  selector: 'edit-game',
+  templateUrl: './edit-game.component.html',
   imports: [
     CommonModule,
     RouterModule,
@@ -28,19 +33,16 @@ import { LeagueService } from 'src/app/league-site/services/league-service';
     TooltipModule,
     DropdownModule,
     CalendarModule,
+    GamePipe
   ],
 })
-export class CreateGameComponent {
+export class EditGameComponent {
   #leagueService = inject(LeagueService);
   #router = inject(Router);
+  @Input() id!: string;
   #fb = inject(FormBuilder);
   form = this.#fb.group(
     {
-      id: this.#fb.nonNullable.control('', [
-        Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(4),
-      ]),
       startTime: this.#fb.nonNullable.control(new Date(), [
         Validators.required,
       ]),
@@ -49,17 +51,51 @@ export class CreateGameComponent {
         Validators.minLength(1),
         Validators.maxLength(100),
       ]),
-      awayTeam: this.#fb.nonNullable.control('', [Validators.required]),
-      homeTeam: this.#fb.nonNullable.control('', [Validators.required]),
+      status: this.#fb.nonNullable.control('', [
+        Validators.required,
+        Validators.minLength(1),
+        Validators.maxLength(10),
+      ]),
     },
     { validators: [mustBeDifferentValidator('awayTeam', 'homeTeam')] }
   );
 
   teams$ = this.#leagueService.watchTeams$();
   players$ = this.#leagueService.watchPlayers$();
+  homeRoster$ = new Observable<Player[]>();
+  awayRoster$ = new Observable<Player[]>();
   errors = new Array<Message>();
+  game$ = new Observable<Game | undefined>();
 
-  createGameClicked() {
+  ngOnInit(): void {
+    this.game$ = this.#leagueService.watchGame$(this.id).pipe(
+      tap((game) => {
+        if (!game) {
+          return;
+        }
+        this.form.controls.startTime.setValue(new Date(game.startTime));
+        this.form.controls.location.setValue(game.location);
+        this.form.controls.status.setValue(game.status);
+      })
+    );
+    this.homeRoster$ = this.#leagueService.watchRoster$(this.id, true);
+    this.awayRoster$ = this.#leagueService.watchRoster$(this.id, false);
+    this.players$ = combineLatest([
+      this.homeRoster$,
+      this.awayRoster$,
+      this.#leagueService.watchPlayers$(),
+    ]).pipe(
+      map((responses) => {
+        return responses[2].filter(
+          (player) =>
+            !responses[1].find((away) => away.id === player.id) &&
+            !responses[0].find((home) => home.id === player.id)
+        );
+      })
+    );
+  }
+
+  editGameClicked() {
     if (!this.form.valid) {
       throw new Error('Form is not valid.');
     }
@@ -67,18 +103,10 @@ export class CreateGameComponent {
     this.errors = [];
     try {
       this.#leagueService
-        .createGame({
-          id: game.id!,
-          homeTeamId: game.homeTeam!,
-          awayTeamId: game.awayTeam!,
-          homeRoster: [],
-          awayRoster: [],
+        .editGame(this.id, {
           startTime: game.startTime!.getTime(),
           location: game.location!,
-          status: '',
-          homeScore: 0,
-          awayScore: 0,
-          plays: [],
+          status: game.status!,
         })
         .subscribe({
           // next: (team) => this.#router.navigate(['/', 'teams', team.id]),
@@ -90,5 +118,17 @@ export class CreateGameComponent {
         detail: e.message,
       });
     }
+  }
+
+  addPlayerClicked(id: string, homeTeam: boolean) {
+    this.#leagueService
+      .addPlayerToRoster(this.id, id, homeTeam, '')
+      .subscribe();
+  }
+
+  removePlayerClicked(id: string, homeTeam: boolean) {
+    this.#leagueService
+      .removePlayerFromRoster(this.id, id, homeTeam)
+      .subscribe();
   }
 }

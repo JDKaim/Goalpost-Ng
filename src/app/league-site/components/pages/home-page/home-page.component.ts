@@ -5,13 +5,15 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { Game } from 'src/app/league-site/models/game';
 import { GameStats } from 'src/app/league-site/models/game-stats';
+import { GameInfoPipe } from 'src/app/league-site/pipes/game-info.pipe';
+import { GamePipe } from 'src/app/league-site/pipes/game.pipe';
 import { LeagueService } from 'src/app/league-site/services/league-service';
 
 @Component({
   standalone: true,
   selector: 'home-page',
   templateUrl: './home-page.component.html',
-  imports: [CommonModule, RouterModule, CardModule, ButtonModule],
+  imports: [CommonModule, RouterModule, CardModule, ButtonModule, GamePipe, GameInfoPipe],
 })
 export class HomePageComponent {
   #leagueService = inject(LeagueService);

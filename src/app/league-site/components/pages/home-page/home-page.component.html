@@ -1,15 +1,45 @@
 <h1>Home Page</h1>
-@for (player of gameStats.homeTeamStats.playerStats; track $index) {
-  <div>
-    {{player.playerGame.id}} - {{player.passingCompletions}}/{{player.passingAttempts}} for {{player.passingYardage}} yards 
-  </div>
-}
-
-
 @if (league$ | async; as league) {
+<p-card [header]="'Current Games'" class="w-30rem">
+  @for(game of league.games; track $index) {
+  <div class="flex gap-3 align-items-center">
+    <p-button
+      size="small"
+      icon="pi pi-eye"
+      severity="success"
+      [routerLink]="['/', 'games', game.id]"
+    />
+    <p-button
+      size="small"
+      icon="pi pi-pencil"
+      severity="primary"
+      [routerLink]="['/', 'edit-game', game.id]"
+    />
+    <div class="p-card-title text-center align-items-center">
+      {{ game | game }}
+    </div>
+    <div class="text-center text-600 mb-3">
+      {{ game | gameinfo }}
+    </div>
+  </div>
+  } @empty {
+  <div>No Games.</div>
+  }
+</p-card>
+
 <ul>
   @for(team of league.teams; track $index) {
-  <li><a [routerLink]="['/', 'teams', team.id]">{{ team.name }}</a></li>
+  <li>
+    <a [routerLink]="['/', 'teams', team.id]">{{ team.name }}</a>
+  </li>
   }
 </ul>
+
+} @for (player of gameStats.homeTeamStats.playerStats; track $index) {
+<div>
+  {{ player.playerGame.id }} - {{ player.passingCompletions }}/{{
+    player.passingAttempts
+  }}
+  for {{ player.passingYardage }} yards
+</div>
 }

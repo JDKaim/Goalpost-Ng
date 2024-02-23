@@ -2,7 +2,7 @@
 @if (league$ | async; as league) {
 <p-card [header]="'Current Games'" class="w-30rem">
   @for(game of league.games; track $index) {
-  <div class="flex gap-3 align-items-center">
+  <div class="flex gap-3 align-items-center mb-3">
     <p-button
       size="small"
       icon="pi pi-eye"

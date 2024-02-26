@@ -15,7 +15,9 @@ import { Observable, combineLatest, map, takeUntil, tap } from 'rxjs';
 import { mustBeDifferentValidator } from 'src/app/league-site/helpers/custom-validators';
 import { Game } from 'src/app/league-site/models/game';
 import { Play } from 'src/app/league-site/models/play';
+import { PlayType } from 'src/app/league-site/models/play-type';
 import { Player } from 'src/app/league-site/models/player';
+import { TurnoverType } from 'src/app/league-site/models/turnover-type';
 import { GamePipe } from 'src/app/league-site/pipes/game.pipe';
 import { LeagueService } from 'src/app/league-site/services/league-service';
 
@@ -34,7 +36,7 @@ import { LeagueService } from 'src/app/league-site/services/league-service';
     TooltipModule,
     DropdownModule,
     CalendarModule,
-    GamePipe
+    GamePipe,
   ],
 })
 export class ScorekeeperComponent {
@@ -42,24 +44,59 @@ export class ScorekeeperComponent {
   #router = inject(Router);
   @Input() id!: string;
   #fb = inject(FormBuilder);
-  form = this.#fb.group(
-    {
-      startTime: this.#fb.nonNullable.control(new Date(), [
-        Validators.required,
-      ]),
-      location: this.#fb.nonNullable.control('', [
-        Validators.required,
-        Validators.minLength(1),
-        Validators.maxLength(100),
-      ]),
-      status: this.#fb.nonNullable.control('', [
-        Validators.required,
-        Validators.minLength(1),
-        Validators.maxLength(10),
-      ]),
-    },
-    { validators: [mustBeDifferentValidator('awayTeam', 'homeTeam')] }
-  );
+
+  form = this.#fb.group({
+    type: this.#fb.nonNullable.control<PlayType>('passing', [
+      Validators.required,
+    ]),
+    down: this.#fb.nonNullable.control(1, [
+      Validators.required,
+      Validators.min(1),
+      Validators.max(4),
+    ]),
+    distanceToGo: this.#fb.nonNullable.control(40, [
+      Validators.required,
+      Validators.min(1),
+      Validators.max(40),
+    ]),
+    yardline: this.#fb.nonNullable.control(40, [
+      Validators.required,
+      Validators.min(1),
+      Validators.max(40),
+    ]),
+    points: this.#fb.nonNullable.control(0, [
+      Validators.required,
+      Validators.min(0),
+      Validators.max(6),
+    ]),
+    yardage: this.#fb.nonNullable.control(0, [Validators.required]),
+    offensiveTeamId: this.#fb.nonNullable.control('', [Validators.required]),
+    defensiveTeamId: this.#fb.nonNullable.control('', [Validators.required]),
+    completedPass: this.#fb.nonNullable.control(false, [Validators.required]),
+    earnedFirstDown: this.#fb.nonNullable.control(false, [Validators.required]),
+    sack: this.#fb.nonNullable.control(false, [Validators.required]),
+    passer: this.#fb.nonNullable.control('', [Validators.required]),
+    rusher: this.#fb.nonNullable.control('', [Validators.required]),
+    receiver: this.#fb.nonNullable.control('', [Validators.required]),
+    flagPuller: this.#fb.nonNullable.control('', [Validators.required]),
+    turnoverType: this.#fb.nonNullable.control<TurnoverType>('interception', [
+      Validators.required,
+    ]),
+    turnoverPlayer: this.#fb.nonNullable.control('', [Validators.required]),
+    penalty: this.#fb.nonNullable.control('', [Validators.required]),
+    penaltyPlayer: this.#fb.nonNullable.control('', [Validators.required]),
+    penaltyYardage: this.#fb.nonNullable.control(0, [Validators.required]),
+  });
+
+  playTypes: Array<{ label: string; value: PlayType }> = [
+    { label: 'Rushing', value: 'rushing' },
+    { label: 'Passing', value: 'passing' },
+    { label: 'Punt', value: 'punt' },
+    { label: '1-PT Pass', value: 'one-point-pass' },
+    { label: '2-PT Pass', value: 'two-point-pass' },
+    { label: '1-PT Rush', value: 'one-point-rush' },
+    { label: '2-PT Rush', value: 'two-point-rush' },
+  ];
 
   teams$ = this.#leagueService.watchTeams$();
   players$ = this.#leagueService.watchPlayers$();
@@ -86,68 +123,9 @@ export class ScorekeeperComponent {
     //   receiver: '009',
     //   flagPuller: '010',
     // }).subscribe();
-    this.game$ = this.#leagueService.watchGame$(this.id).pipe(
-      tap((game) => {
-        if (!game) {
-          return;
-        }
-        this.form.controls.startTime.setValue(new Date(game.startTime));
-        this.form.controls.location.setValue(game.location);
-        this.form.controls.status.setValue(game.status);
-      })
-    );
     this.homeRoster$ = this.#leagueService.watchRoster$(this.id, true);
     this.awayRoster$ = this.#leagueService.watchRoster$(this.id, false);
-    this.players$ = combineLatest([
-      this.homeRoster$,
-      this.awayRoster$,
-      this.#leagueService.watchPlayers$(),
-    ]).pipe(
-      map((responses) => {
-        return responses[2].filter(
-          (player) =>
-            !responses[1].find((away) => away.id === player.id) &&
-            !responses[0].find((home) => home.id === player.id)
-        );
-      })
-    );
     this.plays$ = this.#leagueService.watchPlays$(this.id);
-  }
-
-  editGameClicked() {
-    if (!this.form.valid) {
-      throw new Error('Form is not valid.');
-    }
-    const game = this.form.value;
-    this.errors = [];
-    try {
-      this.#leagueService
-        .editGame(this.id, {
-          startTime: game.startTime!.getTime(),
-          location: game.location!,
-          status: game.status!,
-        })
-        .subscribe({
-          // next: (team) => this.#router.navigate(['/', 'teams', team.id]),
-        });
-    } catch (e: any) {
-      this.errors.push({
-        severity: 'error',
-        summary: 'Error',
-        detail: e.message,
-      });
-    }
-  }
-
-  addPlayerClicked(id: string, homeTeam: boolean) {
-    this.#leagueService
-      .addPlayerToRoster(this.id, id, homeTeam, '')
-      .subscribe();
-  }
-
-  removePlayerClicked(id: string, homeTeam: boolean) {
-    this.#leagueService
-      .removePlayerFromRoster(this.id, id, homeTeam)
-      .subscribe();
+    this.game$ = this.#leagueService.watchGame$(this.id);
   }
 }

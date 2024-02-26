@@ -15,15 +15,15 @@
     <form [formGroup]="form" (ngSubmit)="(form.valid)">
       <div class="p-fluid">
         <div class="field">
-          <label htmlFor="startTime">Start Time</label>
-          <p-calendar
-            formControlName="startTime"
-            [showIcon]="true"
-            [showTime]="true"
-            hourFormat="12"
-          ></p-calendar>
+          <label htmlFor="playType">Play Type</label>
+          <p-dropdown
+            formControlName="playType"
+            [options]="playTypes"
+            optionLabel="label"
+            optionValue="value"
+          ></p-dropdown>
         </div>
-        <div class="field">
+        <!-- <div class="field">
           <label htmlFor="location">Location</label>
           <input
             pInputText
@@ -46,7 +46,7 @@
             tooltipPosition="bottom"
             [maxlength]="10"
           />
-        </div>
+        </div> -->
       </div>
     </form>
 
@@ -61,7 +61,6 @@
           icon="pi pi-check"
           severity="success"
           [disabled]="!form.valid || !form.dirty"
-          (onClick)="editGameClicked()"
         />
         <p-button
           label="Cancel"

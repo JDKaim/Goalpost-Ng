@@ -7,9 +7,16 @@
     <div class="text-center">
       <p-button
         size="small"
+        class="mr-2"
         icon="pi pi-pencil"
         severity="primary"
         [routerLink]="['/', 'edit-game', game.id]"
+      />
+      <p-button
+        size="small"
+        icon="pi pi-stopwatch"
+        severity="success"
+        [routerLink]="['/', 'scorekeeper', game.id]"
       />
     </div>
   </p-card>

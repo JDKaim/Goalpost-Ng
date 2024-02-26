@@ -7,9 +7,16 @@
     <div class="text-center">
       <p-button
         size="small"
+        class="mr-2"
         icon="pi pi-eye"
         severity="primary"
         [routerLink]="['/', 'games', game.id]"
+      />
+      <p-button
+        size="small"
+        icon="pi pi-stopwatch"
+        severity="success"
+        [routerLink]="['/', 'scorekeeper', game.id]"
       />
     </div>
     <form [formGroup]="form" (ngSubmit)="(form.valid)">

@@ -7,9 +7,16 @@
     <div class="text-center">
       <p-button
         size="small"
+        class="mr-2"
         icon="pi pi-eye"
         severity="primary"
         [routerLink]="['/', 'games', game.id]"
+      />
+      <p-button
+        size="small"
+        icon="pi pi-pencil"
+        severity="primary"
+        [routerLink]="['/', 'edit-game', game.id]"
       />
     </div>
     <form [formGroup]="form" (ngSubmit)="(form.valid)">
@@ -22,6 +29,17 @@
             optionLabel="label"
             optionValue="value"
           ></p-dropdown>
+        </div>
+        <div class="field">
+          <label htmlFor="passer">Passer</label>
+          <p-dropdown
+            id="passer"
+            formControlName="passer"
+            [options]="$any(homeRoster$ | async)"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Select a Player"
+          />
         </div>
         <!-- <div class="field">
           <label htmlFor="location">Location</label>
@@ -77,10 +95,9 @@
   <p-card class="w-30rem">
     <div class="p-card-title text-center">Plays</div>
     @for (play of plays; track $index) {
-      <div>{{play.id}}</div>
-    }
-    @empty {
-      <div>No current plays.</div>
+    <div>{{ play.id }}</div>
+    } @empty {
+    <div>No current plays.</div>
     }
   </p-card>
   }

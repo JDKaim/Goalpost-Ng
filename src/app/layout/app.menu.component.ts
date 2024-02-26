@@ -1,6 +1,7 @@
 import { OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { LayoutService } from './service/app.layout.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-menu',
@@ -21,7 +22,9 @@ export class AppMenuComponent implements OnInit {
           { label: 'Create Player', icon: 'pi pi-fw pi-user', routerLink: ['/', 'create-player']},
           { label: 'Create Game', icon: 'pi pi-fw pi-calendar', routerLink: ['/', 'create-game']}
         ],
-      },
+      }];
+    if (!environment.production) {
+      this.model.push(
       {
         label: 'Goalpost',
         items: [
@@ -283,6 +286,6 @@ export class AppMenuComponent implements OnInit {
           },
         ],
       },
-    ];
+    );}
   }
 }

@@ -1,7 +1,7 @@
 @if (game$ | async; as game) {
 <div class="flex gap-3 mb-3">
   <p-card class="w-30rem">
-    <div class="p-card-title text-center">Edit Game</div>
+    <div class="p-card-title text-center">Scorekeeper</div>
     <div class="text-center font-semibold text-900">{{ game | game }}</div>
     <div class="text-center text-600 mb-3">Game ID: {{ game.id }}</div>
     <div class="text-center">
@@ -74,70 +74,17 @@
     </ng-template>
   </p-card>
 
-  <p-card [header]="'Away Team - ' + game.awayTeamId" class="w-30rem">
-    @if (awayRoster$ | async; as players) { @for(player of players; track
-    $index) {
-    <div class="flex gap-2 align-items-center mb-1">
-      <p-button
-        size="small"
-        icon="pi pi-times"
-        severity="danger"
-        (onClick)="removePlayerClicked(player.id, false)"
-      />
-      <a [routerLink]="['/', 'players', player.id]">{{ player.name }}</a>
-    </div>
-    } @empty {
-    <div>No Players.</div>
-    }}
+  @if (plays$ | async; as plays) {
+  <p-card class="w-30rem">
+    <div class="p-card-title text-center">Plays</div>
+    @for (play of plays; track $index) {
+      <div>{{play.id}}</div>
+    }
+    @empty {
+      <div>No current plays.</div>
+    }
   </p-card>
+  }
+</div>
 
-  <p-card [header]="'Home Team - ' + game.homeTeamId" class="w-30rem">
-    @if (homeRoster$ | async; as players) { @for(player of players; track
-    $index) {
-    <div class="flex gap-2 align-items-center mb-1">
-      <p-button
-        size="small"
-        icon="pi pi-times"
-        severity="danger"
-        (onClick)="removePlayerClicked(player.id, true)"
-      />
-      <a [routerLink]="['/', 'players', player.id]">{{ player.name }}</a>
-    </div>
-    } @empty {
-    <div>No Players.</div>
-    }}
-  </p-card>
-</div>
-<div>
-  <p-card header="Current Players" class="w-full">
-    <div class="flex gap-3">
-      @if (players$ | async; as players) { @for(player of players; track $index)
-      {
-      <div class="flex gap-2 align-items-center mb-1">
-        <p-button
-          size="small"
-          icon="pi pi-briefcase"
-          severity="danger"
-          (onClick)="addPlayerClicked(player.id, false)"
-        />
-        <p-button
-          size="small"
-          icon="pi pi-home"
-          severity="success"
-          (onClick)="addPlayerClicked(player.id, true)"
-        />
-        <a [routerLink]="['/', 'players', player.id]">{{ player.name }}</a>
-      </div>
-      } }
-    </div>
-  </p-card>
-  <div class="mt-3">
-    <p-button
-      label="Delete Game"
-      icon="pi pi-trash"
-      severity="danger"
-      (onClick)="deleteGameClicked()"
-    />
-  </div>
-</div>
 }

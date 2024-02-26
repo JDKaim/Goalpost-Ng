@@ -14,14 +14,15 @@ import { TooltipModule } from 'primeng/tooltip';
 import { Observable, combineLatest, map, takeUntil, tap } from 'rxjs';
 import { mustBeDifferentValidator } from 'src/app/league-site/helpers/custom-validators';
 import { Game } from 'src/app/league-site/models/game';
+import { Play } from 'src/app/league-site/models/play';
 import { Player } from 'src/app/league-site/models/player';
 import { GamePipe } from 'src/app/league-site/pipes/game.pipe';
 import { LeagueService } from 'src/app/league-site/services/league-service';
 
 @Component({
   standalone: true,
-  selector: 'edit-game',
-  templateUrl: './edit-game.component.html',
+  selector: 'scorekeeper',
+  templateUrl: './scorekeeper.component.html',
   imports: [
     CommonModule,
     RouterModule,
@@ -36,7 +37,7 @@ import { LeagueService } from 'src/app/league-site/services/league-service';
     GamePipe
   ],
 })
-export class EditGameComponent {
+export class ScorekeeperComponent {
   #leagueService = inject(LeagueService);
   #router = inject(Router);
   @Input() id!: string;
@@ -62,12 +63,29 @@ export class EditGameComponent {
 
   teams$ = this.#leagueService.watchTeams$();
   players$ = this.#leagueService.watchPlayers$();
+  plays$ = new Observable<Play[]>();
   homeRoster$ = new Observable<Player[]>();
   awayRoster$ = new Observable<Player[]>();
   errors = new Array<Message>();
   game$ = new Observable<Game | undefined>();
 
   ngOnInit(): void {
+    // this.#leagueService.createPlay(this.id, {
+    //   down: 1,
+    //   distanceToGo: 10,
+    //   yardLine: 25,
+    //   yardage: 6,
+    //   type: 'passing',
+    //   offensiveTeamId: 'WASH',
+    //   defensiveTeamId: 'ORE',
+    //   completedPass: true,
+    //   earnedFirstDown: false,
+    //   points: 0,
+    //   sack: false,
+    //   passer: '009',
+    //   receiver: '009',
+    //   flagPuller: '010',
+    // }).subscribe();
     this.game$ = this.#leagueService.watchGame$(this.id).pipe(
       tap((game) => {
         if (!game) {
@@ -93,6 +111,7 @@ export class EditGameComponent {
         );
       })
     );
+    this.plays$ = this.#leagueService.watchPlays$(this.id);
   }
 
   editGameClicked() {
@@ -118,12 +137,6 @@ export class EditGameComponent {
         detail: e.message,
       });
     }
-  }
-
-  deleteGameClicked() {
-    this.#leagueService.deleteGame(this.id).subscribe({
-      next: () => this.#router.navigate(['/'])
-    });
   }
 
   addPlayerClicked(id: string, homeTeam: boolean) {

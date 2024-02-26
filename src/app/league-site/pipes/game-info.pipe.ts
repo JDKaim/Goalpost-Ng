@@ -9,6 +9,6 @@ import { Game } from '../models/game';
 export class GameInfoPipe implements PipeTransform {
 
   transform(game: Game): string {
-    return `@ ${game.location} @ ${new Date(game.startTime).toTimeString()}`;
+    return `@ ${game.location} @ ${new Date(game.startTime)}`;
   }
 }

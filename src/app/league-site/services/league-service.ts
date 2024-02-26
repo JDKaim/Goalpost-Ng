@@ -19,6 +19,7 @@ import { CreateGame } from '../models/create-game';
 import { EditGame } from '../models/edit-game';
 import { PlayerGame } from '../models/player-game';
 import { Player } from '../models/player';
+import { CreatePlay } from '../models/create-play';
 
 // NOTE: This service is overly complicated because of the way it's dealing with local data. If dealing with
 // a proper database or backend service this would probablyend up a bit cleaner.
@@ -64,6 +65,12 @@ export class LeagueService {
   watchGame$(id: string) {
     return this.watchLeague$().pipe(
       map((league) => league.games.find((game) => game.id === id))
+    );
+  }
+
+  watchPlays$(id: string) {
+    return this.watchLeague$().pipe(
+      map((league) => league.games.find((game) => game.id === id)!.plays)
     );
   }
 
@@ -230,16 +237,27 @@ export class LeagueService {
   }
 
   editGame(id: string, editGame: EditGame) {
-    return this.watchGame$(id).pipe(take(1), switchMap((game) => {
-      if (!game) {
-        return of(null);
-      }
-      game.location = editGame.location;
-      game.startTime = editGame.startTime;
-      game.status = editGame.status;
-      this.#subject.next(this.#league);
-      return of(game);
-    }))
+    return this.watchGame$(id).pipe(
+      take(1),
+      switchMap((game) => {
+        if (!game) {
+          return of(null);
+        }
+        game.location = editGame.location;
+        game.startTime = editGame.startTime;
+        game.status = editGame.status;
+        this.#subject.next(this.#league);
+        return of(game);
+      })
+    );
+  }
+
+  deleteGame(id: string) {
+    this.#league.games = this.#league.games.filter(
+      (game) => game.id != id
+    );
+    this.#subject.next(this.#league);
+    return of(true);
   }
 
   addPlayerToRoster(
@@ -319,14 +337,48 @@ export class LeagueService {
   }
 
   watchRoster$(id: string, homeTeam: boolean) {
-    return this.watchGame$(id).pipe(switchMap((game) => {
-      if (!game) {
-        return of(new Array<Player>());
-      }
-      if (homeTeam) {
-        return of(game.homeRoster.map((playerGame) => this.#league.players.find(player => player.id === playerGame.id)!));
-      }
-      return of(game.awayRoster.map((playerGame) => this.#league.players.find(player => player.id === playerGame.id)!));
-    }))
+    return this.watchGame$(id).pipe(
+      switchMap((game) => {
+        if (!game) {
+          return of(new Array<Player>());
+        }
+        if (homeTeam) {
+          return of(
+            game.homeRoster.map(
+              (playerGame) =>
+                this.#league.players.find(
+                  (player) => player.id === playerGame.id
+                )!
+            )
+          );
+        }
+        return of(
+          game.awayRoster.map(
+            (playerGame) =>
+              this.#league.players.find(
+                (player) => player.id === playerGame.id
+              )!
+          )
+        );
+      })
+    );
+  }
+
+  createPlay(gameId: string, play: CreatePlay) {
+    return this.watchGame$(gameId).pipe(take(1),
+      map((game) => {
+        if (!game) {
+          return null;
+        }
+        const newPlay = {
+          ...play,
+          id: game.plays.length.toString(),
+          index: game.plays.length,
+        };
+        game.plays.push(newPlay);
+        this.#subject.next(this.#league);
+        return newPlay;
+      })
+    );
   }
 }

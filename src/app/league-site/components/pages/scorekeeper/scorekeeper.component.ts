@@ -8,10 +8,12 @@ import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { CardModule } from 'primeng/card';
 import { DropdownModule } from 'primeng/dropdown';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessagesModule } from 'primeng/messages';
+import { SelectButtonModule } from 'primeng/selectbutton';
 import { TooltipModule } from 'primeng/tooltip';
-import { Observable, combineLatest, map, takeUntil, tap } from 'rxjs';
+import { Observable, combineLatest, map, take, takeUntil, tap } from 'rxjs';
 import { mustBeDifferentValidator } from 'src/app/league-site/helpers/custom-validators';
 import { Game } from 'src/app/league-site/models/game';
 import { Play } from 'src/app/league-site/models/play';
@@ -20,24 +22,30 @@ import { Player } from 'src/app/league-site/models/player';
 import { TurnoverType } from 'src/app/league-site/models/turnover-type';
 import { GamePipe } from 'src/app/league-site/pipes/game.pipe';
 import { LeagueService } from 'src/app/league-site/services/league-service';
+import { PassPlayComponent } from '../../controls/plays/pass-play/pass-play.component';
+import { RushPlayComponent } from "../../controls/plays/rush-play/rush-play.component";
 
 @Component({
-  standalone: true,
-  selector: 'scorekeeper',
-  templateUrl: './scorekeeper.component.html',
-  imports: [
-    CommonModule,
-    RouterModule,
-    CardModule,
-    ButtonModule,
-    ReactiveFormsModule,
-    InputTextModule,
-    MessagesModule,
-    TooltipModule,
-    DropdownModule,
-    CalendarModule,
-    GamePipe,
-  ],
+    standalone: true,
+    selector: 'scorekeeper',
+    templateUrl: './scorekeeper.component.html',
+    imports: [
+        CommonModule,
+        RouterModule,
+        CardModule,
+        ButtonModule,
+        ReactiveFormsModule,
+        InputTextModule,
+        InputNumberModule,
+        MessagesModule,
+        TooltipModule,
+        DropdownModule,
+        CalendarModule,
+        GamePipe,
+        SelectButtonModule,
+        PassPlayComponent,
+        RushPlayComponent
+    ]
 })
 export class ScorekeeperComponent {
   #leagueService = inject(LeagueService);
@@ -56,12 +64,12 @@ export class ScorekeeperComponent {
     ]),
     distanceToGo: this.#fb.nonNullable.control(40, [
       Validators.required,
-      Validators.min(1),
+      Validators.min(0),
       Validators.max(40),
     ]),
-    yardline: this.#fb.nonNullable.control(40, [
+    yardLine: this.#fb.nonNullable.control(40, [
       Validators.required,
-      Validators.min(1),
+      Validators.min(0),
       Validators.max(40),
     ]),
     points: this.#fb.nonNullable.control(0, [
@@ -79,9 +87,7 @@ export class ScorekeeperComponent {
     rusher: this.#fb.nonNullable.control('', [Validators.required]),
     receiver: this.#fb.nonNullable.control('', [Validators.required]),
     flagPuller: this.#fb.nonNullable.control('', [Validators.required]),
-    turnoverType: this.#fb.nonNullable.control<TurnoverType>('interception', [
-      Validators.required,
-    ]),
+    turnoverType: this.#fb.control<TurnoverType | 'none'>('none'),
     turnoverPlayer: this.#fb.nonNullable.control('', [Validators.required]),
     penalty: this.#fb.nonNullable.control('', [Validators.required]),
     penaltyPlayer: this.#fb.nonNullable.control('', [Validators.required]),
@@ -98,13 +104,112 @@ export class ScorekeeperComponent {
     { label: '2-PT Rush', value: 'two-point-rush' },
   ];
 
+  turnoverTypes: Array<{ label: string; value: TurnoverType | 'none' }> = [
+    { label: 'No Turnover', value: 'none' },
+    { label: 'Interception', value: 'interception' },
+    { label: 'Fumble', value: 'fumble' },
+  ];
+
+  teams: Array<{ label: string; value: string }> = [
+    { label: 'Away Team', value: '' },
+    { label: 'Home Team', value: '' },
+  ];
+
   teams$ = this.#leagueService.watchTeams$();
   players$ = this.#leagueService.watchPlayers$();
   plays$ = new Observable<Play[]>();
   homeRoster$ = new Observable<Player[]>();
   awayRoster$ = new Observable<Player[]>();
+  offensiveTeamRoster$ = new Observable<Player[]>();
+  defensiveTeamRoster$ = new Observable<Player[]>();
   errors = new Array<Message>();
   game$ = new Observable<Game | undefined>();
+
+  constructor() {
+    this.form.controls.type.valueChanges.pipe(takeUntilDestroyed()).subscribe({
+      next: (playType) => this.#updateForm(playType),
+    });
+    this.form.controls.points.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe({
+        next: (points) => {
+          this.form.controls.flagPuller.disable();
+          if (!points) {
+            this.form.controls.flagPuller.enable();
+          }
+        },
+      });
+    this.#updateForm(this.form.controls.type.value);
+    this.form.controls.offensiveTeamId.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe({
+        next: (teamId) => {
+          if (teamId === this.teams[1].value) {
+            this.offensiveTeamRoster$ = this.homeRoster$;
+            this.defensiveTeamRoster$ = this.awayRoster$;
+            this.form.controls.defensiveTeamId.setValue(this.teams[0].value);
+          } else {
+            this.offensiveTeamRoster$ = this.awayRoster$;
+            this.defensiveTeamRoster$ = this.homeRoster$;
+            this.form.controls.defensiveTeamId.setValue(this.teams[1].value);
+          }
+        },
+      });
+    this.form.controls.points.setValue(0);
+  }
+
+  #updateForm(playType: PlayType) {
+    this.form.controls.completedPass.disable();
+    this.form.controls.flagPuller.disable();
+    this.form.controls.passer.disable();
+    this.form.controls.penalty.disable();
+    this.form.controls.penaltyPlayer.disable();
+    this.form.controls.penaltyYardage.disable();
+    this.form.controls.receiver.disable();
+    this.form.controls.rusher.disable();
+    this.form.controls.turnoverPlayer.disable();
+    switch (playType) {
+      case 'one-point-pass':
+      case 'two-point-pass':
+      case 'passing':
+        this.form.controls.passer.enable();
+        this.form.controls.receiver.enable();
+        this.form.controls.completedPass.enable();
+        break;
+      case 'one-point-rush':
+      case 'two-point-rush':
+      case 'rushing':
+        this.form.controls.rusher.enable();
+        break;
+      case 'punt':
+        break;
+      default:
+        throw new Error(`Unknown play type: '${playType}'`);
+    }
+  }
+
+  createPlayClicked() {
+    const formValue = this.form.getRawValue();
+    try {
+      this.#leagueService
+        .createPlay(this.id, {
+          ...formValue,
+          turnoverType:
+            formValue.turnoverType != 'none'
+              ? formValue.turnoverType!
+              : undefined,
+        })
+        .subscribe({
+          // next: (team) => this.#router.navigate(['/', 'teams', team.id]),
+        });
+    } catch (e: any) {
+      this.errors.push({
+        severity: 'error',
+        summary: 'Error',
+        detail: e.message,
+      });
+    }
+  }
 
   ngOnInit(): void {
     // this.#leagueService.createPlay(this.id, {
@@ -126,6 +231,19 @@ export class ScorekeeperComponent {
     this.homeRoster$ = this.#leagueService.watchRoster$(this.id, true);
     this.awayRoster$ = this.#leagueService.watchRoster$(this.id, false);
     this.plays$ = this.#leagueService.watchPlays$(this.id);
-    this.game$ = this.#leagueService.watchGame$(this.id);
+    this.game$ = this.#leagueService.watchGame$(this.id).pipe(
+      tap((game) => {
+        if (!game) {
+          return;
+        }
+        this.teams[0].label = game.awayTeamId;
+        this.teams[0].value = game.awayTeamId;
+        this.teams[1].label = game.homeTeamId;
+        this.teams[1].value = game.homeTeamId;
+        if (!this.form.controls.offensiveTeamId.value) {
+          this.form.controls.offensiveTeamId.setValue(game.homeTeamId);
+        }
+      })
+    );
   }
 }

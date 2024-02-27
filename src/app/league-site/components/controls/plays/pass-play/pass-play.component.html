@@ -6,24 +6,38 @@
     <a class="font-semibold" [routerLink]="['/', 'players', results.passPlayer.id]">{{results.passPlayer.name}}</a>
     pass to
     <a class="font-semibold" [routerLink]="['/', 'players', results.receivePlayer.id]">{{results.receivePlayer.name}}</a>
-    for {{play.yardage}} yards,
-    @if (play.points === 6) {
+    @if (play.completedPass) {
+      completed for {{play.yardage}} yards,
+    } @else if (play.turnoverType === 'interception') {
+      INTERCEPTED by
+      <a class="font-semibold" [routerLink]="['/', 'players', results.turnoverPlayer!.id]">{{results.turnoverPlayer!.name}}</a>
+      @if (play.points === 6) {
+        AND RETURNED FOR A TOUCHDOWN!!!
+      }
+    } @else if (play.turnoverType === 'fumble') {
+      FUMBLED!!! Recovered by
+      <a class="font-semibold" [routerLink]="['/', 'players', results.turnoverPlayer!.id]">{{results.turnoverPlayer!.name}}</a>
+      @if (play.points === 6) {
+        AND RETURNED FOR A TOUCHDOWN!!!
+      }
+    }
+    @if (play.points === 6 && !play.turnoverType) {
       TOUCHDOWN!!!
     }
     @else if (play.points === 2 && !play.turnoverType) {
       2-PT CONVERSION GOOD!!!
     }
-    @else if (play.points === 1) {
+    @else if (play.points === 1 && !play.turnoverType) {
       1-PT CONVERSION GOOD!!!
     }
-    @else {
+    @else if (play.points === 0) {
       flag pulled by
       <a class="font-semibold" [routerLink]="['/', 'players', results.flagPuller!.id]">{{results.flagPuller!.name}}.</a>
     }
-    @if (play.type === "two-point-pass") {
+    @if (play.type === "two-point-pass" && (play.points === 0 || play.turnoverType)) {
       2-PT Conversion is no good.
     }
-    @if (play.type === "one-point-pass") {
+    @if (play.type === "one-point-pass" && (play.points === 0 || play.turnoverType)) {
       1-PT Conversion is no good.
     }
   </div>

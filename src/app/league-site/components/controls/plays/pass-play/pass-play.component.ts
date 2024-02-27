@@ -36,11 +36,17 @@ export class PassPlayComponent implements OnInit {
   passPlayer$ = new Observable<Player | undefined>();
   receivePlayer$ = new Observable<Player | undefined>();
   flagPuller$ = new Observable<Player | undefined>();
-  combined$ = new Observable<
-  {offensiveTeam: Team, defensiveTeam: Team, passPlayer: Player, receivePlayer: Player, flagPuller: Player | undefined }
-  >();
-  
-  playDisplay: Array<string> = ["1st", "2nd", "3rd", "4th"];
+  turnoverPlayer$ = new Observable<Player | undefined>();
+  combined$ = new Observable<{
+    offensiveTeam: Team;
+    defensiveTeam: Team;
+    passPlayer: Player;
+    receivePlayer: Player;
+    flagPuller: Player | undefined;
+    turnoverPlayer: Player | undefined;
+  }>();
+
+  playDisplay: Array<string> = ['1st', '2nd', '3rd', '4th'];
 
   ngOnInit(): void {
     this.passPlayer$ = this.#leagueService
@@ -55,16 +61,16 @@ export class PassPlayComponent implements OnInit {
     this.defensiveTeam$ = this.#leagueService
       .watchTeam$(this.play.defensiveTeamId)
       .pipe(take(1));
-    if (!this.play.points) {
-      this.flagPuller$ = this.#leagueService
-        .watchPlayer$(this.play.flagPuller!)
+    if (this.play.turnoverType) {
+      this.turnoverPlayer$ = this.#leagueService
+        .watchPlayer$(this.play.turnoverPlayer!)
         .pipe(take(1));
       this.combined$ = combineLatest([
         this.offensiveTeam$,
         this.defensiveTeam$,
         this.passPlayer$,
         this.receivePlayer$,
-        this.flagPuller$,
+        this.turnoverPlayer$,
       ]).pipe(
         map((results) => {
           return {
@@ -72,27 +78,53 @@ export class PassPlayComponent implements OnInit {
             defensiveTeam: results[1]!,
             passPlayer: results[2]!,
             receivePlayer: results[3]!,
-            flagPuller: results[4],
-        };
+            flagPuller: undefined,
+            turnoverPlayer: results[4],
+          };
         })
       );
     } else {
-      this.combined$ = combineLatest([
-        this.offensiveTeam$,
-        this.defensiveTeam$,
-        this.passPlayer$,
-        this.receivePlayer$,
-      ]).pipe(
-        map((results) => {
-          return {
-            offensiveTeam: results[0]!,
-            defensiveTeam: results[1]!,
-            passPlayer: results[2]!,
-            receivePlayer: results[3]!,
-            flagPuller: undefined
-        };
-        })
-      );
+      if (this.play.points) {
+        this.combined$ = combineLatest([
+          this.offensiveTeam$,
+          this.defensiveTeam$,
+          this.passPlayer$,
+          this.receivePlayer$,
+        ]).pipe(
+          map((results) => {
+            return {
+              offensiveTeam: results[0]!,
+              defensiveTeam: results[1]!,
+              passPlayer: results[2]!,
+              receivePlayer: results[3]!,
+              flagPuller: undefined,
+              turnoverPlayer: undefined,
+            };
+          })
+        );
+      } else {
+        this.flagPuller$ = this.#leagueService
+          .watchPlayer$(this.play.flagPuller!)
+          .pipe(take(1));
+        this.combined$ = combineLatest([
+          this.offensiveTeam$,
+          this.defensiveTeam$,
+          this.passPlayer$,
+          this.receivePlayer$,
+          this.flagPuller$,
+        ]).pipe(
+          map((results) => {
+            return {
+              offensiveTeam: results[0]!,
+              defensiveTeam: results[1]!,
+              passPlayer: results[2]!,
+              receivePlayer: results[3]!,
+              flagPuller: results[4],
+              turnoverPlayer: undefined,
+            };
+          })
+        );
+      }
     }
   }
 }

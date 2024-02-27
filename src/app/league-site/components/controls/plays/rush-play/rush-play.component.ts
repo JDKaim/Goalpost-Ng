@@ -35,11 +35,16 @@ export class RushPlayComponent implements OnInit {
   defensiveTeam$ = new Observable<Team | undefined>();
   rushPlayer$ = new Observable<Player | undefined>();
   flagPuller$ = new Observable<Player | undefined>();
-  combined$ = new Observable<
-  {offensiveTeam: Team, defensiveTeam: Team, rushPlayer: Player, flagPuller: Player | undefined }
-  >();
-  
-  playDisplay: Array<string> = ["1st", "2nd", "3rd", "4th"];
+  turnoverPlayer$ = new Observable<Player | undefined>();
+  combined$ = new Observable<{
+    offensiveTeam: Team;
+    defensiveTeam: Team;
+    rushPlayer: Player;
+    flagPuller: Player | undefined;
+    turnoverPlayer: Player | undefined;
+  }>();
+
+  playDisplay: Array<string> = ['1st', '2nd', '3rd', '4th'];
 
   ngOnInit(): void {
     this.rushPlayer$ = this.#leagueService
@@ -51,40 +56,64 @@ export class RushPlayComponent implements OnInit {
     this.defensiveTeam$ = this.#leagueService
       .watchTeam$(this.play.defensiveTeamId)
       .pipe(take(1));
-    if (!this.play.points) {
-      this.flagPuller$ = this.#leagueService
-        .watchPlayer$(this.play.flagPuller!)
+    if (this.play.turnoverType) {
+      this.turnoverPlayer$ = this.#leagueService
+        .watchPlayer$(this.play.turnoverPlayer!)
         .pipe(take(1));
       this.combined$ = combineLatest([
         this.offensiveTeam$,
         this.defensiveTeam$,
         this.rushPlayer$,
-        this.flagPuller$,
+        this.turnoverPlayer$,
       ]).pipe(
         map((results) => {
           return {
             offensiveTeam: results[0]!,
             defensiveTeam: results[1]!,
             rushPlayer: results[2]!,
-            flagPuller: results[3],
-        };
+            flagPuller: undefined,
+            turnoverPlayer: results[3],
+          };
         })
       );
     } else {
-      this.combined$ = combineLatest([
-        this.offensiveTeam$,
-        this.defensiveTeam$,
-        this.rushPlayer$,
-      ]).pipe(
-        map((results) => {
-          return {
-            offensiveTeam: results[0]!,
-            defensiveTeam: results[1]!,
-            rushPlayer: results[2]!,
-            flagPuller: undefined
-        };
-        })
-      );
+      if (this.play.points) {
+        this.combined$ = combineLatest([
+          this.offensiveTeam$,
+          this.defensiveTeam$,
+          this.rushPlayer$,
+        ]).pipe(
+          map((results) => {
+            return {
+              offensiveTeam: results[0]!,
+              defensiveTeam: results[1]!,
+              rushPlayer: results[2]!,
+              flagPuller: undefined,
+              turnoverPlayer: undefined,
+            };
+          })
+        );
+      } else {
+        this.flagPuller$ = this.#leagueService
+          .watchPlayer$(this.play.flagPuller!)
+          .pipe(take(1));
+        this.combined$ = combineLatest([
+          this.offensiveTeam$,
+          this.defensiveTeam$,
+          this.rushPlayer$,
+          this.flagPuller$,
+        ]).pipe(
+          map((results) => {
+            return {
+              offensiveTeam: results[0]!,
+              defensiveTeam: results[1]!,
+              rushPlayer: results[2]!,
+              flagPuller: results[3],
+              turnoverPlayer: undefined,
+            };
+          })
+        );
+      }
     }
   }
 }

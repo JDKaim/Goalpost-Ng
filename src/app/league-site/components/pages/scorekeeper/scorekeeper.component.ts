@@ -23,29 +23,29 @@ import { TurnoverType } from 'src/app/league-site/models/turnover-type';
 import { GamePipe } from 'src/app/league-site/pipes/game.pipe';
 import { LeagueService } from 'src/app/league-site/services/league-service';
 import { PassPlayComponent } from '../../controls/plays/pass-play/pass-play.component';
-import { RushPlayComponent } from "../../controls/plays/rush-play/rush-play.component";
+import { RushPlayComponent } from '../../controls/plays/rush-play/rush-play.component';
 
 @Component({
-    standalone: true,
-    selector: 'scorekeeper',
-    templateUrl: './scorekeeper.component.html',
-    imports: [
-        CommonModule,
-        RouterModule,
-        CardModule,
-        ButtonModule,
-        ReactiveFormsModule,
-        InputTextModule,
-        InputNumberModule,
-        MessagesModule,
-        TooltipModule,
-        DropdownModule,
-        CalendarModule,
-        GamePipe,
-        SelectButtonModule,
-        PassPlayComponent,
-        RushPlayComponent
-    ]
+  standalone: true,
+  selector: 'scorekeeper',
+  templateUrl: './scorekeeper.component.html',
+  imports: [
+    CommonModule,
+    RouterModule,
+    CardModule,
+    ButtonModule,
+    ReactiveFormsModule,
+    InputTextModule,
+    InputNumberModule,
+    MessagesModule,
+    TooltipModule,
+    DropdownModule,
+    CalendarModule,
+    GamePipe,
+    SelectButtonModule,
+    PassPlayComponent,
+    RushPlayComponent,
+  ],
 })
 export class ScorekeeperComponent {
   #leagueService = inject(LeagueService);
@@ -139,6 +139,23 @@ export class ScorekeeperComponent {
           }
         },
       });
+    this.form.controls.turnoverType.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe({
+        next: (turnoverType) => {
+          this.form.controls.turnoverPlayer.disable();
+          this.form.controls.flagPuller.enable();
+          this.form.controls.yardage.enable();
+          if (turnoverType === 'interception' || turnoverType === 'fumble') {
+            this.form.controls.turnoverPlayer.enable();
+            this.form.controls.flagPuller.disable();
+            this.form.controls.yardage.disable();
+          }
+          if (this.form.controls.points.value !== 0) {
+            this.form.controls.flagPuller.disable();
+          }
+        },
+      });
     this.#updateForm(this.form.controls.type.value);
     this.form.controls.offensiveTeamId.valueChanges
       .pipe(takeUntilDestroyed())
@@ -185,6 +202,9 @@ export class ScorekeeperComponent {
         break;
       default:
         throw new Error(`Unknown play type: '${playType}'`);
+    }
+    if (this.form.controls.points.value === 0) {
+      this.form.controls.flagPuller.enable();
     }
   }
 

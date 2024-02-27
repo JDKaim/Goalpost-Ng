@@ -22,7 +22,12 @@
     <form [formGroup]="form" (ngSubmit)="(form.valid)">
       <div class="p-fluid p-formgrid grid">
         <div class="col-12">
-          <p-selectButton [options]="teams" formControlName="offensiveTeamId" optionLabel="label" optionValue="value"/>
+          <p-selectButton
+            [options]="teams"
+            formControlName="offensiveTeamId"
+            optionLabel="label"
+            optionValue="value"
+          />
         </div>
         <div class="col-4">
           <label htmlFor="down">Down</label>
@@ -39,7 +44,7 @@
           />
         </div>
         <div class="col-4">
-          <label htmlFor="yardLine">Yard Line</label>
+          <label htmlFor="yardLine">Yardline</label>
           <p-inputNumber
             id="yardLine"
             formControlName="yardLine"
@@ -48,7 +53,7 @@
             tooltipPosition="bottom"
           />
         </div>
-        <div class="field col-12">
+        <div class="col-12">
           <label htmlFor="type">Play Type</label>
           <p-dropdown
             formControlName="type"
@@ -58,7 +63,7 @@
           ></p-dropdown>
         </div>
         @if (form.controls.passer.enabled) {
-        <div class="field">
+        <div class="col-12">
           <label htmlFor="passer">Passer</label>
           <p-dropdown
             id="passer"
@@ -69,7 +74,7 @@
             placeholder="Select a Player"
           />
         </div>
-        <div class="field">
+        <div class="col-12">
           <label htmlFor="receiver">Receiver</label>
           <p-dropdown
             id="receiver"
@@ -81,7 +86,7 @@
           />
         </div>
         } @if (form.controls.rusher.enabled) {
-        <div class="field">
+        <div class="col-12">
           <label htmlFor="rusher">Rusher</label>
           <p-dropdown
             id="rusher"
@@ -92,8 +97,13 @@
             placeholder="Select a Player"
           />
         </div>
-        }
-        <div class="field">
+        } 
+        @if (form.controls.yardage.enabled) {
+        <div class="col-6">
+          <label htmlFor="points">Points Scored</label>
+          <p-dropdown formControlName="points" [options]="[0, 1, 2, 6]" />
+        </div>
+        <div class="col-6">
           <label htmlFor="yardage">Yardage Gained</label>
           <p-inputNumber
             id="yardage"
@@ -103,24 +113,13 @@
             tooltipPosition="bottom"
           />
         </div>
-        <div class="field">
-          <label htmlFor="points">Points Scored</label>
-          <p-dropdown formControlName="points" [options]="[0, 1, 2, 6]" />
-        </div>
-        @if (form.controls.flagPuller.enabled) {
-          <div class="field">
-            <label htmlFor="flagPuller">Flag Puller</label>
-            <p-dropdown
-              id="flagPuller"
-              formControlName="flagPuller"
-              [options]="$any(defensiveTeamRoster$ | async)"
-              optionLabel="name"
-              optionValue="id"
-              placeholder="Select a Player"
-            />
+        } @else {
+          <div class="col-12">
+            <label htmlFor="points">Points Scored</label>
+            <p-dropdown formControlName="points" [options]="[0, 1, 2, 6]" />
           </div>
         }
-        <div class="field">
+        <div class="col-12">
           <label htmlFor="turnoverType">Turnover Type</label>
           <p-dropdown
             formControlName="turnoverType"
@@ -129,6 +128,31 @@
             optionValue="value"
           ></p-dropdown>
         </div>
+        @if (form.controls.flagPuller.enabled) {
+        <div class="col-12">
+          <label htmlFor="flagPuller">Flag Puller</label>
+          <p-dropdown
+            id="flagPuller"
+            formControlName="flagPuller"
+            [options]="$any(defensiveTeamRoster$ | async)"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Select a Player"
+          />
+        </div>
+        } @if (form.controls.turnoverPlayer.enabled) {
+        <div class="col-12">
+          <label htmlFor="turnoverPlayer">Turnover Player</label>
+          <p-dropdown
+            id="turnoverPlayer"
+            formControlName="turnoverPlayer"
+            [options]="$any(defensiveTeamRoster$ | async)"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Select a Player"
+          />
+        </div>
+        }
         <!-- <div class="field">
           <label htmlFor="location">Location</label>
           <input
@@ -183,31 +207,22 @@
   @if (plays$ | async; as plays) {
   <p-card class="w-30rem">
     <div class="p-card-title text-center">Plays</div>
-    @for (play of plays; track $index) {
-      @switch (play.type) {
-        @case ("passing") {
-          <pass-play [play]="play"></pass-play>
-        }
-        @case ("rushing") {
-          <rush-play [play]="play"></rush-play>
-        }
-        @case ("one-point-pass") {
-          <pass-play [play]="play"></pass-play>
-        }
-        @case ("one-point-rush") {
-          <rush-play [play]="play"></rush-play>
-        }
-        @case ("two-point-pass") {
-          <pass-play [play]="play"></pass-play>
-        }
-        @case ("two-point-rush") {
-          <rush-play [play]="play"></rush-play>
-        }
-        @default() {
-          <div>{{ play.id }}</div>
-        }
-      }
-    } @empty {
+    @for (play of plays; track $index) { @switch (play.type) { @case ("passing")
+    {
+    <pass-play [play]="play"></pass-play>
+    } @case ("rushing") {
+    <rush-play [play]="play"></rush-play>
+    } @case ("one-point-pass") {
+    <pass-play [play]="play"></pass-play>
+    } @case ("one-point-rush") {
+    <rush-play [play]="play"></rush-play>
+    } @case ("two-point-pass") {
+    <pass-play [play]="play"></pass-play>
+    } @case ("two-point-rush") {
+    <rush-play [play]="play"></rush-play>
+    } @default() {
+    <div>{{ play.id }}</div>
+    } } } @empty {
     <div>No current plays.</div>
     }
   </p-card>

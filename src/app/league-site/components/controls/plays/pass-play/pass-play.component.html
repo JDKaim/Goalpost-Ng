@@ -30,7 +30,7 @@
     @else if (play.points === 1 && !play.turnoverType) {
       1-PT CONVERSION GOOD!!!
     }
-    @else if (play.points === 0) {
+    @else if (play.points === 0 && !play.turnoverType) {
       flag pulled by
       <a class="font-semibold" [routerLink]="['/', 'players', results.flagPuller!.id]">{{results.flagPuller!.name}}.</a>
     }

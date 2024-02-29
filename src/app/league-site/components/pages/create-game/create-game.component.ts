@@ -81,7 +81,7 @@ export class CreateGameComponent {
           plays: [],
         })
         .subscribe({
-          // next: (team) => this.#router.navigate(['/', 'teams', team.id]),
+          next: (game) => this.#router.navigate(['/', 'games', game.id]),
         });
     } catch (e: any) {
       this.errors.push({

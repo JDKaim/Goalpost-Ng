@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import {
+  Observable,
   ReplaySubject,
+  combineLatest,
+  combineLatestAll,
+  delay,
   interval,
   map,
   of,
@@ -20,6 +24,7 @@ import { EditGame } from '../models/edit-game';
 import { PlayerGame } from '../models/player-game';
 import { Player } from '../models/player';
 import { CreatePlay } from '../models/create-play';
+import { PlayStats } from '../models/play-stats';
 
 // NOTE: This service is overly complicated because of the way it's dealing with local data. If dealing with
 // a proper database or backend service this would probablyend up a bit cleaner.
@@ -71,6 +76,84 @@ export class LeagueService {
   watchPlays$(id: string) {
     return this.watchLeague$().pipe(
       map((league) => league.games.find((game) => game.id === id)!.plays)
+    );
+  }
+
+  watchPlayStats$(id: string): Observable<Array<PlayStats>> {
+    return this.watchPlays$(id).pipe(
+      switchMap((plays) => {
+        if (!plays?.length) {
+          return of([]);
+        }
+        const playerArray = Array.from(
+          new Set(
+            plays
+              .map((play) => [
+                play.passer,
+                play.rusher,
+                play.receiver,
+                play.flagPuller,
+                play.turnoverPlayer,
+              ])
+              .flat()
+              .filter((playerId) => playerId)
+          ).values()
+        ).map((playerId) => this.watchPlayer$(playerId!));
+        const observables = [
+          this.watchTeam$(plays[0].offensiveTeamId),
+          this.watchTeam$(plays[0].defensiveTeamId),
+        ];
+        return combineLatest([
+          combineLatest(observables),
+          combineLatest(playerArray),
+        ]).pipe(take(1), 
+          map((responses) => {
+            const teamMap = new Map(
+              responses[0].map((team) => [team!.id, team!])
+            );
+            const playerMap = new Map(
+              responses[1].map((player) => [player!.id, player!])
+            );
+            return plays.map((play) => {
+              switch (play.type) {
+                case 'rushing':
+                case 'one-point-rush':
+                case 'two-point-rush':
+                  return PlayStats.createRush(
+                    play,
+                    teamMap.get(play.offensiveTeamId)!,
+                    teamMap.get(play.defensiveTeamId)!,
+                    playerMap.get(play.rusher!)!,
+                    play.flagPuller
+                      ? playerMap.get(play.flagPuller)
+                      : undefined,
+                    play.turnoverPlayer
+                      ? playerMap.get(play.turnoverPlayer)
+                      : undefined
+                  );
+                case 'passing':
+                case 'one-point-pass':
+                case 'two-point-pass':
+                  return PlayStats.createPass(
+                    play,
+                    teamMap.get(play.offensiveTeamId)!,
+                    teamMap.get(play.defensiveTeamId)!,
+                    playerMap.get(play.passer!)!,
+                    playerMap.get(play.receiver!)!,
+                    play.flagPuller
+                      ? playerMap.get(play.flagPuller)
+                      : undefined,
+                    play.turnoverPlayer
+                      ? playerMap.get(play.turnoverPlayer)
+                      : undefined
+                  );
+                default:
+                  throw new Error("Unsupported play type.");
+              }
+            });
+          })
+        );
+      })
     );
   }
 
@@ -253,9 +336,7 @@ export class LeagueService {
   }
 
   deleteGame(id: string) {
-    this.#league.games = this.#league.games.filter(
-      (game) => game.id != id
-    );
+    this.#league.games = this.#league.games.filter((game) => game.id != id);
     this.#subject.next(this.#league);
     return of(true);
   }
@@ -365,7 +446,8 @@ export class LeagueService {
   }
 
   createPlay(gameId: string, play: CreatePlay) {
-    return this.watchGame$(gameId).pipe(take(1),
+    return this.watchGame$(gameId).pipe(
+      take(1),
       map((game) => {
         if (!game) {
           return null;

@@ -1,0 +1,91 @@
+@if (playStats.isPassingPlay) {
+  <div class="mb-3">
+    <a class="font-semibold" [routerLink]="['/', 'teams', playStats.offensiveTeam.id]">
+      {{playStats.offensiveTeam.name}}
+    </a>
+    <span>
+      - {{playDisplay[playStats.play.down - 1]}} & {{playStats.play.distanceToGo}} from {{playStats.play.yardLine}} -
+    </span>
+    <a class="font-semibold" [routerLink]="['/', 'players', playStats.passer!.id]">
+      {{playStats.passer!.name}}
+    </a>
+    <span>
+      pass to
+    </span>
+    <a class="font-semibold" [routerLink]="['/', 'players', playStats.receiver!.id]">{{playStats.receiver!.name}}</a>
+    @if (playStats.play.completedPass) {
+      completed for {{playStats.play.yardage}} yards,
+    } @else if (playStats.play.turnoverType === 'interception') {
+      INTERCEPTED by
+      <a class="font-semibold" [routerLink]="['/', 'players', playStats.turnoverPlayer!.id]">{{playStats.turnoverPlayer!.name}}</a>
+      @if (playStats.play.points === 6) {
+        AND RETURNED FOR A TOUCHDOWN!!!
+      }
+    } @else if (playStats.play.turnoverType === 'fumble') {
+      FUMBLED!!! Recovered by
+      <a class="font-semibold" [routerLink]="['/', 'players', playStats.turnoverPlayer!.id]">{{playStats.turnoverPlayer!.name}}</a>
+      @if (playStats.play.points === 6) {
+        AND RETURNED FOR A TOUCHDOWN!!!
+      }
+    }
+    @if (playStats.play.points === 6 && !playStats.play.turnoverType) {
+      TOUCHDOWN!!!
+    }
+    @else if (playStats.play.points === 2 && !playStats.play.turnoverType) {
+      2-PT CONVERSION GOOD!!!
+    }
+    @else if (playStats.play.points === 1 && !playStats.play.turnoverType) {
+      1-PT CONVERSION GOOD!!!
+    }
+    @else if (playStats.play.points === 0 && !playStats.play.turnoverType) {
+      flag pulled by
+      <a class="font-semibold" [routerLink]="['/', 'players', playStats.flagPuller!.id]">{{playStats.flagPuller!.name}}.</a>
+    }
+    @if (playStats.play.type === "two-point-pass" && (playStats.play.points === 0 || playStats.play.turnoverType)) {
+      2-PT Conversion is no good.
+    }
+    @if (playStats.play.type === "one-point-pass" && (playStats.play.points === 0 || playStats.play.turnoverType)) {
+      1-PT Conversion is no good.
+    }
+  </div>
+} @else {
+  <div class="mb-3">
+    <a class="font-semibold" [routerLink]="['/', 'teams', playStats.offensiveTeam.id]">{{playStats.offensiveTeam.name}}</a>
+    - {{playDisplay[playStats.play.down - 1]}} & {{playStats.play.distanceToGo}} from {{playStats.play.yardLine}} - Rush by
+    <a class="font-semibold" [routerLink]="['/', 'players', playStats.rusher!.id]">{{playStats.rusher!.name}}</a>
+    @if (!playStats.play.turnoverType) {
+      for a gain of {{playStats.play.yardage}} yards,
+    } @else if (playStats.play.turnoverType === 'interception') {
+      INTERCEPTED by
+      <a class="font-semibold" [routerLink]="['/', 'players', playStats.turnoverPlayer!.id]">{{playStats.turnoverPlayer!.name}}</a>
+      @if (playStats.play.points === 6) {
+        AND RETURNED FOR A TOUCHDOWN!!!
+      }
+    } @else if (playStats.play.turnoverType === 'fumble') {
+      FUMBLED!!! Recovered by
+      <a class="font-semibold" [routerLink]="['/', 'players', playStats.turnoverPlayer!.id]">{{playStats.turnoverPlayer!.name}}</a>
+      @if (playStats.play.points === 6) {
+        AND RETURNED FOR A TOUCHDOWN!!!
+      }
+    }
+    @if (playStats.play.points === 6 && !playStats.play.turnoverType) {
+      TOUCHDOWN!!!
+    }
+    @else if (playStats.play.points === 2 && !playStats.play.turnoverType) {
+      2-PT CONVERSION GOOD!!!
+    }
+    @else if (playStats.play.points === 1 && !playStats.play.turnoverType) {
+      1-PT CONVERSION GOOD!!!
+    }
+    @else if (playStats.play.points === 0 && !playStats.play.turnoverType) {
+      flag pulled by
+      <a class="font-semibold" [routerLink]="['/', 'players', playStats.flagPuller!.id]">{{playStats.flagPuller!.name}}.</a>
+    }
+    @if (playStats.play.type === "two-point-rush" && (playStats.play.points === 0 || playStats.play.turnoverType)) {
+      2-PT Conversion is no good.
+    }
+    @if (playStats.play.type === "one-point-rush" && (playStats.play.points === 0 || playStats.play.turnoverType)) {
+      1-PT Conversion is no good.
+    }
+  </div>
+}

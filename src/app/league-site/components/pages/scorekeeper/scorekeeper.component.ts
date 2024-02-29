@@ -24,6 +24,7 @@ import { GamePipe } from 'src/app/league-site/pipes/game.pipe';
 import { LeagueService } from 'src/app/league-site/services/league-service';
 import { PassPlayComponent } from '../../controls/plays/pass-play/pass-play.component';
 import { RushPlayComponent } from '../../controls/plays/rush-play/rush-play.component';
+import { PlayListComponent } from '../../controls/play-list/play-list.component';
 
 @Component({
   standalone: true,
@@ -45,6 +46,7 @@ import { RushPlayComponent } from '../../controls/plays/rush-play/rush-play.comp
     SelectButtonModule,
     PassPlayComponent,
     RushPlayComponent,
+    PlayListComponent
   ],
 })
 export class ScorekeeperComponent {

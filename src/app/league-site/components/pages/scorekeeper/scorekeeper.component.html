@@ -205,7 +205,7 @@
   </p-card>
 
   @if (plays$ | async; as plays) {
-  <p-card class="w-30rem">
+  <!-- <p-card class="w-30rem">
     <div class="p-card-title text-center">Plays</div>
     @for (play of plays; track $index) { @switch (play.type) { @case ("passing")
     {
@@ -225,6 +225,11 @@
     } } } @empty {
     <div>No current plays.</div>
     }
+  </p-card> -->
+  
+  <p-card class="w-30rem">
+    <div class="p-card-title text-center">Plays</div>
+    <play-list [gameId]="id"></play-list>
   </p-card>
   }
 </div>

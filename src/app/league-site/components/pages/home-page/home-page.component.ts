@@ -33,7 +33,7 @@ export class HomePageComponent {
       awayRoster: [{ id: 'layla', jersey: '99' }],
       startTime: 0,
       location: 'Lumen Field',
-      status: 'Finished',
+      status: 'final',
       homeScore: 0,
       awayScore: 0,
       plays: [

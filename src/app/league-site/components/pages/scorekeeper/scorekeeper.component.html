@@ -38,9 +38,6 @@
           <p-inputNumber
             id="distanceToGo"
             formControlName="distanceToGo"
-            placeholder="Enter the Distance To Go"
-            pTooltip="0-40"
-            tooltipPosition="bottom"
           />
         </div>
         <div class="col-4">
@@ -105,13 +102,7 @@
         </div>
         <div class="col-6">
           <label htmlFor="yardage">Yardage Gained</label>
-          <p-inputNumber
-            id="yardage"
-            formControlName="yardage"
-            placeholder="Enter the Yardage Gained"
-            pTooltip="0-40"
-            tooltipPosition="bottom"
-          />
+          <p-dropdown formControlName="yardage" [options]="possibleDistances"/>
         </div>
         } @else {
           <div class="col-12">

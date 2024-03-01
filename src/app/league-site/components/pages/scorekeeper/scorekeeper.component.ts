@@ -69,7 +69,7 @@ export class ScorekeeperComponent {
       Validators.min(0),
       Validators.max(40),
     ]),
-    yardLine: this.#fb.nonNullable.control(40, [
+    yardLine: this.#fb.nonNullable.control(0, [
       Validators.required,
       Validators.min(0),
       Validators.max(40),
@@ -126,6 +126,7 @@ export class ScorekeeperComponent {
   defensiveTeamRoster$ = new Observable<Player[]>();
   errors = new Array<Message>();
   game$ = new Observable<Game | undefined>();
+  possibleDistances: Array<number> = [];
 
   constructor() {
     this.form.controls.type.valueChanges.pipe(takeUntilDestroyed()).subscribe({
@@ -141,6 +142,14 @@ export class ScorekeeperComponent {
           }
         },
       });
+    this.form.controls.yardLine.valueChanges.pipe(takeUntilDestroyed()).subscribe({
+      next: (yardLine) => {
+        this.possibleDistances = [];
+        for (let i = 0 - yardLine; i <= 40 - yardLine; i++) {
+          this.possibleDistances.push(i);
+        }
+      }
+    })
     this.form.controls.turnoverType.valueChanges
       .pipe(takeUntilDestroyed())
       .subscribe({
@@ -267,5 +276,8 @@ export class ScorekeeperComponent {
         }
       })
     );
+    for (let i = 0; i <= 40; i++) {
+      this.possibleDistances.push(i);
+    }
   }
 }

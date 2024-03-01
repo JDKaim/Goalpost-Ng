@@ -11,6 +11,7 @@ import { CreateGameComponent } from './create-game/create-game.component';
 import { EditGameComponent } from './edit-game/edit-game.component';
 import { ViewGameComponent } from './view-game/view-game.component';
 import { ScorekeeperComponent } from './scorekeeper/scorekeeper.component';
+import { ScheduleComponent } from './schedule/schedule.component';
 
 @NgModule({
     imports: [RouterModule.forChild([
@@ -25,6 +26,7 @@ import { ScorekeeperComponent } from './scorekeeper/scorekeeper.component';
         { path: 'edit-game/:id', component: EditGameComponent},
         { path: 'edit-player/:id', component: EditPlayerComponent},
         { path: 'scorekeeper/:id', component: ScorekeeperComponent},
+        { path: 'schedule', component: ScheduleComponent},
     ])],
     exports: [RouterModule]
 })

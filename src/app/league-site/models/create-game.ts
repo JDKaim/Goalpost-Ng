@@ -1,5 +1,6 @@
 import { Play } from "./play";
 import { PlayerGame } from "./player-game";
+import { Status } from "./status";
 import { TeamStats } from "./team-stats";
 
 export interface CreateGame {
@@ -10,7 +11,7 @@ export interface CreateGame {
   awayRoster: Array<PlayerGame>;
   startTime: number;
   location: string;
-  status: string;
+  status: Status;
   homeScore: number;
   awayScore: number;
   plays: Array<Play>;

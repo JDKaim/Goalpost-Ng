@@ -15,6 +15,7 @@ import { Observable, combineLatest, map, takeUntil, tap } from 'rxjs';
 import { mustBeDifferentValidator } from 'src/app/league-site/helpers/custom-validators';
 import { Game } from 'src/app/league-site/models/game';
 import { Player } from 'src/app/league-site/models/player';
+import { Status } from 'src/app/league-site/models/status';
 import { GamePipe } from 'src/app/league-site/pipes/game.pipe';
 import { LeagueService } from 'src/app/league-site/services/league-service';
 
@@ -51,10 +52,8 @@ export class EditGameComponent {
         Validators.minLength(1),
         Validators.maxLength(100),
       ]),
-      status: this.#fb.nonNullable.control('', [
+      status: this.#fb.nonNullable.control<Status>('future', [
         Validators.required,
-        Validators.minLength(1),
-        Validators.maxLength(10),
       ]),
     },
     { validators: [mustBeDifferentValidator('awayTeam', 'homeTeam')] }
@@ -95,6 +94,14 @@ export class EditGameComponent {
     );
   }
 
+  statuses: Array<{ label: string; value: Status }> = [
+    { label: 'Future', value: 'future' },
+    { label: 'Ongoing', value: 'ongoing' },
+    { label: 'Final', value: 'final' },
+    { label: 'Postponed', value: 'postponed' },
+    { label: 'Cancelled', value: 'cancelled' },
+  ];
+
   editGameClicked() {
     if (!this.form.valid) {
       throw new Error('Form is not valid.');
@@ -109,7 +116,7 @@ export class EditGameComponent {
           status: game.status!,
         })
         .subscribe({
-          // next: (team) => this.#router.navigate(['/', 'teams', team.id]),
+          next: (team) => this.#router.navigate(['/', 'games', this.id]),
         });
     } catch (e: any) {
       this.errors.push({

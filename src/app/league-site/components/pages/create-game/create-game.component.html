@@ -31,6 +31,17 @@
           />
         </div>
         <div class="field">
+          <label htmlFor="status">Status</label>
+          <p-dropdown 
+            id="status"
+            formControlName="status"
+            [options]="statuses"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Select a Status"
+          />
+        </div>
+        <div class="field">
           <label htmlFor="awayTeam">Away Team</label>
           <p-dropdown 
             id="awayTeam"

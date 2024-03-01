@@ -1,9 +1,37 @@
 @if (team$ | async; as team) {
   <h1>{{team | team}}</h1>
-  <div class="flex justify-content-end gap-2">
+  <div class="flex justify-content-end gap-2 mb-3">
     <p-button label="Edit Team" icon="pi pi-pencil" severity="primary" [routerLink]="['/', 'edit-team', team.id]"/>
     <p-button label="Delete Team" icon="pi pi-times" severity="danger" (onClick)="deleteTeam()"/>
   </div>
+  <p-card [header]="'Schedule'" class="w-30rem">
+    @if (games$ | async; as games) {
+      @for(game of games; track $index) {
+        <div class="flex gap-3 align-items-center mb-3">
+          <p-button
+            size="small"
+            icon="pi pi-eye"
+            severity="success"
+            [routerLink]="['/', 'games', game.id]"
+          />
+          <p-button
+            size="small"
+            icon="pi pi-pencil"
+            severity="primary"
+            [routerLink]="['/', 'edit-game', game.id]"
+          />
+          <div class="p-card-title text-center align-items-center">
+            {{ game | game }}
+          </div>
+          <div class="text-center text-600 mb-3">
+            {{ game | gameinfo }}
+          </div>
+        </div>
+        } @empty {
+        <div>No Games.</div>
+        }
+    }
+  </p-card>
 }
 @else {
   <h1>Team is not found.</h1>

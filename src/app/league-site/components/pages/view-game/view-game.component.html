@@ -12,12 +12,14 @@
         severity="primary"
         [routerLink]="['/', 'edit-game', game.id]"
       />
-      <p-button
-        size="small"
-        icon="pi pi-stopwatch"
-        severity="success"
-        [routerLink]="['/', 'scorekeeper', game.id]"
-      />
+      @if (game.status === 'final' || game.status === 'ongoing') {
+        <p-button
+          size="small"
+          icon="pi pi-stopwatch"
+          severity="success"
+          [routerLink]="['/', 'scorekeeper', game.id]"
+        />
+        }
     </div>
   </p-card>
 

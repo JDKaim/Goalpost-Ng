@@ -12,12 +12,14 @@
         severity="primary"
         [routerLink]="['/', 'games', game.id]"
       />
+      @if (game.status === 'final' || game.status === 'ongoing') {
       <p-button
         size="small"
         icon="pi pi-stopwatch"
         severity="success"
         [routerLink]="['/', 'scorekeeper', game.id]"
       />
+      }
     </div>
     <form [formGroup]="form" (ngSubmit)="(form.valid)">
       <div class="p-fluid">
@@ -44,14 +46,13 @@
         </div>
         <div class="field">
           <label htmlFor="status">Status</label>
-          <input
-            pInputText
+          <p-dropdown
             id="status"
             formControlName="status"
-            placeholder="Enter a Status"
-            pTooltip="1-10 characters"
-            tooltipPosition="bottom"
-            [maxlength]="10"
+            [options]="statuses"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Select a Status"
           />
         </div>
       </div>

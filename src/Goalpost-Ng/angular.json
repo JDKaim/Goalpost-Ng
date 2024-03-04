@@ -60,7 +60,7 @@
                                 }
                             ],
                             "outputHashing": "all",
-                            "outputPath": "../docs"
+                            "outputPath": "../../docs"
                         },
                         "development": {
                             "buildOptimizer": false,

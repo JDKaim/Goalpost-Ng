@@ -1,0 +1,6 @@
+@Goalpost.WebApi_HostAddress = http://localhost:5172
+
+GET {{Goalpost.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

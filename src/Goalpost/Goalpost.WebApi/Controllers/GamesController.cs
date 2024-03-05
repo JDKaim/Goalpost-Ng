@@ -1,13 +1,17 @@
 using Goalpost.WebApi.Data;
 using Goalpost.WebApi.DTOs;
 using Goalpost.WebApi.Entities;
+using Goalpost.WebApi.Entities.Identity;
+using Goalpost.WebApi.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Goalpost.WebApi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class GamesController : ControllerBase
     {
         private readonly ILogger<GamesController> _logger;
@@ -20,8 +24,11 @@ namespace Goalpost.WebApi.Controllers
         }
 
         [HttpPost()]
+        [Authorize(Roles = ApplicationRoles.Administrator)]
         public async Task<GameDto> CreateGame(CreateGameDto dto)
         {
+            string id = this.User.GetUserId();
+            
             Game game = new Game()
             {
                 AwayTeamCode = dto.AwayTeamCode ?? "AWAY",

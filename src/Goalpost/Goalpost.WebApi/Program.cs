@@ -1,8 +1,13 @@
 using Goalpost.WebApi.Data;
 using Goalpost.WebApi.Entities.Identity;
+using Goalpost.WebApi.Interfaces;
+using Goalpost.WebApi.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Diagnostics;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +21,26 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>((options) =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
+builder.Services.AddAuthentication(
+(options) =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters =
+        new TokenValidationParameters()
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration.GetValue<string>("AppSettings:TokenKey") ?? throw new ArgumentException("Required setting TokenKey is missing"))),
+            ValidateIssuer = false,
+            ValidateAudience = false
+        };
+});
+
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -52,6 +77,10 @@ try
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
     await context.Database.MigrateAsync();
     await Seeder.SeedUsers(userManager, roleManager);
+    if (app.Environment.IsDevelopment())
+    {
+        await Seeder.SeedGames(context);
+    }
 }
 catch (Exception ex)
 {

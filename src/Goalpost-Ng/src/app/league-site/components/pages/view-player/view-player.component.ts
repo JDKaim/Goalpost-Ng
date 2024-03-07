@@ -10,7 +10,7 @@ import { Player } from 'src/app/league-site/models/player';
 import { Team } from 'src/app/league-site/models/team';
 import { TeamPipe } from 'src/app/league-site/pipes/team.pipe';
 import { PlayerPipe } from 'src/app/league-site/pipes/player.pipe';
-import { LeagueService } from 'src/app/league-site/services/league-service';
+import { LeagueService } from 'src/app/league-site/services/league.service';
 import { GamePipe } from "../../../pipes/game.pipe";
 import { GameInfoPipe } from "../../../pipes/game-info.pipe";
 

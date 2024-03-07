@@ -21,7 +21,7 @@ import { PlayType } from 'src/app/league-site/models/play-type';
 import { Player } from 'src/app/league-site/models/player';
 import { TurnoverType } from 'src/app/league-site/models/turnover-type';
 import { GamePipe } from 'src/app/league-site/pipes/game.pipe';
-import { LeagueService } from 'src/app/league-site/services/league-service';
+import { LeagueService } from 'src/app/league-site/services/league.service';
 import { PassPlayComponent } from '../../controls/plays/pass-play/pass-play.component';
 import { RushPlayComponent } from '../../controls/plays/rush-play/rush-play.component';
 import { PlayListComponent } from '../../controls/play-list/play-list.component';

@@ -1,5 +1,6 @@
 using Goalpost.WebApi.Data;
-using Goalpost.WebApi.DTOs;
+using Goalpost.WebApi.DTOs.Requests;
+using Goalpost.WebApi.DTOs.Responses;
 using Goalpost.WebApi.Entities;
 using Goalpost.WebApi.Entities.Identity;
 using Goalpost.WebApi.Extensions;

@@ -1,6 +1,6 @@
 ﻿using Goalpost.WebApi.Entities;
 
-namespace Goalpost.WebApi.DTOs
+namespace Goalpost.WebApi.DTOs.Requests
 {
     public class UpdateGameDto
     {

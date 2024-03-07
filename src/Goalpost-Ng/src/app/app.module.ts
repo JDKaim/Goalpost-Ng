@@ -13,6 +13,8 @@ import { NodeService } from './demo/service/node.service';
 import { PhotoService } from './demo/service/photo.service';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { environment } from 'src/environments/environment';
+import { DEFAULT_API_URL } from './league-site/services/data.service';
 
 @NgModule({
     declarations: [
@@ -26,7 +28,8 @@ import { MessageService } from 'primeng/api';
     providers: [
         { provide: LocationStrategy, useClass: HashLocationStrategy },
         CountryService, CustomerService, EventService, IconService, NodeService,
-        PhotoService, ProductService, MessageService
+        PhotoService, ProductService, MessageService,
+        { provide: DEFAULT_API_URL, useValue: environment.apiUrl }
     ],
     bootstrap: [AppComponent]
 })

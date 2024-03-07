@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PlayStats } from 'src/app/league-site/models/play-stats';
-import { LeagueService } from 'src/app/league-site/services/league-service';
+import { LeagueService } from 'src/app/league-site/services/league.service';
 import { PlayListItemComponent } from '../play-list-item/play-list-item.component';
 import { ProgressBar, ProgressBarModule } from 'primeng/progressbar';
 import { SkeletonModule } from 'primeng/skeleton';

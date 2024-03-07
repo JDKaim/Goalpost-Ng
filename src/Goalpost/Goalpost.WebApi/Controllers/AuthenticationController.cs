@@ -1,4 +1,5 @@
-﻿using Goalpost.WebApi.Dtos;
+﻿using Goalpost.WebApi.DTOs.Requests;
+using Goalpost.WebApi.DTOs.Responses;
 using Goalpost.WebApi.Entities.Identity;
 using Goalpost.WebApi.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -32,17 +33,17 @@ namespace Goalpost.WebApi.Controllers
 
         [HttpPost]
         [Route("login")]
-        public async Task<ActionResult<string>> Login(LoginDto loginDto)
+        public async Task<ActionResult<ApiResponseDto<string>>> Login(LoginDto loginDto)
         {
             if (string.IsNullOrEmpty(loginDto.Email) || string.IsNullOrEmpty(loginDto.Password)) { return this.BadRequest(); }
 
             ApplicationUser? user = await this._userManager.FindByEmailAsync(loginDto.Email);
             if ((user == null) || !(await this._userManager.CheckPasswordAsync(user, loginDto.Password)))
             {
-                return this.Unauthorized("Invalid email/password combination.");
+                return ApiResponseDto<string>.CreateError("Invalid email/password combination.");
             }
 
-            return await this.CreateBearerTokenAsync(user);
+            return ApiResponseDto<string>.CreateSuccess(await this.CreateBearerTokenAsync(user));
         }
 
     }

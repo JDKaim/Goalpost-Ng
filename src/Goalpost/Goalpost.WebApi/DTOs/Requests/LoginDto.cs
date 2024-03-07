@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Goalpost.WebApi.Dtos
+namespace Goalpost.WebApi.DTOs.Requests
 {
     public class LoginDto
     {

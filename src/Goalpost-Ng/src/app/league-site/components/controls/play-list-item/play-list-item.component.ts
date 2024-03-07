@@ -3,7 +3,7 @@ import { Component, Input, OnInit, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Observable } from 'rxjs';
 import { PlayStats } from 'src/app/league-site/models/play-stats';
-import { LeagueService } from 'src/app/league-site/services/league-service';
+import { LeagueService } from 'src/app/league-site/services/league.service';
 
 @Component({
   standalone: true,

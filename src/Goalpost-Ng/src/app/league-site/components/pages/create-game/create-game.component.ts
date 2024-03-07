@@ -12,7 +12,7 @@ import { MessagesModule } from 'primeng/messages';
 import { TooltipModule } from 'primeng/tooltip';
 import { mustBeDifferentValidator } from 'src/app/league-site/helpers/custom-validators';
 import { Status } from 'src/app/league-site/models/status';
-import { LeagueService } from 'src/app/league-site/services/league-service';
+import { LeagueService } from 'src/app/league-site/services/league.service';
 
 @Component({
   standalone: true,

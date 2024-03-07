@@ -17,7 +17,7 @@ import { Game } from 'src/app/league-site/models/game';
 import { Player } from 'src/app/league-site/models/player';
 import { Status } from 'src/app/league-site/models/status';
 import { GamePipe } from 'src/app/league-site/pipes/game.pipe';
-import { LeagueService } from 'src/app/league-site/services/league-service';
+import { LeagueService } from 'src/app/league-site/services/league.service';
 
 @Component({
   standalone: true,

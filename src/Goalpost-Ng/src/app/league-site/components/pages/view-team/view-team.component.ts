@@ -8,7 +8,7 @@ import { Game } from 'src/app/league-site/models/game';
 import { GameStats } from 'src/app/league-site/models/game-stats';
 import { Team } from 'src/app/league-site/models/team';
 import { TeamPipe } from 'src/app/league-site/pipes/team.pipe';
-import { LeagueService } from 'src/app/league-site/services/league-service';
+import { LeagueService } from 'src/app/league-site/services/league.service';
 import { GameInfoPipe } from "../../../pipes/game-info.pipe";
 import { GamePipe } from "../../../pipes/game.pipe";
 

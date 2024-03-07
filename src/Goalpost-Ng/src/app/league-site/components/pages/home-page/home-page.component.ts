@@ -7,7 +7,7 @@ import { Game } from 'src/app/league-site/models/game';
 import { GameStats } from 'src/app/league-site/models/game-stats';
 import { GameInfoPipe } from 'src/app/league-site/pipes/game-info.pipe';
 import { GamePipe } from 'src/app/league-site/pipes/game.pipe';
-import { LeagueService } from 'src/app/league-site/services/league-service';
+import { LeagueService } from 'src/app/league-site/services/league.service';
 
 @Component({
   standalone: true,

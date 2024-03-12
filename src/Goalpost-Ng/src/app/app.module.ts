@@ -15,6 +15,9 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { environment } from 'src/environments/environment';
 import { DEFAULT_API_URL } from './league-site/services/data.service';
+import { TokenInterceptor } from './league-site/interceptors/token-interceptor';
+import { ApiResponseInterceptor } from './league-site/interceptors/api-response-interceptor';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 @NgModule({
     declarations: [
@@ -29,7 +32,9 @@ import { DEFAULT_API_URL } from './league-site/services/data.service';
         { provide: LocationStrategy, useClass: HashLocationStrategy },
         CountryService, CustomerService, EventService, IconService, NodeService,
         PhotoService, ProductService, MessageService,
-        { provide: DEFAULT_API_URL, useValue: environment.apiUrl }
+        { provide: DEFAULT_API_URL, useValue: environment.apiUrl },
+        { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
+        { provide: HTTP_INTERCEPTORS, useClass: ApiResponseInterceptor, multi: true },
     ],
     bootstrap: [AppComponent]
 })

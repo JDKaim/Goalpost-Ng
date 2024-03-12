@@ -12,6 +12,7 @@ import { MessagesModule } from 'primeng/messages';
 import { TooltipModule } from 'primeng/tooltip';
 import { mustBeDifferentValidator } from 'src/app/league-site/helpers/custom-validators';
 import { Status } from 'src/app/league-site/models/status';
+import { GameService } from 'src/app/league-site/services/game.service';
 import { LeagueService } from 'src/app/league-site/services/league.service';
 
 @Component({
@@ -32,16 +33,11 @@ import { LeagueService } from 'src/app/league-site/services/league.service';
   ],
 })
 export class CreateGameComponent {
-  #leagueService = inject(LeagueService);
+  #gameService = inject(GameService);
   #router = inject(Router);
   #fb = inject(FormBuilder);
   form = this.#fb.group(
     {
-      id: this.#fb.nonNullable.control('', [
-        Validators.required,
-        Validators.minLength(2),
-        Validators.maxLength(4),
-      ]),
       startTime: this.#fb.nonNullable.control(new Date(), [
         Validators.required,
       ]),
@@ -50,25 +46,32 @@ export class CreateGameComponent {
         Validators.minLength(1),
         Validators.maxLength(100),
       ]),
-      status: this.#fb.nonNullable.control<Status>('future', [
+      status: this.#fb.nonNullable.control<Status>('Future', [
         Validators.required,
       ]),
-      awayTeam: this.#fb.nonNullable.control('', [Validators.required]),
-      homeTeam: this.#fb.nonNullable.control('', [Validators.required]),
+      awayTeamCode: this.#fb.nonNullable.control('', [Validators.required]),
+      homeTeamCode: this.#fb.nonNullable.control('', [Validators.required]),
+      awayTeamName: this.#fb.nonNullable.control('', [Validators.required]),
+      homeTeamName: this.#fb.nonNullable.control('', [Validators.required]),
     },
-    { validators: [mustBeDifferentValidator('awayTeam', 'homeTeam')] }
+    {
+      validators: [
+        mustBeDifferentValidator('awayTeamCode', 'homeTeamCode'),
+        mustBeDifferentValidator('awayTeamName', 'homeTeamName'),
+      ],
+    }
   );
 
-  teams$ = this.#leagueService.watchTeams$();
-  players$ = this.#leagueService.watchPlayers$();
+  // teams$ = this.#leagueService.watchTeams$();
+  // players$ = this.#leagueService.watchPlayers$();
   errors = new Array<Message>();
 
   statuses: Array<{ label: string; value: Status }> = [
-    { label: 'Future', value: 'future' },
-    { label: 'Ongoing', value: 'ongoing' },
-    { label: 'Final', value: 'final' },
-    { label: 'Postponed', value: 'postponed' },
-    { label: 'Cancelled', value: 'cancelled' },
+    { label: 'Future', value: 'Future' },
+    { label: 'Ongoing', value: 'Ongoing' },
+    { label: 'Final', value: 'Final' },
+    { label: 'Postponed', value: 'Postponed' },
+    { label: 'Cancelled', value: 'Cancelled' },
   ];
 
   createGameClicked() {
@@ -77,30 +80,32 @@ export class CreateGameComponent {
     }
     const game = this.form.value;
     this.errors = [];
-    try {
-      this.#leagueService
-        .createGame({
-          id: game.id!,
-          homeTeamId: game.homeTeam!,
-          awayTeamId: game.awayTeam!,
-          homeRoster: [],
-          awayRoster: [],
-          startTime: game.startTime!.getTime(),
-          location: game.location!,
-          status: game.status!,
-          homeScore: 0,
-          awayScore: 0,
-          plays: [],
-        })
-        .subscribe({
-          next: (game) => this.#router.navigate(['/', 'games', game.id]),
-        });
-    } catch (e: any) {
-      this.errors.push({
-        severity: 'error',
-        summary: 'Error',
-        detail: e.message,
+    this.#gameService
+      .createGame({
+        homeTeamCode: game.homeTeamCode!,
+        awayTeamCode: game.awayTeamCode!,
+        homeTeamName: game.homeTeamName!,
+        awayTeamName: game.awayTeamName!,
+        startTime: game.startTime!.getTime(),
+        location: game.location!,
+      })
+      .subscribe({
+        next: (response) => {
+          if (!response.result) {
+            this.errors.push(
+              ...response.errorMessages!.map(
+                (errorMessage) =>
+                  <Message>{
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: errorMessage,
+                  }
+              )
+            );
+            return;
+          }
+          this.#router.navigate(['/', 'games', response.result.id]);
+        },
       });
-    }
   }
 }

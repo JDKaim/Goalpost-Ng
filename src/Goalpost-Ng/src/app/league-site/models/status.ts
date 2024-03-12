@@ -1,1 +1,1 @@
-export type Status = "future" | "ongoing" | "final" | "postponed" | "cancelled";
+export type Status = "Future" | "Ongoing" | "Final" | "Postponed" | "Cancelled";

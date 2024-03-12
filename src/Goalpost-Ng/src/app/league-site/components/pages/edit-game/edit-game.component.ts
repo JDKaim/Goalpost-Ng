@@ -52,7 +52,7 @@ export class EditGameComponent {
         Validators.minLength(1),
         Validators.maxLength(100),
       ]),
-      status: this.#fb.nonNullable.control<Status>('future', [
+      status: this.#fb.nonNullable.control<Status>('Future', [
         Validators.required,
       ]),
     },
@@ -95,11 +95,11 @@ export class EditGameComponent {
   }
 
   statuses: Array<{ label: string; value: Status }> = [
-    { label: 'Future', value: 'future' },
-    { label: 'Ongoing', value: 'ongoing' },
-    { label: 'Final', value: 'final' },
-    { label: 'Postponed', value: 'postponed' },
-    { label: 'Cancelled', value: 'cancelled' },
+    { label: 'Future', value: 'Future' },
+    { label: 'Ongoing', value: 'Ongoing' },
+    { label: 'Final', value: 'Final' },
+    { label: 'Postponed', value: 'Postponed' },
+    { label: 'Cancelled', value: 'Cancelled' },
   ];
 
   editGameClicked() {

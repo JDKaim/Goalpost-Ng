@@ -1,4 +1,5 @@
 ﻿using Goalpost.WebApi.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace Goalpost.WebApi.DTOs.Requests
 {

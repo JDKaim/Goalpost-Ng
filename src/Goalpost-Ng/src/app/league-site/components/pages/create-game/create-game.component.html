@@ -3,20 +3,13 @@
     <form [formGroup]="form" (ngSubmit)="(form.valid)">
       <div class="p-fluid">
         <div class="field">
-          <label htmlFor="id">ID</label>
-          <input
-            pInputText
-            id="id"
-            formControlName="id"
-            placeholder="Enter an ID"
-            pTooltip="2-4 characters"
-            tooltipPosition="bottom"
-            [maxlength]="4"
-          />
-        </div>
-        <div class="field">
           <label htmlFor="startTime">Start Time</label>
-          <p-calendar formControlName="startTime" [showIcon]="true" [showTime]="true" hourFormat="12"></p-calendar>
+          <p-calendar
+            formControlName="startTime"
+            [showIcon]="true"
+            [showTime]="true"
+            hourFormat="12"
+          ></p-calendar>
         </div>
         <div class="field">
           <label htmlFor="location">Location</label>
@@ -32,7 +25,7 @@
         </div>
         <div class="field">
           <label htmlFor="status">Status</label>
-          <p-dropdown 
+          <p-dropdown
             id="status"
             formControlName="status"
             [options]="statuses"
@@ -42,48 +35,80 @@
           />
         </div>
         <div class="field">
-          <label htmlFor="awayTeam">Away Team</label>
-          <p-dropdown 
-            id="awayTeam"
-            formControlName="awayTeam"
-            [options]="$any(teams$ | async)"
-            optionLabel="name"
-            optionValue="id"
-            placeholder="Select a Team"
+          <label htmlFor="awayTeamCode">Away Team Code</label>
+          <input
+            pInputText
+            id="awayTeamCode"
+            formControlName="awayTeamCode"
+            placeholder="Enter Away Team Code"
+            [maxlength]="4"
+            [minlength]="2"
           />
         </div>
         <div class="field">
-          <label htmlFor="homeTeam">Home Team</label>
-          <p-dropdown 
-            id="homeTeam"
-            formControlName="homeTeam"
-            [options]="$any(teams$ | async)"
-            optionLabel="name"
-            optionValue="id"
-            placeholder="Select a Team"
+          <label htmlFor="homeTeamCode">Home Team Code</label>
+          <input
+            pInputText
+            id="homeTeamCode"
+            formControlName="homeTeamCode"
+            placeholder="Enter Home Team Code"
+            [maxlength]="4"
+            [minlength]="2"
+          />
+        </div>
+        <div class="field">
+          <label htmlFor="awayTeamName">Away Team Name</label>
+          <input
+            pInputText
+            id="awayTeamName"
+            formControlName="awayTeamName"
+            placeholder="Enter Away Team Name"
+            [maxlength]="20"
+            [minlength]="4"
+          />
+        </div>
+        <div class="field">
+          <label htmlFor="homeTeamName">Home Team Name</label>
+          <input
+            pInputText
+            id="homeTeamName"
+            formControlName="homeTeamName"
+            placeholder="Enter Home Team Name"
+            [maxlength]="20"
+            [minlength]="4"
           />
         </div>
         @if(form.errors?.fieldsMustBeDifferent) {
-          <div class="text-red-500">
-            Teams must be different.
-          </div>
+        <div class="text-red-500">Teams must be different.</div>
         }
       </div>
     </form>
-    
+
     @if(errors.length) {
-      <p-messages [(value)]="errors" [enableService]="false"></p-messages>
+    <p-messages [(value)]="errors" [enableService]="false"></p-messages>
     }
 
     <ng-template pTemplate="footer">
       <div class="flex justify-content-end">
-        <p-button label="Save" icon="pi pi-check" severity="success" [disabled]="!form.valid || !form.dirty" (onClick)="createGameClicked()"/>
-        <p-button label="Cancel" icon="pi pi-times" severity="danger" class="ml-2" [routerLink]="['/']"/>
+        <p-button
+          label="Save"
+          icon="pi pi-check"
+          severity="success"
+          [disabled]="!form.valid || !form.dirty"
+          (onClick)="createGameClicked()"
+        />
+        <p-button
+          label="Cancel"
+          icon="pi pi-times"
+          severity="danger"
+          class="ml-2"
+          [routerLink]="['/']"
+        />
       </div>
-  </ng-template>
+    </ng-template>
   </p-card>
 
-  <p-card header="Current Players" class="w-15rem">
+  <!-- <p-card header="Current Players" class="w-15rem">
     @if (players$ | async; as players) {
       <ul>
         @for(player of players; track $index) {
@@ -100,5 +125,5 @@
         }
       </ul>
       }
-  </p-card>
+  </p-card> -->
 </div>

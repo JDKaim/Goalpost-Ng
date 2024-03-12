@@ -26,10 +26,10 @@ namespace Goalpost.WebApi.Controllers
 
         [HttpPost()]
         [Authorize(Roles = ApplicationRoles.Administrator)]
-        public async Task<GameDto> CreateGame(CreateGameDto dto)
+        public async Task<ApiResponseDto<GameDto>> CreateGame(CreateGameDto dto)
         {
             string id = this.User.GetUserId();
-            
+
             Game game = new Game()
             {
                 AwayTeamCode = dto.AwayTeamCode ?? "AWAY",
@@ -55,16 +55,16 @@ namespace Goalpost.WebApi.Controllers
                 AwayScore = game.AwayScore,
                 HomeScore = game.HomeScore
             };
-            return gameDto;
+            return ApiResponseDto<GameDto>.CreateSuccess(gameDto);
         }
 
         [HttpGet("{id}")]
-        public async Task<GameDto?> GetGame(int id)
+        public async Task<ApiResponseDto<GameDto>> GetGame(int id)
         {
             Game? game = await this.Db.Games.FindAsync(id);
             if (game is null)
             {
-                return null;
+                return ApiResponseDto<GameDto>.CreateSuccess(null);
             }
             GameDto gameDto = new GameDto()
             {
@@ -79,28 +79,30 @@ namespace Goalpost.WebApi.Controllers
                 AwayScore = game.AwayScore,
                 HomeScore = game.HomeScore
             };
-            return gameDto;
+            return ApiResponseDto<GameDto>.CreateSuccess(gameDto);
         }
 
         [HttpDelete("{id}")]
-        public async Task DeleteGame(int id)
+        [Authorize(Roles = ApplicationRoles.Administrator)]
+        public async Task<ApiResponseDto<bool>> DeleteGame(int id)
         {
             Game? game = await this.Db.Games.FindAsync(id);
-            if (game is null)
+            if (game is not null)
             {
-                return;
+                this.Db.Games.Remove(game);
+                await this.Db.SaveChangesAsync();
             }
-            this.Db.Games.Remove(game);
-            await this.Db.SaveChangesAsync();
+            return ApiResponseDto<bool>.CreateSuccess(true);
         }
 
         [HttpPut()]
-        public async Task<GameDto> UpdateGame(UpdateGameDto dto, int id)
+        [Authorize(Roles = ApplicationRoles.Administrator)]
+        public async Task<ApiResponseDto<GameDto>> UpdateGame(UpdateGameDto dto, int id)
         {
             Game? game = await this.Db.Games.FindAsync(id);
             if (game is null)
             {
-                throw new Exception("Game does not exist.");
+                return ApiResponseDto<GameDto>.CreateError("Game does not exist.");
             }
             game.AwayTeamCode = dto.AwayTeamCode ?? game.AwayTeamCode;
             game.AwayTeamName = dto.AwayTeamName ?? game.AwayTeamName;
@@ -125,11 +127,11 @@ namespace Goalpost.WebApi.Controllers
                 AwayScore = game.AwayScore,
                 HomeScore = game.HomeScore
             };
-            return gameDto;
+            return ApiResponseDto<GameDto>.CreateSuccess(gameDto);
         }
 
         [HttpPost("Search")]
-        public async Task<List<GameDto>> SearchGames(SearchGamesDto dto)
+        public async Task<ApiResponseDto<List<GameDto>>> SearchGames(SearchGamesDto dto)
         {
             var query = this.Db.Games.AsQueryable();
 
@@ -138,7 +140,24 @@ namespace Goalpost.WebApi.Controllers
                 query = query.Where((game) => game.AwayTeamCode == dto.TeamCode || game.HomeTeamCode == dto.TeamCode);
             }
 
-            return await query.Select((game) =>
+            if (dto.SortBy is null)
+            {
+                dto.SortBy = "StartTime";
+            }
+
+            switch (dto.SortBy)
+            {
+                case "StartTime":
+                    query = query.OrderBy((game) => game.StartTime);
+                    break;
+                case "Status":
+                    query = query.OrderBy((game) => game.Status);
+                    break;
+                default:
+                    throw new BadHttpRequestException($"SortBy parameter '{dto.SortBy}' unsupported.");
+            }
+
+            return ApiResponseDto<List<GameDto>>.CreateSuccess(await query.Select((game) =>
             new GameDto()
             {
                 AwayTeamCode = game.AwayTeamCode,
@@ -151,7 +170,7 @@ namespace Goalpost.WebApi.Controllers
                 Id = game.Id,
                 AwayScore = game.AwayScore,
                 HomeScore = game.HomeScore
-            }).ToListAsync();
+            }).ToListAsync());
         }
     }
 }

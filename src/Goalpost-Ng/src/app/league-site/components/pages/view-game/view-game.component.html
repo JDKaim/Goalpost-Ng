@@ -1,4 +1,5 @@
-@if (game$ | async; as game) {
+@if (game$ | async; as response) { @if (response.result; as game) {
+
 <div class="flex gap-3 mb-3">
   <p-card class="w-30rem align-items-center">
     <div class="p-card-title text-center align-items-center">View Game</div>
@@ -12,19 +13,19 @@
         severity="primary"
         [routerLink]="['/', 'edit-game', game.id]"
       />
-      @if (game.status === 'final' || game.status === 'ongoing') {
-        <p-button
-          size="small"
-          icon="pi pi-stopwatch"
-          severity="success"
-          [routerLink]="['/', 'scorekeeper', game.id]"
-        />
-        }
+      @if (game.status === 'Final' || game.status === 'Ongoing') {
+      <p-button
+        size="small"
+        icon="pi pi-stopwatch"
+        severity="success"
+        [routerLink]="['/', 'scorekeeper', game.id]"
+      />
+      }
     </div>
   </p-card>
 
   <p-card
-    [header]="'Away Team - ' + game.awayTeamId + ' [' + game.awayScore + ']'"
+    [header]="'Away Team - ' + game.awayTeamCode + ' [' + game.awayScore + ']'"
     class="w-30rem"
   >
     @if (awayRoster$ | async; as players) { @for(player of players; track
@@ -38,7 +39,7 @@
   </p-card>
 
   <p-card
-    [header]="'Home Team - ' + game.homeTeamId + ' [' + game.homeScore + ']'"
+    [header]="'Home Team - ' + game.homeTeamCode + ' [' + game.homeScore + ']'"
     class="w-30rem"
   >
     @if (homeRoster$ | async; as players) { @for(player of players; track
@@ -51,4 +52,14 @@
     }}
   </p-card>
 </div>
+} 
+@else if (response.type === "Success") {
+  <div>Game does not exist.</div>
+}
+@else {
+  <div>Error occurred. Unable to load.</div>
+}
+}
+@else {
+  <p-progressBar mode="indeterminate"></p-progressBar>
 }

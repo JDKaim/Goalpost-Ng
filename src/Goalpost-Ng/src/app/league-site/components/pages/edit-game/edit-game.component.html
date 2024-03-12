@@ -1,4 +1,5 @@
-@if (game$ | async; as game) {
+@if (game$ | async; as response) { @if (response.result; as game) {
+
 <div class="flex gap-3 mb-3">
   <p-card class="w-30rem">
     <div class="p-card-title text-center">Edit Game</div>
@@ -55,6 +56,50 @@
             placeholder="Select a Status"
           />
         </div>
+        <div class="field">
+          <label htmlFor="awayTeamCode">Away Team Code</label>
+          <input
+            pInputText
+            id="awayTeamCode"
+            formControlName="awayTeamCode"
+            placeholder="Enter Away Team Code"
+            [maxlength]="4"
+            [minlength]="2"
+          />
+        </div>
+        <div class="field">
+          <label htmlFor="homeTeamCode">Home Team Code</label>
+          <input
+            pInputText
+            id="homeTeamCode"
+            formControlName="homeTeamCode"
+            placeholder="Enter Home Team Code"
+            [maxlength]="4"
+            [minlength]="2"
+          />
+        </div>
+        <div class="field">
+          <label htmlFor="awayTeamName">Away Team Name</label>
+          <input
+            pInputText
+            id="awayTeamName"
+            formControlName="awayTeamName"
+            placeholder="Enter Away Team Name"
+            [maxlength]="20"
+            [minlength]="4"
+          />
+        </div>
+        <div class="field">
+          <label htmlFor="homeTeamName">Home Team Name</label>
+          <input
+            pInputText
+            id="homeTeamName"
+            formControlName="homeTeamName"
+            placeholder="Enter Home Team Name"
+            [maxlength]="20"
+            [minlength]="4"
+          />
+        </div>
       </div>
     </form>
 
@@ -82,7 +127,7 @@
     </ng-template>
   </p-card>
 
-  <p-card [header]="'Away Team - ' + game.awayTeamId" class="w-30rem">
+  <!-- <p-card [header]="'Away Team - ' + game.awayTeamId" class="w-30rem">
     @if (awayRoster$ | async; as players) { @for(player of players; track
     $index) {
     <div class="flex gap-2 align-items-center mb-1">
@@ -114,9 +159,9 @@
     } @empty {
     <div>No Players.</div>
     }}
-  </p-card>
+  </p-card> -->
 </div>
-<div>
+<!-- <div>
   <p-card header="Current Players" class="w-full">
     <div class="flex gap-3">
       @if (players$ | async; as players) { @for(player of players; track $index)
@@ -138,14 +183,13 @@
       </div>
       } }
     </div>
-  </p-card>
-  <div class="mt-3">
-    <p-button
-      label="Delete Game"
-      icon="pi pi-trash"
-      severity="danger"
-      (onClick)="deleteGameClicked()"
-    />
-  </div>
+  </p-card> -->
+<div class="mt-3">
+  <p-button
+    label="Delete Game"
+    icon="pi pi-trash"
+    severity="danger"
+    (onClick)="deleteGameClicked()"
+  />
 </div>
-}
+} }

@@ -13,10 +13,12 @@ import { MessagesModule } from 'primeng/messages';
 import { TooltipModule } from 'primeng/tooltip';
 import { Observable, combineLatest, map, takeUntil, tap } from 'rxjs';
 import { mustBeDifferentValidator } from 'src/app/league-site/helpers/custom-validators';
-import { Game } from 'src/app/league-site/models/game';
+import { ApiResponse } from 'src/app/league-site/models/api/api-response';
+import { Game } from 'src/app/league-site/models/dtos/game';
 import { Player } from 'src/app/league-site/models/player';
 import { Status } from 'src/app/league-site/models/status';
 import { GamePipe } from 'src/app/league-site/pipes/game.pipe';
+import { GameService } from 'src/app/league-site/services/game.service';
 import { LeagueService } from 'src/app/league-site/services/league.service';
 
 @Component({
@@ -34,13 +36,13 @@ import { LeagueService } from 'src/app/league-site/services/league.service';
     TooltipModule,
     DropdownModule,
     CalendarModule,
-    GamePipe
+    GamePipe,
   ],
 })
 export class EditGameComponent {
-  #leagueService = inject(LeagueService);
+  #gameService = inject(GameService);
   #router = inject(Router);
-  @Input() id!: string;
+  @Input() id!: number;
   #fb = inject(FormBuilder);
   form = this.#fb.group(
     {
@@ -55,41 +57,43 @@ export class EditGameComponent {
       status: this.#fb.nonNullable.control<Status>('Future', [
         Validators.required,
       ]),
+      awayTeamCode: this.#fb.nonNullable.control('', [Validators.required]),
+      homeTeamCode: this.#fb.nonNullable.control('', [Validators.required]),
+      awayTeamName: this.#fb.nonNullable.control('', [Validators.required]),
+      homeTeamName: this.#fb.nonNullable.control('', [Validators.required]),
+      homeScore: this.#fb.nonNullable.control(0),
+      awayScore: this.#fb.nonNullable.control(0),
     },
-    { validators: [mustBeDifferentValidator('awayTeam', 'homeTeam')] }
+    {
+      validators: [
+        mustBeDifferentValidator('awayTeamCode', 'homeTeamCode'),
+        mustBeDifferentValidator('awayTeamName', 'homeTeamName'),
+      ],
+    }
   );
 
-  teams$ = this.#leagueService.watchTeams$();
-  players$ = this.#leagueService.watchPlayers$();
   homeRoster$ = new Observable<Player[]>();
   awayRoster$ = new Observable<Player[]>();
   errors = new Array<Message>();
-  game$ = new Observable<Game | undefined>();
+  game$ = new Observable<ApiResponse<Game>>();
 
   ngOnInit(): void {
-    this.game$ = this.#leagueService.watchGame$(this.id).pipe(
-      tap((game) => {
-        if (!game) {
+    this.game$ = this.#gameService.getGame(this.id).pipe(
+      tap((response) => {
+        if (!response.result) {
           return;
         }
-        this.form.controls.startTime.setValue(new Date(game.startTime));
-        this.form.controls.location.setValue(game.location);
-        this.form.controls.status.setValue(game.status);
-      })
-    );
-    this.homeRoster$ = this.#leagueService.watchRoster$(this.id, true);
-    this.awayRoster$ = this.#leagueService.watchRoster$(this.id, false);
-    this.players$ = combineLatest([
-      this.homeRoster$,
-      this.awayRoster$,
-      this.#leagueService.watchPlayers$(),
-    ]).pipe(
-      map((responses) => {
-        return responses[2].filter(
-          (player) =>
-            !responses[1].find((away) => away.id === player.id) &&
-            !responses[0].find((home) => home.id === player.id)
+        this.form.controls.awayTeamCode.setValue(response.result!.awayTeamCode);
+        this.form.controls.homeTeamCode.setValue(response.result!.homeTeamCode);
+        this.form.controls.awayTeamName.setValue(response.result!.awayTeamName);
+        this.form.controls.homeTeamName.setValue(response.result!.homeTeamName);
+        this.form.controls.awayScore.setValue(response.result!.awayScore);
+        this.form.controls.homeScore.setValue(response.result!.homeScore);
+        this.form.controls.location.setValue(response.result!.location);
+        this.form.controls.startTime.setValue(
+          new Date(response.result!.startTime)
         );
+        this.form.controls.status.setValue(response.result!.status);
       })
     );
   }
@@ -108,40 +112,53 @@ export class EditGameComponent {
     }
     const game = this.form.value;
     this.errors = [];
-    try {
-      this.#leagueService
-        .editGame(this.id, {
-          startTime: game.startTime!.getTime(),
-          location: game.location!,
-          status: game.status!,
-        })
-        .subscribe({
-          next: (team) => this.#router.navigate(['/', 'games', this.id]),
-        });
-    } catch (e: any) {
-      this.errors.push({
-        severity: 'error',
-        summary: 'Error',
-        detail: e.message,
+    this.#gameService
+      .updateGame(this.id, {
+        startTime: game.startTime!.getTime(),
+        location: game.location!,
+        status: game.status!,
+        homeTeamCode: game.homeTeamCode!,
+        awayTeamCode: game.awayTeamCode!,
+        homeTeamName: game.homeTeamName!,
+        awayTeamName: game.awayTeamName!,
+        awayScore: game.awayScore,
+        homeScore: game.homeScore,
+      })
+      .subscribe({
+        next: (response) => {
+          if (!response.result) {
+            this.errors.push(
+              ...response.errorMessages!.map(
+                (errorMessage) =>
+                  <Message>{
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: errorMessage,
+                  }
+              )
+            );
+            return;
+          }
+          this.#router.navigate(['/', 'games', response.result.id]);
+        },
       });
-    }
   }
 
   deleteGameClicked() {
-    this.#leagueService.deleteGame(this.id).subscribe({
-      next: () => this.#router.navigate(['/'])
+    this.#gameService.deleteGame(this.id).subscribe({
+      next: () => this.#router.navigate(['/']),
     });
   }
 
-  addPlayerClicked(id: string, homeTeam: boolean) {
-    this.#leagueService
-      .addPlayerToRoster(this.id, id, homeTeam, '')
-      .subscribe();
-  }
+  // addPlayerClicked(id: string, homeTeam: boolean) {
+  //   this.#leagueService
+  //     .addPlayerToRoster(this.id, id, homeTeam, '')
+  //     .subscribe();
+  // }
 
-  removePlayerClicked(id: string, homeTeam: boolean) {
-    this.#leagueService
-      .removePlayerFromRoster(this.id, id, homeTeam)
-      .subscribe();
-  }
+  // removePlayerClicked(id: string, homeTeam: boolean) {
+  //   this.#leagueService
+  //     .removePlayerFromRoster(this.id, id, homeTeam)
+  //     .subscribe();
+  // }
 }

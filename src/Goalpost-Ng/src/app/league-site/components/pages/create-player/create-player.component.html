@@ -3,18 +3,6 @@
     <form [formGroup]="form" (ngSubmit)="(form.valid)">
       <div class="p-fluid">
         <div class="field">
-          <label htmlFor="id">ID</label>
-          <input
-            pInputText
-            id="id"
-            formControlName="id"
-            placeholder="Enter an ID"
-            pTooltip="2-4 characters"
-            tooltipPosition="bottom"
-            [maxlength]="4"
-          />
-        </div>
-        <div class="field">
           <label htmlFor="name">Name</label>
           <input
             pInputText
@@ -42,12 +30,17 @@
   </p-card>
 
   <p-card header="Current Players" class="w-15rem">
-    @if (players$ | async; as players) {
-      <ul>
-        @for(player of players; track $index) {
-        <li><a [routerLink]="['/', 'players', player.id]">{{ player.name }}</a></li>
-        }
-      </ul>
+    @if (players$ | async; as response) {
+      @if (response.result; as players) {
+        <ul>
+          @for(player of players; track $index) {
+          <li><a [routerLink]="['/', 'players', player.id]">{{ player.name }}</a></li>
+          } @empty {
+            <div>No Games.</div>
+          }
+        </ul>
+      }
+      
       }
   </p-card>
 </div>

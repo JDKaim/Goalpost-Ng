@@ -1,4 +1,4 @@
-@if (player$ | async; as player) {
+@if (player$ | async; as response) { @if (response.result; as player) {
 <div class="flex gap-3">
   <p-card [header]="'Edit Player - ' + player.id" class="w-30rem">
     <form [formGroup]="form" (ngSubmit)="(form.valid)">
@@ -43,7 +43,7 @@
   </p-card>
 
   <p-card header="Current Players" class="w-15rem">
-    @if (players$ | async; as players) {
+    @if (players$ | async; as response) { @if (response.result; as players) {
     <ul>
       @for(player of players; track $index) {
       <li>
@@ -54,6 +54,11 @@
       }
     </ul>
     }
+  }
   </p-card>
 </div>
+<div class="mt-3">
+  <p-button label="Delete Player" icon="pi pi-times" severity="danger" (onClick)="deletePlayer()"/>
+</div>
+}
 }

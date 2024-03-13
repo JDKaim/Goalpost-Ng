@@ -1,10 +1,10 @@
-@if (player$ | async; as player) {
-  <h1>{{player | player}}</h1>
+@if (player$ | async; as response) {
+  @if (response.result; as player) {
+  <h1>{{player.name}}</h1>
   <div class="flex justify-content-end gap-2 mb-3">
     <p-button label="Edit Player" icon="pi pi-pencil" severity="primary" [routerLink]="['/', 'edit-player', player.id]"/>
-    <p-button label="Delete Player" icon="pi pi-times" severity="danger" (onClick)="deletePlayer()"/>
   </div>
-  <p-card [header]="'Schedule'" class="w-30rem">
+  <!-- <p-card [header]="'Schedule'" class="w-30rem">
     @if (games$ | async; as games) {
       @for(game of games; track $index) {
         <div class="flex gap-3 align-items-center mb-3">
@@ -20,9 +20,9 @@
             severity="primary"
             [routerLink]="['/', 'edit-game', game.id]"
           />
-          <!-- <div class="p-card-title text-center align-items-center">
+          <div class="p-card-title text-center align-items-center">
             {{ game | game }}
-          </div> -->
+          </div>
           <div class="text-center text-600 mb-3">
             {{ game | gameinfo }}
           </div>
@@ -31,8 +31,9 @@
         <div>No Games.</div>
         }
     }
-  </p-card>
+  </p-card> -->
 }
 @else {
-  <h1>Team is not found.</h1>
+  <h1>Player is not found.</h1>
+}
 }

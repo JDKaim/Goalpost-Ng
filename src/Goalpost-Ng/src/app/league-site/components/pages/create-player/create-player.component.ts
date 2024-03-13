@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Message } from 'primeng/api';
@@ -7,9 +7,11 @@ import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessagesModule } from 'primeng/messages';
-import { LeagueService } from 'src/app/league-site/services/league.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TooltipModule } from 'primeng/tooltip';
+import { Observable, tap } from 'rxjs';
+import { ApiResponse } from 'src/app/league-site/models/api/api-response';
+import { Player } from 'src/app/league-site/models/dtos/player';
+import { PlayerService } from 'src/app/league-site/services/player.service';
 
 @Component({
   standalone: true,
@@ -23,19 +25,14 @@ import { TooltipModule } from 'primeng/tooltip';
     ReactiveFormsModule,
     InputTextModule,
     MessagesModule,
-    TooltipModule
+    TooltipModule,
   ],
 })
 export class CreatePlayerComponent {
-  #leagueService = inject(LeagueService);
+  #playerService = inject(PlayerService);
   #router = inject(Router);
   #fb = inject(FormBuilder);
   form = this.#fb.group({
-    id: this.#fb.nonNullable.control('', [
-      Validators.required,
-      Validators.minLength(2),
-      Validators.maxLength(4),
-    ]),
     name: this.#fb.nonNullable.control('', [
       Validators.required,
       Validators.minLength(4),
@@ -43,8 +40,8 @@ export class CreatePlayerComponent {
     ]),
   });
 
-  teams$ = this.#leagueService.watchTeams$();
-  players$ = this.#leagueService.watchPlayers$();
+  // teams$ = this.#leagueService.watchTeams$();
+  players$ = new Observable<ApiResponse<Array<Player>>>();
   errors = new Array<Message>();
 
   createPlayerClicked() {
@@ -53,14 +50,31 @@ export class CreatePlayerComponent {
     }
     const player = this.form.value;
     this.errors = [];
-    try {
-      this.#leagueService
-        .createPlayer({ id: player.id!, name: player.name! })
-        .subscribe({
-          // next: (team) => this.#router.navigate(['/', 'teams', team.id]),
-        });
-    } catch (e: any) {
-      this.errors.push( { severity: 'error', summary: 'Error', detail: e.message });
-    }
+    this.#playerService
+      .createPlayer({
+        name: player.name!,
+      })
+      .subscribe({
+        next: (response) => {
+          if (!response.result) {
+            this.errors.push(
+              ...response.errorMessages!.map(
+                (errorMessage) =>
+                  <Message>{
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: errorMessage,
+                  }
+              )
+            );
+            return;
+          }
+          this.#router.navigate(['/', 'players', response.result.id]);
+        },
+      });
+  }
+
+  ngOnInit(): void {
+    this.players$ = this.#playerService.searchPlayers({});
   }
 }

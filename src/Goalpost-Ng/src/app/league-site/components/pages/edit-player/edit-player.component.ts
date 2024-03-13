@@ -12,7 +12,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TooltipModule } from 'primeng/tooltip';
 import { Observable, tap } from 'rxjs';
 import { Team } from 'src/app/league-site/models/team';
-import { Player } from 'src/app/league-site/models/player';
+import { Player } from 'src/app/league-site/models/dtos/player';
+import { PlayerService } from 'src/app/league-site/services/player.service';
+import { ApiResponse } from 'src/app/league-site/models/api/api-response';
 
 @Component({
   standalone: true,
@@ -30,9 +32,9 @@ import { Player } from 'src/app/league-site/models/player';
   ],
 })
 export class EditPlayerComponent {
-  #leagueService = inject(LeagueService);
+  #playerService = inject(PlayerService);
   #router = inject(Router);
-  @Input() id!: string;
+  @Input() id!: number;
   #fb = inject(FormBuilder);
   form = this.#fb.group({
     name: this.#fb.nonNullable.control('', [
@@ -42,19 +44,20 @@ export class EditPlayerComponent {
     ]),
   });
 
-  teams$ = this.#leagueService.watchTeams$();
-  players$ = this.#leagueService.watchPlayers$();
+  // teams$ = this.#leagueService.watchTeams$();
+  players$ = new Observable<ApiResponse<Array<Player>>>();
   errors = new Array<Message>();
-  team$ = new Observable<Team | undefined>();
-  player$ = new Observable<Player | undefined>();
+  // team$ = new Observable<Team | undefined>();
+  player$ = new Observable<ApiResponse<Player>>();
 
   ngOnInit(): void {
-    this.player$ = this.#leagueService.watchPlayer$(this.id).pipe(
-      tap((player) => {
-        if (!player) {
+    this.players$ = this.#playerService.searchPlayers({});
+    this.player$ = this.#playerService.getPlayer(this.id).pipe(
+      tap((response) => {
+        if (!response.result) {
           return;
         }
-        this.form.controls.name.setValue(player.name);
+        this.form.controls.name.setValue(response.result.name);
       })
     );
   }
@@ -66,8 +69,8 @@ export class EditPlayerComponent {
     const player = this.form.value;
     this.errors = [];
     try {
-      this.#leagueService
-        .editPlayer(this.id, { id: this.id, name: player.name! })
+      this.#playerService
+        .updatePlayer(this.id, { name: player.name! })
         .subscribe({
           next: (team) => this.#router.navigate(['/', 'players', this.id]),
         });
@@ -78,5 +81,11 @@ export class EditPlayerComponent {
         detail: e.message,
       });
     }
+  }
+
+  deletePlayer(): void {
+    this.#playerService.deletePlayer(this.id).subscribe({
+      next: () => this.#router.navigate(['/'])
+    });
   }
 }

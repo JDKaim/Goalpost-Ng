@@ -14,9 +14,9 @@ export class GameService {
   #dataService = inject(DataService);
 
   createGame(createGame: CreateGame) {
-    if (createGame.homeTeamCode === "AWAY") {
-      return of(new ErrorApiResponse<Game>("The Home Team Code cannot be 'AWAY'."));
-    }
+    // if (createGame.homeTeamCode === "AWAY") {
+    //   return of(new ErrorApiResponse<Game>("The Home Team Code cannot be 'AWAY'."));
+    // }
     return this.#dataService.createGame(createGame);
   }
 

@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, Input, inject } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, Input, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Message } from 'primeng/api';
@@ -11,7 +10,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessagesModule } from 'primeng/messages';
 import { TooltipModule } from 'primeng/tooltip';
-import { Observable, combineLatest, map, takeUntil, tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { mustBeDifferentValidator } from 'src/app/league-site/helpers/custom-validators';
 import { ApiResponse } from 'src/app/league-site/models/api/api-response';
 import { Game } from 'src/app/league-site/models/dtos/game';
@@ -19,7 +18,6 @@ import { Player } from 'src/app/league-site/models/player';
 import { Status } from 'src/app/league-site/models/status';
 import { GamePipe } from 'src/app/league-site/pipes/game.pipe';
 import { GameService } from 'src/app/league-site/services/game.service';
-import { LeagueService } from 'src/app/league-site/services/league.service';
 
 @Component({
   standalone: true,

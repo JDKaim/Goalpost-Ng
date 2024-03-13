@@ -3,16 +3,16 @@ import { Component, Input, OnInit, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { Observable, map, switchMap } from 'rxjs';
+import { Observable } from 'rxjs';
+import { ApiResponse } from 'src/app/league-site/models/api/api-response';
+import { Player } from 'src/app/league-site/models/dtos/player';
 import { Game } from 'src/app/league-site/models/game';
-import { GameStats } from 'src/app/league-site/models/game-stats';
-import { Player } from 'src/app/league-site/models/player';
 import { Team } from 'src/app/league-site/models/team';
-import { TeamPipe } from 'src/app/league-site/pipes/team.pipe';
 import { PlayerPipe } from 'src/app/league-site/pipes/player.pipe';
-import { LeagueService } from 'src/app/league-site/services/league.service';
-import { GamePipe } from "../../../pipes/game.pipe";
+import { TeamPipe } from 'src/app/league-site/pipes/team.pipe';
+import { PlayerService } from 'src/app/league-site/services/player.service';
 import { GameInfoPipe } from "../../../pipes/game-info.pipe";
+import { GamePipe } from "../../../pipes/game.pipe";
 
 @Component({
     standalone: true,
@@ -21,18 +21,18 @@ import { GameInfoPipe } from "../../../pipes/game-info.pipe";
     imports: [CommonModule, RouterModule, CardModule, ButtonModule, TeamPipe, PlayerPipe, GamePipe, GameInfoPipe]
 })
 export class ViewPlayerComponent implements OnInit {
-  #leagueService = inject(LeagueService);
+  #playerService = inject(PlayerService);
   #router = inject(Router);
-  @Input() id!: string;
+  @Input() id!: number;
   team$ = new Observable<Team | undefined>();
-  player$ = new Observable<Player | undefined>();
   games$ = new Observable<Game[] | undefined>();
+  player$ = new Observable<ApiResponse<Player>>();
   // rushYardage$ = new Observable<number | undefined>();
   // rushYardage = 0;
 
   ngOnInit(): void {
-    this.player$ = this.#leagueService.watchPlayer$(this.id);
-    this.games$ = this.#leagueService.watchGames$().pipe(map(games => games.filter(game => game.awayRoster.find((player) => player.id === this.id) || game.homeRoster.find((player) => player.id === this.id))));
+    this.player$ = this.#playerService.getPlayer(this.id);
+    // this.games$ = this.#leagueService.watchGames$().pipe(map(games => games.filter(game => game.awayRoster.find((player) => player.id === this.id) || game.homeRoster.find((player) => player.id === this.id))));
     // this.rushYardage$ = this.games$.pipe((switchMap(games => games!.forEach((game) => {
     //   if (game.homeRoster.find((player) => player.id === this.id)) {
     //     return of(new GameStats(game!).homeTeamStats.playerStats.find((player) => player.id === this.id).rushingYardage);
@@ -40,11 +40,5 @@ export class ViewPlayerComponent implements OnInit {
     //     return of(new GameStats(game!).awayTeamStats.playerStats.find((player) => player.id === this.id).rushingYardage);
     //   }
     // }))));
-  }
-
-  deletePlayer(): void {
-    this.#leagueService.deletePlayer(this.id).subscribe({
-      next: () => this.#router.navigate(['/'])
-    });
   }
 }

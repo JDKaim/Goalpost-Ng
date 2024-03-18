@@ -123,5 +123,15 @@ namespace Goalpost.WebApi.Controllers
                 Id = player.Id,
             }).ToListAsync());
         }
+
+        [HttpGet("{id}/Games")]
+        public async Task<ApiResponseDto<List<PlayerGameDto>>> GetRoster(int id)
+        {
+            return ApiResponseDto<List<PlayerGameDto>>.CreateSuccess(
+                await this.Db.PlayerGames
+                    .Where((playerGame) => playerGame.PlayerId == id)
+                    .Select(playerGame => playerGame.ToDto())
+                    .ToListAsync());
+        }
     }
 }

@@ -224,23 +224,105 @@ namespace Goalpost.WebApi.Migrations
 
             modelBuilder.Entity("Goalpost.WebApi.Entities.PlayerGame", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("PlayerId")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("GameId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PlayerId")
+                    b.Property<bool>("IsHome")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("DefensiveFumbles")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.Property<int>("DefensiveInterceptions")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DefensiveOnePointConversions")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DefensiveSacks")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DefensiveTds")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DefensiveTwoPointConversions")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FlagPulls")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsCurrent")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("OffensiveFumbles")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OffensiveSacks")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PassingAttempts")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PassingCompletions")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PassingInterceptions")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PassingOnePointConversions")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PassingTds")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PassingTwoPointConversions")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PassingYardage")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PointsScored")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReceivingCompletions")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReceivingOnePointConversions")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReceivingTargets")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReceivingTds")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReceivingTwoPointConversions")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReceivingYardage")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RushingAttempts")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RushingOnePointConversions")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RushingTds")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RushingTwoPointConversions")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RushingYardage")
+                        .HasColumnType("int");
+
+                    b.HasKey("PlayerId", "GameId", "IsHome");
 
                     b.HasIndex("GameId");
-
-                    b.HasIndex("PlayerId");
 
                     b.ToTable("PlayerGames");
                 });

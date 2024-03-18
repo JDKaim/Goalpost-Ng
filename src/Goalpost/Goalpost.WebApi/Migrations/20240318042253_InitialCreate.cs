@@ -60,7 +60,7 @@ namespace Goalpost.WebApi.Migrations
                     AwayTeamCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     HomeTeamName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AwayTeamName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StartTime = table.Column<int>(type: "int", nullable: false),
+                    StartTime = table.Column<long>(type: "bigint", nullable: false),
                     Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     HomeScore = table.Column<int>(type: "int", nullable: false),
@@ -194,14 +194,42 @@ namespace Goalpost.WebApi.Migrations
                 name: "PlayerGames",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     GameId = table.Column<int>(type: "int", nullable: false),
-                    PlayerId = table.Column<int>(type: "int", nullable: false)
+                    PlayerId = table.Column<int>(type: "int", nullable: false),
+                    IsHome = table.Column<bool>(type: "bit", nullable: false),
+                    IsCurrent = table.Column<bool>(type: "bit", nullable: false),
+                    PointsScored = table.Column<int>(type: "int", nullable: false),
+                    PassingAttempts = table.Column<int>(type: "int", nullable: false),
+                    PassingCompletions = table.Column<int>(type: "int", nullable: false),
+                    PassingYardage = table.Column<int>(type: "int", nullable: false),
+                    PassingTds = table.Column<int>(type: "int", nullable: false),
+                    PassingOnePointConversions = table.Column<int>(type: "int", nullable: false),
+                    PassingTwoPointConversions = table.Column<int>(type: "int", nullable: false),
+                    RushingAttempts = table.Column<int>(type: "int", nullable: false),
+                    RushingYardage = table.Column<int>(type: "int", nullable: false),
+                    RushingTds = table.Column<int>(type: "int", nullable: false),
+                    RushingOnePointConversions = table.Column<int>(type: "int", nullable: false),
+                    RushingTwoPointConversions = table.Column<int>(type: "int", nullable: false),
+                    ReceivingTargets = table.Column<int>(type: "int", nullable: false),
+                    ReceivingCompletions = table.Column<int>(type: "int", nullable: false),
+                    ReceivingYardage = table.Column<int>(type: "int", nullable: false),
+                    ReceivingTds = table.Column<int>(type: "int", nullable: false),
+                    ReceivingOnePointConversions = table.Column<int>(type: "int", nullable: false),
+                    ReceivingTwoPointConversions = table.Column<int>(type: "int", nullable: false),
+                    FlagPulls = table.Column<int>(type: "int", nullable: false),
+                    PassingInterceptions = table.Column<int>(type: "int", nullable: false),
+                    DefensiveInterceptions = table.Column<int>(type: "int", nullable: false),
+                    OffensiveFumbles = table.Column<int>(type: "int", nullable: false),
+                    DefensiveFumbles = table.Column<int>(type: "int", nullable: false),
+                    OffensiveSacks = table.Column<int>(type: "int", nullable: false),
+                    DefensiveSacks = table.Column<int>(type: "int", nullable: false),
+                    DefensiveTds = table.Column<int>(type: "int", nullable: false),
+                    DefensiveOnePointConversions = table.Column<int>(type: "int", nullable: false),
+                    DefensiveTwoPointConversions = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PlayerGames", x => x.Id);
+                    table.PrimaryKey("PK_PlayerGames", x => new { x.PlayerId, x.GameId, x.IsHome });
                     table.ForeignKey(
                         name: "FK_PlayerGames_Games_GameId",
                         column: x => x.GameId,
@@ -223,6 +251,7 @@ namespace Goalpost.WebApi.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Index = table.Column<int>(type: "int", nullable: false),
+                    GameId = table.Column<int>(type: "int", nullable: false),
                     IsHomePlay = table.Column<bool>(type: "bit", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
                     YardLine = table.Column<int>(type: "int", nullable: false),
@@ -241,6 +270,12 @@ namespace Goalpost.WebApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Plays", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Plays_Games_GameId",
+                        column: x => x.GameId,
+                        principalTable: "Games",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Plays_Players_FlagPullerId",
                         column: x => x.FlagPullerId,
@@ -313,14 +348,14 @@ namespace Goalpost.WebApi.Migrations
                 column: "GameId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PlayerGames_PlayerId",
-                table: "PlayerGames",
-                column: "PlayerId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Plays_FlagPullerId",
                 table: "Plays",
                 column: "FlagPullerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Plays_GameId",
+                table: "Plays",
+                column: "GameId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Plays_PasserId",

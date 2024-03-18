@@ -59,7 +59,7 @@ namespace Goalpost.WebApi.Data
             db.Games.Add(game);
             Player player = new Player() { Name = "Hingle McCringleberry" };
             db.Players.Add(player);
-            PlayerGame playerGame = new PlayerGame() { Game = game, Player = player };
+            PlayerGame playerGame = new PlayerGame() { Game = game, Player = player, IsHome = true, IsCurrent = false };
             db.PlayerGames.Add(playerGame);
             await db.SaveChangesAsync();
         }

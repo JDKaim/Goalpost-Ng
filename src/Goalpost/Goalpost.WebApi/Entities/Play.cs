@@ -3,7 +3,7 @@
     public class Play
     {
         public int Id { get; set; }
-        public int Index { get; set; }
+        public long Index { get; set; }
         public required Game Game { get; set; }
         public bool IsHomePlay { get; set; }
         public PlayType Type { get; set; }

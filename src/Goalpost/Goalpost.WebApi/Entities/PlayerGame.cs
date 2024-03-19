@@ -39,6 +39,8 @@ namespace Goalpost.WebApi.Entities
         public int DefensiveTds { get; set; }
         public int DefensiveOnePointConversions { get; set; }
         public int DefensiveTwoPointConversions { get; set; }
+        public int OffensiveSafeties {  get; set; }
+        public int DefensiveSafeties { get; set; }
 
     }
 }

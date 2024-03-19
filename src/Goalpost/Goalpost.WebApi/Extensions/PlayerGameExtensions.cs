@@ -42,6 +42,8 @@ namespace Goalpost.WebApi.Extensions
                 DefensiveTds = playerGame.DefensiveTds,
                 DefensiveOnePointConversions = playerGame.DefensiveOnePointConversions,
                 DefensiveTwoPointConversions = playerGame.DefensiveTwoPointConversions,
+                OffensiveSafeties = playerGame.OffensiveSafeties,
+                DefensiveSafeties = playerGame.DefensiveSafeties
             };
         }
 

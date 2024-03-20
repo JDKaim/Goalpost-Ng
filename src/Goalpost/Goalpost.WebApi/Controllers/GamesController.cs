@@ -99,7 +99,7 @@ namespace Goalpost.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = ApplicationRoles.Administrator)]
+        //[Authorize(Roles = ApplicationRoles.Administrator)]
         public async Task<ApiResponseDto<GameDto>> UpdateGame(UpdateGameDto dto, int id)
         {
             Game? game = await this.Db.Games.FindAsync(id);
@@ -177,7 +177,7 @@ namespace Goalpost.WebApi.Controllers
         }
 
         [HttpPost("{gameId}/{team}")]
-        public async Task<ApiResponseDto<PlayerGameDto>> AddPlayerToRoster(int gameId, int playerId, string team)
+        public async Task<ApiResponseDto<PlayerGameDto>> AddPlayerToRoster(int gameId, string team, int playerId)
         {
             if (team != "home" && team != "away")
             {
@@ -253,6 +253,41 @@ namespace Goalpost.WebApi.Controllers
                     .ToListAsync());
         }
 
+        [HttpPost("SearchPlayerGames")]
+        public async Task<ApiResponseDto<List<PlayerGameDto>>> SearchPlayerGames(SearchPlayerGamesDto dto)
+        {
+            var query = this.Db.PlayerGames.AsQueryable();
+
+            if (dto.GameId is not null)
+            {
+                query = query.Where((playerGame) => playerGame.GameId == dto.GameId);
+            }
+
+            if (dto.PlayerId is not null)
+            {
+                query = query.Where((playerGame) => playerGame.PlayerId == dto.PlayerId);
+            }
+
+            if (dto.SortBy is null)
+            {
+                dto.SortBy = "PointsScored";
+            }
+
+            switch (dto.SortBy)
+            {
+                case "PointsScored":
+                    query = query.OrderBy((game) => game.PointsScored);
+                    break;
+                case "PassingAttempts":
+                    query = query.OrderBy((game) => game.PassingAttempts);
+                    break;
+                default:
+                    throw new BadHttpRequestException($"SortBy parameter '{dto.SortBy}' unsupported.");
+            }
+
+            return ApiResponseDto<List<PlayerGameDto>>.CreateSuccess(await query.Select((playerGame) => playerGame.ToDto()).ToListAsync());
+        }
+
         [HttpPost("{gameId}/Play")]
         public async Task<ApiResponseDto<PlayDto>> AddPlay(int gameId, CreatePlayDto dto)
         {
@@ -294,7 +329,7 @@ namespace Goalpost.WebApi.Controllers
             }
             if (dto.RusherId != null)
             {
-                play.Rusher = (await this.Db.PlayerGames.Where((playerGame) => playerGame.GameId == game.Id && playerGame.PlayerId == dto.RusherId && playerGame.IsHome == dto.IsHomePlay && playerGame.IsCurrent).FirstOrDefaultAsync())?.Player;
+                play.Rusher = (await this.Db.PlayerGames.Include(playerGame => playerGame.Player).Where((playerGame) => playerGame.GameId == game.Id && playerGame.PlayerId == dto.RusherId && playerGame.IsHome == dto.IsHomePlay && playerGame.IsCurrent).FirstOrDefaultAsync())?.Player;
                 if (play.Rusher == null)
                 {
                     return ApiResponseDto<PlayDto>.CreateError("Rushing player was not found on this roster.");
@@ -330,7 +365,7 @@ namespace Goalpost.WebApi.Controllers
                 }
             }
 
-            int endYardLine = dto.YardLine + dto.Yardage;
+            int endYardLine = dto.YardLine - dto.Yardage;
             if (endYardLine == 0)
             {
                 switch (dto.Type)
@@ -394,7 +429,38 @@ namespace Goalpost.WebApi.Controllers
                 TurnoverPlayerId = dto.TurnoverPlayerId,
                 IsSack = play.IsSack
             };
+            await UpdateGameStatsAsync(play);
 
+            return ApiResponseDto<PlayDto>.CreateSuccess(playDto);
+        }
+
+        [HttpGet("Plays/{playId}")]
+        public async Task<ApiResponseDto<PlayDto>> GetPlay(int playId)
+        {
+            Play? play = await this.Db.Plays.FirstAsync((play) => play.Id == playId);
+            if (play is null)
+            {
+                return ApiResponseDto<PlayDto>.CreateError("Play not found.");
+            }
+            PlayDto playDto = new PlayDto()
+            {
+                Id = play.Id,
+                Index = play.Index,
+                IsHomePlay = play.IsHomePlay,
+                Type = play.Type,
+                YardLine = play.YardLine,
+                Down = play.Down,
+                Points = play.Points,
+                Yardage = play.Yardage,
+                IsCompletedPass = play.IsCompletedPass,
+                PasserId = play.Passer?.Id,
+                RusherId = play.Rusher?.Id,
+                ReceiverId = play.Receiver?.Id,
+                TurnoverType = play.TurnoverType,
+                FlagPullerId = play.FlagPuller?.Id,
+                TurnoverPlayerId = play.TurnoverPlayer?.Id,
+                IsSack = play.IsSack
+            };
             return ApiResponseDto<PlayDto>.CreateSuccess(playDto);
         }
 
@@ -504,7 +570,7 @@ namespace Goalpost.WebApi.Controllers
 
             await this.Db.SaveChangesAsync();
 
-            await UpdatePlayerStatsAsync((int) playerId);
+            await UpdatePlayerStatsAsync((int)playerId);
         }
 
         private async Task UpdatePlayerStatsAsync(int playerId)

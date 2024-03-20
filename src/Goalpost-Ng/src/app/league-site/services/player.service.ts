@@ -29,4 +29,8 @@ export class PlayerService {
   searchPlayers(searchPlayers: SearchPlayers) {
     return this.#dataService.searchPlayers(searchPlayers);
   }
+
+  getGamesForPlayer(id: number) {
+    return this.#dataService.getGamesForPlayer(id);
+  }
 }

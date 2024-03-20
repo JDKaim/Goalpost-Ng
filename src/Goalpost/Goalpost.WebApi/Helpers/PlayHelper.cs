@@ -1,4 +1,5 @@
 ﻿using Goalpost.WebApi.Entities;
+using System.Diagnostics;
 
 namespace Goalpost.WebApi.Helpers
 {
@@ -6,6 +7,10 @@ namespace Goalpost.WebApi.Helpers
     {
         public static void VerifyPlay(CreatePlayDto dto)
         {
+            if (dto.Down > 4 || dto.Down < 1)
+            {
+                throw new Exception($"{nameof(dto.Down)} must be between 1 and 4.");
+            }
             if (dto.Type == PlayType.Passing || dto.Type == PlayType.OnePointPass || dto.Type == PlayType.TwoPointPass)
             {
                 if (dto.PasserId == null)
@@ -37,6 +42,10 @@ namespace Goalpost.WebApi.Helpers
                 }
             }
             int endYardLine = dto.YardLine - dto.Yardage;
+            if (endYardLine < 0 || endYardLine > 40)
+            {
+                throw new Exception("Play must end between the 0 and 40 yard line.");
+            }
             bool isScoringPlay = (endYardLine == 0) || (endYardLine == 40);
             if (!isScoringPlay)
             {

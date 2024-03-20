@@ -28,28 +28,28 @@
     [header]="'Away Team - ' + game.awayTeamCode + ' [' + game.awayScore + ']'"
     class="w-30rem"
   >
-    @if (awayRoster$ | async; as players) { @for(player of players; track
+    @if (awayRoster$ | async; as awayRosterResponse) { @if (awayRosterResponse.result; as awayRoster) { @for (player of awayRoster; track
     $index) {
     <div class="flex gap-2 align-items-center mb-1">
-      <a [routerLink]="['/', 'players', player.id]">{{ player.name }}</a>
+      <a [routerLink]="['/', 'players', player.playerId]">{{ player.playerId }}</a>
     </div>
     } @empty {
     <div>No Players.</div>
-    }}
+    }}}
   </p-card>
 
   <p-card
     [header]="'Home Team - ' + game.homeTeamCode + ' [' + game.homeScore + ']'"
     class="w-30rem"
   >
-    @if (homeRoster$ | async; as players) { @for(player of players; track
+    @if (homeRoster$ | async; as homeRosterResponse) { @if (homeRosterResponse.result; as homeRoster) { @for(player of homeRoster; track
     $index) {
     <div class="flex gap-2 align-items-center mb-1">
-      <a [routerLink]="['/', 'players', player.id]">{{ player.name }}</a>
+      <a [routerLink]="['/', 'players', player.playerId]">{{ player.playerId }}</a>
     </div>
     } @empty {
     <div>No Players.</div>
-    }}
+    }}}
   </p-card>
 </div>
 } 

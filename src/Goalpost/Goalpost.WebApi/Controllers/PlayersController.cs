@@ -125,7 +125,7 @@ namespace Goalpost.WebApi.Controllers
         }
 
         [HttpGet("{id}/Games")]
-        public async Task<ApiResponseDto<List<PlayerGameDto>>> GetRoster(int id)
+        public async Task<ApiResponseDto<List<PlayerGameDto>>> GetGamesForPlayer(int id)
         {
             return ApiResponseDto<List<PlayerGameDto>>.CreateSuccess(
                 await this.Db.PlayerGames

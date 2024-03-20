@@ -9,6 +9,10 @@ import { CreatePlayer } from '../models/dtos/create-player';
 import { Player } from '../models/dtos/player';
 import { UpdatePlayer } from '../models/dtos/update-player';
 import { SearchPlayers } from '../models/dtos/search-players';
+import { PlayerGame } from '../models/dtos/player-game';
+import { CreatePlay } from '../models/dtos/create-play';
+import { Play } from '../models/dtos/play';
+import { SearchPlayerGames } from '../models/dtos/search-player-games';
 
 export const DEFAULT_API_URL = new InjectionToken<string>('DEFAULT_API_URL');
 
@@ -61,5 +65,33 @@ export class DataService {
 
   searchPlayers(searchPlayers: SearchPlayers) {
     return this.#http.post<ApiResponse<Array<Player>>>(`${this.#apiUrl}/Players/Search`, searchPlayers);
+  }
+
+  addPlayerToRoster(gameId: number, team: string, playerId: number) {
+    return this.#http.post<ApiResponse<PlayerGame>>(`${this.#apiUrl}/Games/${gameId}/${team}`, playerId);
+  }
+
+  removePlayerFromRoster(gameId: number, team: string, playerId: number) {
+    return this.#http.delete<ApiResponse<boolean>>(`${this.#apiUrl}/Games/${gameId}/${team}/${playerId}`);
+  }
+
+  getRoster(gameId: number, team: string) {
+    return this.#http.get<ApiResponse<Array<PlayerGame>>>(`${this.#apiUrl}/Games/${gameId}/${team}`);
+  }
+
+  searchPlayerGames(searchPlayerGames: SearchPlayerGames) {
+    return this.#http.post<ApiResponse<Array<PlayerGame>>>(`${this.#apiUrl}/Games/SearchPlayerGames`, searchPlayerGames);
+  }
+
+  addPlay(gameId: number, createPlay: CreatePlay) {
+    return this.#http.post<ApiResponse<Play>>(`${this.#apiUrl}/${gameId}/Play`, createPlay);
+  }
+  
+  getPlay(playId: number) {
+    return this.#http.get<ApiResponse<Play>>(`${this.#apiUrl}/Games/Plays/${playId}`);
+  }
+
+  getGamesForPlayer(id: number) {
+    return this.#http.get<ApiResponse<Array<PlayerGame>>>(`${this.#apiUrl}/Players/${id}/Games`);
   }
 }

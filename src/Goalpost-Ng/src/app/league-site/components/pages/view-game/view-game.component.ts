@@ -14,6 +14,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { Observable, tap } from 'rxjs';
 import { ApiResponse } from 'src/app/league-site/models/api/api-response';
 import { Game } from 'src/app/league-site/models/dtos/game';
+import { GameData } from 'src/app/league-site/models/dtos/game-data';
 import { Player } from 'src/app/league-site/models/dtos/player';
 import { PlayerGame } from 'src/app/league-site/models/dtos/player-game';
 import { GamePipe } from 'src/app/league-site/pipes/game.pipe';
@@ -46,7 +47,9 @@ export class ViewGameComponent {
   @Input() id!: number;
   #fb = inject(FormBuilder);
 
+  gameData$ = new Observable<ApiResponse<GameData>>();
   homeRoster$ = new Observable<ApiResponse<PlayerGame[]>>();
+  homePlayers$ = new Observable<ApiResponse<Player[]>>();
   awayRoster$ = new Observable<ApiResponse<PlayerGame[]>>();
   players$ = new Observable<ApiResponse<Player[]>>();
   homePlayers = [];
@@ -55,6 +58,7 @@ export class ViewGameComponent {
   awayTeamName = '';
   errors = new Array<Message>();
   game$ = new Observable<ApiResponse<Game>>();
+  // gameData$ = new Observable<ApiResponse<>>();
 
   ngOnInit(): void {
     this.players$ = this.#playerService.searchPlayers({});
@@ -67,14 +71,8 @@ export class ViewGameComponent {
         this.awayTeamName = response.result.awayTeamName;
       })
     );
-    this.homeRoster$ = this.#gameService.getRoster(this.id, this.homeTeamName).pipe(tap((response) => {
-      if (!response.result) {
-        return;
-      }
-      response.result.forEach((playerGame) => {
-        
-      })
-    }));
+    this.homeRoster$ = this.#gameService.getRoster(this.id, this.homeTeamName);
     this.awayRoster$ = this.#gameService.getRoster(this.id, this.awayTeamName);
+
   }
 }

@@ -464,6 +464,45 @@ namespace Goalpost.WebApi.Controllers
             return ApiResponseDto<PlayDto>.CreateSuccess(playDto);
         }
 
+        [HttpPost("Plays/Search")]
+        public async Task<ApiResponseDto<List<PlayDto>>> SearchPlays(SearchPlaysDto dto)
+        {
+            var query = this.Db.Plays.AsQueryable();
+
+            if (dto.GameId is not null)
+            {
+                query = query.Where((play) => play.Game.Id == dto.GameId);
+            }
+
+            if (dto.PlayerId is not null)
+            {
+                query = query.Where((play) => (((play.Passer != null) && (play.Passer.Id == dto.PlayerId)) || 
+                ((play.Rusher != null) && (play.Rusher.Id == dto.PlayerId)) || 
+                ((play.Receiver != null) && (play.Receiver.Id == dto.PlayerId)) || 
+                ((play.TurnoverPlayer != null) && (play.TurnoverPlayer.Id == dto.PlayerId)) || 
+                ((play.FlagPuller != null) && (play.FlagPuller.Id == dto.PlayerId))));
+            }
+
+            if (dto.SortBy is null)
+            {
+                dto.SortBy = "Index";
+            }
+
+            switch (dto.SortBy)
+            {
+                case "Index":
+                    query = query.OrderBy((play) => play.Index);
+                    break;
+                case "Points":
+                    query = query.OrderBy((game) => game.Points);
+                    break;
+                default:
+                    throw new BadHttpRequestException($"SortBy parameter '{dto.SortBy}' unsupported.");
+            }
+
+            return ApiResponseDto<List<PlayDto>>.CreateSuccess(await query.Select((play) => play.ToDto()).ToListAsync());
+        }
+
         private async Task UpdateGameStatsAsync(Play play)
         {
             List<Play> plays = await this.Db.Plays.Where((playItem) => playItem.Game.Id == play.Game.Id).ToListAsync();

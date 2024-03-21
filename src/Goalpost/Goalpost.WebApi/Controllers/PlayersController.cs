@@ -52,12 +52,17 @@ namespace Goalpost.WebApi.Controllers
             {
                 return ApiResponseDto<PlayerDto>.CreateSuccess(null);
             }
-            PlayerDto playerDto = new PlayerDto()
+            return ApiResponseDto<PlayerDto>.CreateSuccess(player.ToDto());
+        }
+
+        [HttpPost("Players/List")]
+        public async Task<ApiResponseDto<List<PlayerDto>>> GetPlayers(int[] ids)
+        {
+            if (!ids.Any())
             {
-                Name = player.Name,
-                Id = player.Id,
-            };
-            return ApiResponseDto<PlayerDto>.CreateSuccess(playerDto);
+                return ApiResponseDto<List<PlayerDto>>.CreateSuccess(new List<PlayerDto>());
+            }
+            return ApiResponseDto<List<PlayerDto>>.CreateSuccess(await this.Db.Players.Where(player => ids.Contains(player.Id)).Select((player) => player.ToDto()).ToListAsync());
         }
 
         [HttpDelete("{id}")]
@@ -84,12 +89,7 @@ namespace Goalpost.WebApi.Controllers
             }
             player.Name = dto.Name ?? player.Name;
             await this.Db.SaveChangesAsync();
-            PlayerDto playerDto = new PlayerDto()
-            {
-                Name = player.Name,
-                Id = player.Id,
-            };
-            return ApiResponseDto<PlayerDto>.CreateSuccess(playerDto);
+            return ApiResponseDto<PlayerDto>.CreateSuccess(player.ToDto());
         }
 
         [HttpPost("Search")]
@@ -117,11 +117,7 @@ namespace Goalpost.WebApi.Controllers
             }
 
             return ApiResponseDto<List<PlayerDto>>.CreateSuccess(await query.Select((player) =>
-            new PlayerDto()
-            {
-                Name = player.Name,
-                Id = player.Id,
-            }).ToListAsync());
+            player.ToDto()).ToListAsync());
         }
 
         [HttpGet("{id}/Games")]

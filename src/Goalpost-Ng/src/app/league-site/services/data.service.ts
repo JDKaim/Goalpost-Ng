@@ -13,6 +13,7 @@ import { PlayerGame } from '../models/dtos/player-game';
 import { CreatePlay } from '../models/dtos/create-play';
 import { Play } from '../models/dtos/play';
 import { SearchPlayerGames } from '../models/dtos/search-player-games';
+import { SearchPlays } from '../models/dtos/search-plays';
 
 export const DEFAULT_API_URL = new InjectionToken<string>('DEFAULT_API_URL');
 
@@ -58,6 +59,10 @@ export class DataService {
   getPlayer(id: number) {
     return this.#http.get<ApiResponse<Player>>(`${this.#apiUrl}/Players/${id}`);
   }
+
+  getPlayers(ids: Array<number>) {
+    return this.#http.post<ApiResponse<Player[]>>(`${this.#apiUrl}/Players/List`, ids);
+  }
   
   deletePlayer(id: number) {
     return this.#http.delete<ApiResponse<boolean>>(`${this.#apiUrl}/Players/${id}`);
@@ -84,11 +89,15 @@ export class DataService {
   }
 
   addPlay(gameId: number, createPlay: CreatePlay) {
-    return this.#http.post<ApiResponse<Play>>(`${this.#apiUrl}/${gameId}/Play`, createPlay);
+    return this.#http.post<ApiResponse<Play>>(`${this.#apiUrl}/Games/${gameId}/Play`, createPlay);
   }
   
   getPlay(playId: number) {
     return this.#http.get<ApiResponse<Play>>(`${this.#apiUrl}/Games/Plays/${playId}`);
+  }
+
+  searchPlays(searchPlays: SearchPlays) {
+    return this.#http.post<ApiResponse<Play>>(`${this.#apiUrl}/Games/Plays/Search`, searchPlays);
   }
 
   getGamesForPlayer(id: number) {

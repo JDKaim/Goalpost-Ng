@@ -1,5 +1,4 @@
 import { Game } from './game';
-import { Play } from './play';
 import { TeamStats } from './team-stats';
 
 export class GameStats {

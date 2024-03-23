@@ -53,10 +53,21 @@ jobs:
             ${{ runner.os }}-nuget-
 
       - name: Build with dotnet
-        run: dotnet build src/Goalpost/Goalpost.sln --configuration Release
+        run: dotnet build ./src/Goalpost/Goalpost.sln --configuration Release
+
+      - name: Install node
+        run: actions/setup-node@v4.0.2
+
+      - name: Run Angular Script
+        uses: actions/github-script@v7.0.1
+        with:
+          working-directory: ./src/Goalpost-Ng
+          script: |
+            npm install
+            npm run build
 
       - name: dotnet publish
-        run: dotnet publish src/Goalpost/Goalpost.sln -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish ./src/Goalpost/Goalpost.sln -c Release -o ${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4.3.1

@@ -7,7 +7,7 @@ namespace Goalpost.WebApi.Data
 {
     public class Seeder
     {
-        public static async Task SeedUsers(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public static async Task SeedUsers(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, ConfigurationManager configurationManager)
         {
             if (await userManager.Users.AnyAsync()) { return; }
             
@@ -19,7 +19,7 @@ namespace Goalpost.WebApi.Data
                 }
             }
 
-            List<string> adminEmails = new List<string>() { "jdkaim@hotmail.com" };
+            List<string> adminEmails = new List<string>() { configurationManager.GetValue<string>("AppSettings:Admin:Email") ?? throw new Exception("The AppSettings:Admin:Email setting is required.") };
             foreach (string email in adminEmails)
             {
                 ApplicationUser user = new ApplicationUser()
@@ -29,11 +29,11 @@ namespace Goalpost.WebApi.Data
                     UserName = email,
                 };
 
-                var identity = await userManager.CreateAsync(user, $"P@ssw0rd");
+                var identity = await userManager.CreateAsync(user, configurationManager.GetValue<string>("AppSettings:Admin:Password") ?? throw new Exception("The AppSettings:Admin:Password setting is required."));
                 await userManager.AddToRoleAsync(user, ApplicationRoles.Administrator);
             }
 
-            List<string> scorekeeperEmails = new List<string>() { "scorekeeper@jdkaim.com" };
+            List<string> scorekeeperEmails = new List<string>() { configurationManager.GetValue<string>("AppSettings:Scorekeeper:Email") ?? throw new Exception("The AppSettings:Scorekeeper:Email setting is required.") };
             foreach (string email in scorekeeperEmails)
             {
                 ApplicationUser user = new ApplicationUser()
@@ -43,7 +43,7 @@ namespace Goalpost.WebApi.Data
                     UserName = email,
                 };
 
-                var identity = await userManager.CreateAsync(user, $"P@ssw0rd");
+                var identity = await userManager.CreateAsync(user, configurationManager.GetValue<string>("AppSettings:Scorekeeper:Password") ?? throw new Exception("The AppSettings:Scorekeeper:Password setting is required."));
                 await userManager.AddToRoleAsync(user, ApplicationRoles.Scorekeeper);
             }
 

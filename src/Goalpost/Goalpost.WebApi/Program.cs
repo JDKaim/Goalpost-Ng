@@ -89,7 +89,7 @@ try
     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
     await context.Database.MigrateAsync();
-    await Seeder.SeedUsers(userManager, roleManager);
+    await Seeder.SeedUsers(userManager, roleManager, builder.Configuration);
     if (app.Environment.IsDevelopment())
     {
         await Seeder.SeedGames(context);

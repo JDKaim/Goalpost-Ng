@@ -56,7 +56,7 @@ jobs:
         run: dotnet build ./src/Goalpost/Goalpost.sln --configuration Release
 
       - name: Install node
-        run: actions/setup-node@v4.0.2
+        uses: actions/setup-node@v4.0.2
 
       - name: Run Angular Script
         uses: actions/github-script@v7.0.1

@@ -61,7 +61,7 @@ jobs:
       - name: Run Angular Script
         uses: actions/github-script@v7.0.1
         with:
-          working-directory: ./src/Goalpost-Ng
+          working-directory: './src/Goalpost-Ng'
           script: |
             npm install
             npm run build

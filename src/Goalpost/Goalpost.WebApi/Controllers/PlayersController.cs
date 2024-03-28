@@ -55,7 +55,7 @@ namespace Goalpost.WebApi.Controllers
             return ApiResponseDto<PlayerDto>.CreateSuccess(player.ToDto());
         }
 
-        [HttpPost("Players/List")]
+        [HttpPost("List")]
         public async Task<ApiResponseDto<List<PlayerDto>>> GetPlayers(int[] ids)
         {
             if (!ids.Any())

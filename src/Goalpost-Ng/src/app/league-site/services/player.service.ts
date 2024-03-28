@@ -61,7 +61,7 @@ export class PlayerService {
       }
     });
     if (!requestIds.length) {
-      return new SuccessApiResponse<Player[]>(players);
+      return of(new SuccessApiResponse<Player[]>(players));
     }
     return this.#dataService.getPlayers(requestIds).pipe(
       tap((response) => {

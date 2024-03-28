@@ -1,65 +1,78 @@
-@if (game$ | async; as response) { @if (response.result; as game) {
+@if (gameData$ | async; as response) { @if (response.result; as gameData) {
 
 <div class="flex gap-3 mb-3">
   <p-card class="w-30rem align-items-center">
     <div class="p-card-title text-center align-items-center">View Game</div>
-    <div class="text-center font-semibold text-900">{{ game | game }}</div>
-    <div class="text-center text-600 mb-3">Game ID: {{ game.id }}</div>
+    <div class="text-center font-semibold text-900">
+      {{ gameData.game | game }}
+    </div>
+    <div class="text-center text-600 mb-3">Game ID: {{ gameData.game.id }}</div>
     <div class="text-center">
       <p-button
         size="small"
         class="mr-2"
         icon="pi pi-pencil"
         severity="primary"
-        [routerLink]="['/', 'edit-game', game.id]"
+        [routerLink]="['/', 'edit-game', gameData.game.id]"
       />
-      @if (game.status === 'Final' || game.status === 'Ongoing') {
+      @if (gameData.game.status === 'Final' || gameData.game.status ===
+      'Ongoing') {
       <p-button
         size="small"
         icon="pi pi-stopwatch"
         severity="success"
-        [routerLink]="['/', 'scorekeeper', game.id]"
+        [routerLink]="['/', 'scorekeeper', gameData.game.id]"
       />
       }
     </div>
   </p-card>
 
   <p-card
-    [header]="'Away Team - ' + game.awayTeamCode + ' [' + game.awayScore + ']'"
+    [header]="
+      'Away Team - ' +
+      gameData.game.awayTeamCode +
+      ' [' +
+      gameData.game.awayScore +
+      ']'
+    "
     class="w-30rem"
   >
-    @if (awayRoster$ | async; as awayRosterResponse) { @if (awayRosterResponse.result; as awayRoster) { @for (player of awayRoster; track
-    $index) {
+    @for (player of gameData.awayRoster; track player.player.id) {
     <div class="flex gap-2 align-items-center mb-1">
-      <a [routerLink]="['/', 'players', player.playerId]">{{ player.playerId }}</a>
+      <a [routerLink]="['/', 'players', player.player.id]">{{
+        player.player.name
+      }}</a>
     </div>
     } @empty {
     <div>No Players.</div>
-    }}}
+    }
   </p-card>
 
   <p-card
-    [header]="'Home Team - ' + game.homeTeamCode + ' [' + game.homeScore + ']'"
+    [header]="
+      'Home Team - ' +
+      gameData.game.homeTeamCode +
+      ' [' +
+      gameData.game.homeScore +
+      ']'
+    "
     class="w-30rem"
   >
-    @if (homeRoster$ | async; as homeRosterResponse) { @if (homeRosterResponse.result; as homeRoster) { @for(player of homeRoster; track
-    $index) {
+    @for(player of gameData.homeRoster; track player.player.id) {
     <div class="flex gap-2 align-items-center mb-1">
-      <a [routerLink]="['/', 'players', player.playerId]">{{ player.playerId }}</a>
+      <a [routerLink]="['/', 'players', player.player.id]">{{
+        player.player.name
+      }}</a>
     </div>
     } @empty {
     <div>No Players.</div>
-    }}}
+    }
   </p-card>
 </div>
-} 
-@else if (response.type === "Success") {
-  <div>Game does not exist.</div>
-}
-@else {
-  <div>Error occurred. Unable to load.</div>
-}
-}
-@else {
-  <p-progressBar mode="indeterminate"></p-progressBar>
+} @else if (response.type === "Success") {
+<div>Game does not exist.</div>
+} @else {
+<div>Error occurred. Unable to load.</div>
+} } @else {
+<p-progressBar mode="indeterminate"></p-progressBar>
 }

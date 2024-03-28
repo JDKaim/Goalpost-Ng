@@ -177,14 +177,14 @@ namespace Goalpost.WebApi.Controllers
         }
 
         [HttpPost("{gameId}/{team}")]
-        public async Task<ApiResponseDto<PlayerGameDto>> AddPlayerToRoster(int gameId, string team, int playerId)
+        public async Task<ApiResponseDto<PlayerGameDto>> AddPlayerToRoster(int gameId, string team, IdDto playerId)
         {
             if (team != "home" && team != "away")
             {
                 return ApiResponseDto<PlayerGameDto>.CreateError("Team must be 'home' or 'away'.");
             }
             bool isHome = team == "home";
-            PlayerGame? playerGame = await this.Db.PlayerGames.FindAsync(playerId, gameId, isHome);
+            PlayerGame? playerGame = await this.Db.PlayerGames.FindAsync(playerId.Id, gameId, isHome);
             if (playerGame is not null)
             {
                 if (!playerGame.IsCurrent)
@@ -201,7 +201,7 @@ namespace Goalpost.WebApi.Controllers
             {
                 return ApiResponseDto<PlayerGameDto>.CreateError("Game does not exist.");
             }
-            Player? player = await this.Db.Players.FindAsync(playerId);
+            Player? player = await this.Db.Players.FindAsync(playerId.Id);
             if (player is null)
             {
                 return ApiResponseDto<PlayerGameDto>.CreateError("Player does not exist.");

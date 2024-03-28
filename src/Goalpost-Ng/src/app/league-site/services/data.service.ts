@@ -73,7 +73,7 @@ export class DataService {
   }
 
   addPlayerToRoster(gameId: number, team: string, playerId: number) {
-    return this.#http.post<ApiResponse<PlayerGame>>(`${this.#apiUrl}/Games/${gameId}/${team}`, playerId);
+    return this.#http.post<ApiResponse<PlayerGame>>(`${this.#apiUrl}/Games/${gameId}/${team}`, {id: playerId});
   }
 
   removePlayerFromRoster(gameId: number, team: string, playerId: number) {
@@ -97,7 +97,7 @@ export class DataService {
   }
 
   searchPlays(searchPlays: SearchPlays) {
-    return this.#http.post<ApiResponse<Play>>(`${this.#apiUrl}/Games/Plays/Search`, searchPlays);
+    return this.#http.post<ApiResponse<Play[]>>(`${this.#apiUrl}/Games/Plays/Search`, searchPlays);
   }
 
   getGamesForPlayer(id: number) {

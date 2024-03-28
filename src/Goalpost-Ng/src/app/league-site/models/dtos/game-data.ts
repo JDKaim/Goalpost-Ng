@@ -1,10 +1,9 @@
 import { Game } from "./game";
 import { Play } from "./play";
-import { PlayerGame } from "./player-game";
+import { RosterPlayer } from "./roster-player";
 
-export interface GameData {
-  game: Game;
-  plays: Play[];
-  awayRoster: PlayerGame[];
-  homeRoster: PlayerGame[];
+export class GameData {
+  constructor(public game: Game, public plays: Play[], public awayRoster: RosterPlayer[], public homeRoster: RosterPlayer[]) {
+
+  }
 }

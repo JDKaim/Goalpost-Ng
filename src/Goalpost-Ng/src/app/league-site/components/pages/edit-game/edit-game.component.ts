@@ -13,11 +13,11 @@ import { TooltipModule } from 'primeng/tooltip';
 import { Observable, tap } from 'rxjs';
 import { mustBeDifferentValidator } from 'src/app/league-site/helpers/custom-validators';
 import { ApiResponse } from 'src/app/league-site/models/api/api-response';
-import { Game } from 'src/app/league-site/models/dtos/game';
-import { Player } from 'src/app/league-site/models/player';
+import { GameData } from 'src/app/league-site/models/dtos/game-data';
 import { Status } from 'src/app/league-site/models/status';
 import { GamePipe } from 'src/app/league-site/pipes/game.pipe';
 import { GameService } from 'src/app/league-site/services/game.service';
+import { PlayerService } from 'src/app/league-site/services/player.service';
 
 @Component({
   standalone: true,
@@ -39,6 +39,7 @@ import { GameService } from 'src/app/league-site/services/game.service';
 })
 export class EditGameComponent {
   #gameService = inject(GameService);
+  #playerService = inject(PlayerService);
   #router = inject(Router);
   @Input() id!: number;
   #fb = inject(FormBuilder);
@@ -70,31 +71,9 @@ export class EditGameComponent {
     }
   );
 
-  homeRoster$ = new Observable<Player[]>();
-  awayRoster$ = new Observable<Player[]>();
+  players$ = this.#playerService.searchPlayers({});
   errors = new Array<Message>();
-  game$ = new Observable<ApiResponse<Game>>();
-
-  ngOnInit(): void {
-    this.game$ = this.#gameService.getGame(this.id).pipe(
-      tap((response) => {
-        if (!response.result) {
-          return;
-        }
-        this.form.controls.awayTeamCode.setValue(response.result!.awayTeamCode);
-        this.form.controls.homeTeamCode.setValue(response.result!.homeTeamCode);
-        this.form.controls.awayTeamName.setValue(response.result!.awayTeamName);
-        this.form.controls.homeTeamName.setValue(response.result!.homeTeamName);
-        this.form.controls.awayScore.setValue(response.result!.awayScore);
-        this.form.controls.homeScore.setValue(response.result!.homeScore);
-        this.form.controls.location.setValue(response.result!.location);
-        this.form.controls.startTime.setValue(
-          new Date(response.result!.startTime)
-        );
-        this.form.controls.status.setValue(response.result!.status);
-      })
-    );
-  }
+  gameData$ = new Observable<ApiResponse<GameData>>();
 
   statuses: Array<{ label: string; value: Status }> = [
     { label: 'Future', value: 'Future' },
@@ -103,6 +82,39 @@ export class EditGameComponent {
     { label: 'Postponed', value: 'Postponed' },
     { label: 'Cancelled', value: 'Cancelled' },
   ];
+
+  ngOnInit(): void {
+    this.#updateGameData();
+  }
+
+  #updateGameData() {
+    this.gameData$ = this.#gameService.getGameData(this.id).pipe(
+      tap((response) => {
+        if (!response.result) {
+          return;
+        }
+        this.form.controls.awayTeamCode.setValue(
+          response.result!.game.awayTeamCode
+        );
+        this.form.controls.homeTeamCode.setValue(
+          response.result!.game.homeTeamCode
+        );
+        this.form.controls.awayTeamName.setValue(
+          response.result!.game.awayTeamName
+        );
+        this.form.controls.homeTeamName.setValue(
+          response.result!.game.homeTeamName
+        );
+        this.form.controls.awayScore.setValue(response.result!.game.awayScore);
+        this.form.controls.homeScore.setValue(response.result!.game.homeScore);
+        this.form.controls.location.setValue(response.result!.game.location);
+        this.form.controls.startTime.setValue(
+          new Date(response.result!.game.startTime)
+        );
+        this.form.controls.status.setValue(response.result!.game.status);
+      })
+    );
+  }
 
   editGameClicked() {
     if (!this.form.valid) {
@@ -148,15 +160,15 @@ export class EditGameComponent {
     });
   }
 
-  // addPlayerClicked(id: string, homeTeam: boolean) {
-  //   this.#leagueService
-  //     .addPlayerToRoster(this.id, id, homeTeam, '')
-  //     .subscribe();
-  // }
+  addPlayerClicked(id: number, homeTeam: boolean) {
+    this.#gameService.addPlayerToRoster(this.id, homeTeam, id).subscribe({
+      next: () => this.#updateGameData(),
+    });
+  }
 
-  // removePlayerClicked(id: string, homeTeam: boolean) {
-  //   this.#leagueService
-  //     .removePlayerFromRoster(this.id, id, homeTeam)
-  //     .subscribe();
-  // }
+  removePlayerClicked(id: number, homeTeam: boolean) {
+    this.#gameService
+      .removePlayerFromRoster(this.id, homeTeam, id)
+      .subscribe({ next: () => this.#updateGameData() });
+  }
 }

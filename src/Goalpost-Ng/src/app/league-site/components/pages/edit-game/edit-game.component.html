@@ -1,24 +1,25 @@
-@if (game$ | async; as response) { @if (response.result; as game) {
+@if (gameData$ | async; as response) { @if (response.result; as gameData) {
 
 <div class="flex gap-3 mb-3">
   <p-card class="w-30rem">
     <div class="p-card-title text-center">Edit Game</div>
     <!-- <div class="text-center font-semibold text-900">{{ game | game }}</div> -->
-    <div class="text-center text-600 mb-3">Game ID: {{ game.id }}</div>
+    <div class="text-center text-600 mb-3">Game ID: {{ gameData.game.id }}</div>
     <div class="text-center">
       <p-button
         size="small"
         class="mr-2"
         icon="pi pi-eye"
         severity="primary"
-        [routerLink]="['/', 'games', game.id]"
+        [routerLink]="['/', 'games', gameData.game.id]"
       />
-      @if (game.status === 'Final' || game.status === 'Ongoing') {
+      @if (gameData.game.status === 'Final' || gameData.game.status ===
+      'Ongoing') {
       <p-button
         size="small"
         icon="pi pi-stopwatch"
         severity="success"
-        [routerLink]="['/', 'scorekeeper', game.id]"
+        [routerLink]="['/', 'scorekeeper', gameData.game.id]"
       />
       }
     </div>
@@ -127,45 +128,53 @@
     </ng-template>
   </p-card>
 
-  <!-- <p-card [header]="'Away Team - ' + game.awayTeamId" class="w-30rem">
-    @if (awayRoster$ | async; as players) { @for(player of players; track
-    $index) {
+  <p-card
+    [header]="'Away Team - ' + gameData.game.awayTeamCode"
+    class="w-30rem"
+  >
+    @for(player of gameData.awayRoster; track player.player.id) {
     <div class="flex gap-2 align-items-center mb-1">
       <p-button
         size="small"
         icon="pi pi-times"
         severity="danger"
-        (onClick)="removePlayerClicked(player.id, false)"
+        (onClick)="removePlayerClicked(player.player.id, false)"
       />
-      <a [routerLink]="['/', 'players', player.id]">{{ player.name }}</a>
+      <a [routerLink]="['/', 'players', player.player.id]">{{
+        player.player.name
+      }}</a>
     </div>
     } @empty {
     <div>No Players.</div>
-    }}
+    }
   </p-card>
 
-  <p-card [header]="'Home Team - ' + game.homeTeamId" class="w-30rem">
-    @if (homeRoster$ | async; as players) { @for(player of players; track
-    $index) {
+  <p-card
+    [header]="'Home Team - ' + gameData.game.homeTeamCode"
+    class="w-30rem"
+  >
+    @for(player of gameData.homeRoster; track player.player.id) {
     <div class="flex gap-2 align-items-center mb-1">
       <p-button
         size="small"
         icon="pi pi-times"
         severity="danger"
-        (onClick)="removePlayerClicked(player.id, true)"
+        (onClick)="removePlayerClicked(player.player.id, true)"
       />
-      <a [routerLink]="['/', 'players', player.id]">{{ player.name }}</a>
+      <a [routerLink]="['/', 'players', player.player.id]">{{
+        player.player.name
+      }}</a>
     </div>
     } @empty {
     <div>No Players.</div>
-    }}
-  </p-card> -->
+    }
+  </p-card>
 </div>
-<!-- <div>
+<div>
   <p-card header="Current Players" class="w-full">
     <div class="flex gap-3">
-      @if (players$ | async; as players) { @for(player of players; track $index)
-      {
+      @if (players$ | async; as playersResponse) { @if (playersResponse.result;
+      as players) { @for(player of players; track $index) {
       <div class="flex gap-2 align-items-center mb-1">
         <p-button
           size="small"
@@ -181,9 +190,10 @@
         />
         <a [routerLink]="['/', 'players', player.id]">{{ player.name }}</a>
       </div>
-      } }
+      } } }
     </div>
-  </p-card> -->
+  </p-card>
+</div>
 <div class="mt-3">
   <p-button
     label="Delete Game"

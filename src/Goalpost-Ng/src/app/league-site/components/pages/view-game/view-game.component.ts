@@ -11,12 +11,9 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessagesModule } from 'primeng/messages';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { TooltipModule } from 'primeng/tooltip';
-import { Observable, tap } from 'rxjs';
+import { Observable } from 'rxjs';
 import { ApiResponse } from 'src/app/league-site/models/api/api-response';
-import { Game } from 'src/app/league-site/models/dtos/game';
 import { GameData } from 'src/app/league-site/models/dtos/game-data';
-import { Player } from 'src/app/league-site/models/dtos/player';
-import { PlayerGame } from 'src/app/league-site/models/dtos/player-game';
 import { GamePipe } from 'src/app/league-site/pipes/game.pipe';
 import { GameService } from 'src/app/league-site/services/game.service';
 import { PlayerService } from 'src/app/league-site/services/player.service';
@@ -48,31 +45,11 @@ export class ViewGameComponent {
   #fb = inject(FormBuilder);
 
   gameData$ = new Observable<ApiResponse<GameData>>();
-  homeRoster$ = new Observable<ApiResponse<PlayerGame[]>>();
-  homePlayers$ = new Observable<ApiResponse<Player[]>>();
-  awayRoster$ = new Observable<ApiResponse<PlayerGame[]>>();
-  players$ = new Observable<ApiResponse<Player[]>>();
-  homePlayers = [];
-  awayPlayers = [];
-  homeTeamName = '';
-  awayTeamName = '';
   errors = new Array<Message>();
-  game$ = new Observable<ApiResponse<Game>>();
   // gameData$ = new Observable<ApiResponse<>>();
 
   ngOnInit(): void {
-    this.players$ = this.#playerService.searchPlayers({});
-    this.game$ = this.#gameService.getGame(this.id).pipe(
-      tap((response) => {
-        if (!response.result) {
-          return;
-        }
-        this.homeTeamName = response.result.homeTeamName;
-        this.awayTeamName = response.result.awayTeamName;
-      })
-    );
-    this.homeRoster$ = this.#gameService.getRoster(this.id, this.homeTeamName);
-    this.awayRoster$ = this.#gameService.getRoster(this.id, this.awayTeamName);
+    this.gameData$ = this.#gameService.getGameData(this.id);
 
   }
 }

@@ -1,22 +1,22 @@
-@if (game$ | async; as game) {
+@if (gameData$ | async; as response) { @if (response.result; as gameData) {
 <div class="flex gap-3 mb-3">
   <p-card class="w-30rem">
     <div class="p-card-title text-center">Scorekeeper</div>
     <!-- <div class="text-center font-semibold text-900">{{ game | game }}</div> -->
-    <div class="text-center text-600 mb-3">Game ID: {{ game.id }}</div>
+    <div class="text-center text-600 mb-3">Game ID: {{ gameData.game.id }}</div>
     <div class="text-center mb-3">
       <p-button
         size="small"
         class="mr-2"
         icon="pi pi-eye"
         severity="primary"
-        [routerLink]="['/', 'games', game.id]"
+        [routerLink]="['/', 'games', gameData.game.id]"
       />
       <p-button
         size="small"
         icon="pi pi-pencil"
         severity="primary"
-        [routerLink]="['/', 'edit-game', game.id]"
+        [routerLink]="['/', 'edit-game', gameData.game.id]"
       />
     </div>
     <form [formGroup]="form" (ngSubmit)="(form.valid)">
@@ -29,18 +29,11 @@
             optionValue="value"
           />
         </div>
-        <div class="col-4">
+        <div class="col-6">
           <label htmlFor="down">Down</label>
           <p-dropdown formControlName="down" [options]="[1, 2, 3, 4]" />
         </div>
-        <div class="col-4">
-          <label htmlFor="distanceToGo">Distance</label>
-          <p-inputNumber
-            id="distanceToGo"
-            formControlName="distanceToGo"
-          />
-        </div>
-        <div class="col-4">
+        <div class="col-6">
           <label htmlFor="yardLine">Yardline</label>
           <p-inputNumber
             id="yardLine"
@@ -96,11 +89,7 @@
         </div>
         } 
         @if (form.controls.yardage.enabled) {
-        <div class="col-6">
-          <label htmlFor="points">Points Scored</label>
-          <p-dropdown formControlName="points" [options]="[0, 1, 2, 6]" />
-        </div>
-        <div class="col-6">
+        <div class="col-12">
           <label htmlFor="yardage">Yardage Gained</label>
           <p-dropdown formControlName="yardage" [options]="possibleDistances"/>
         </div>
@@ -195,7 +184,6 @@
     </ng-template>
   </p-card>
 
-  @if (plays$ | async; as plays) {
   <!-- <p-card class="w-30rem">
     <div class="p-card-title text-center">Plays</div>
     @for (play of plays; track $index) { @switch (play.type) { @case ("passing")
@@ -222,7 +210,7 @@
     <div class="p-card-title text-center">Plays</div>
     <play-list [gameId]="id"></play-list>
   </p-card>
-  }
 </div>
 
+}
 }

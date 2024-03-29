@@ -8,6 +8,7 @@ import { Game } from 'src/app/league-site/models/game';
 import { GameStats } from 'src/app/league-site/models/game-stats';
 import { GameInfoPipe } from 'src/app/league-site/pipes/game-info.pipe';
 import { GamePipe } from 'src/app/league-site/pipes/game.pipe';
+import { GameService } from 'src/app/league-site/services/game.service';
 import { LeagueService } from 'src/app/league-site/services/league.service';
 
 @Component({
@@ -17,10 +18,8 @@ import { LeagueService } from 'src/app/league-site/services/league.service';
   imports: [CommonModule, RouterModule, CardModule, ButtonModule, GamePipe, GameInfoPipe],
 })
 export class ScheduleComponent {
-  #leagueService = inject(LeagueService);
-  games$ = this.#leagueService.watchGames$().pipe(tap((games) => {
-    games.sort((game, game2) => game.startTime - game2.startTime);
-  }));
+  #gameService = inject(GameService);
+  games$ = this.#gameService.searchGames({});
 
 
   constructor() {

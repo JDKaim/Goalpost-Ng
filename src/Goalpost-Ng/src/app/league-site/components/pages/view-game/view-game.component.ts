@@ -50,6 +50,5 @@ export class ViewGameComponent {
 
   ngOnInit(): void {
     this.gameData$ = this.#gameService.getGameData(this.id);
-
   }
 }

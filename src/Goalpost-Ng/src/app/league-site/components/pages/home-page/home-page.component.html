@@ -1,7 +1,7 @@
 <h1>Home Page</h1>
-@if (league$ | async; as league) {
+@if (games$ | async; as response) { @if (response.result; as games) {
 <p-card [header]="'Current Games'" class="w-30rem">
-  @for(game of league.games; track $index) {
+  @for(game of games; track game.id) {
   <div class="flex gap-3 align-items-center mb-3">
     <p-button
       size="small"
@@ -15,9 +15,9 @@
       severity="primary"
       [routerLink]="['/', 'edit-game', game.id]"
     />
-    <!-- <div class="p-card-title text-center align-items-center">
+    <div class="p-card-title text-center align-items-center">
       {{ game | game }}
-    </div> -->
+    </div>
     <div class="text-center text-600 mb-3">
       {{ game | gameinfo }}
     </div>
@@ -27,19 +27,21 @@
   }
 </p-card>
 
-<ul>
+<!-- <ul>
   @for(team of league.teams; track $index) {
   <li>
     <a [routerLink]="['/', 'teams', team.id]">{{ team.name }}</a>
   </li>
   }
-</ul>
+</ul> -->
 
-} @for (player of gameStats.homeTeamStats.playerStats; track $index) {
+}
+} 
+<!-- @for (player of gameStats.homeTeamStats.playerStats; track $index) {
 <div>
   {{ player.playerGame.id }} - {{ player.passingCompletions }}/{{
     player.passingAttempts
   }}
   for {{ player.passingYardage }} yards
 </div>
-}
+} -->

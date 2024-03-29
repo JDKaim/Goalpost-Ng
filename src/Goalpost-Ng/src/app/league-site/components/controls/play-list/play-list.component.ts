@@ -1,24 +1,77 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, inject } from '@angular/core';
-import { Observable } from 'rxjs';
-import { PlayStats } from 'src/app/league-site/models/play-stats';
-import { LeagueService } from 'src/app/league-site/services/league.service';
-import { PlayListItemComponent } from '../play-list-item/play-list-item.component';
-import { ProgressBar, ProgressBarModule } from 'primeng/progressbar';
+import { ProgressBarModule } from 'primeng/progressbar';
 import { SkeletonModule } from 'primeng/skeleton';
+import { Observable, map, of, switchMap, tap } from 'rxjs';
+import { ApiResponse } from 'src/app/league-site/models/api/api-response';
+import { Play } from 'src/app/league-site/models/dtos/play';
+import { GameService } from 'src/app/league-site/services/game.service';
+import { PlayListItemComponent } from '../play-list-item/play-list-item.component';
+import { GameData } from 'src/app/league-site/models/dtos/game-data';
+import { PlayDisplay } from 'src/app/league-site/models/dtos/play-display';
+import { SuccessApiResponse } from 'src/app/league-site/models/api/success-api-response';
 
 @Component({
   standalone: true,
   selector: 'play-list',
   templateUrl: './play-list.component.html',
-  imports: [CommonModule, PlayListItemComponent, ProgressBarModule, SkeletonModule],
+  imports: [
+    CommonModule,
+    PlayListItemComponent,
+    ProgressBarModule,
+    SkeletonModule,
+  ],
 })
 export class PlayListComponent implements OnInit {
-  #leagueService = inject(LeagueService);
-  @Input() gameId!: string;
-  playStats$ = new Observable<Array<PlayStats>>();
+  #gameService = inject(GameService);
+  @Input() gameId!: number;
+  gameData$ = new Observable<ApiResponse<GameData>>();
+  plays$ = new Observable<ApiResponse<PlayDisplay[]>>();
 
   ngOnInit(): void {
-    this.playStats$ = this.#leagueService.watchPlayStats$(this.gameId);
+    this.gameData$ = this.#gameService.getGameData(this.gameId).pipe(
+      tap((response) => {
+        if (!response.result) {
+          return;
+        }
+        this.plays$ = this.#gameService
+          .searchPlays({ gameId: this.gameId })
+          .pipe(
+            map((playsResponse) => {
+              if (!playsResponse.result) {
+                return playsResponse as any as ApiResponse<PlayDisplay[]>;
+              }
+              return new SuccessApiResponse(
+                playsResponse.result!.map(
+                  (play) => {
+                    if (play.isHomePlay) {
+                      return new PlayDisplay(
+                        play,
+                        response.result!.game.awayTeamName,
+                        response.result!.game.awayTeamCode,
+                        response.result!.game.homeTeamName,
+                        response.result!.game.homeTeamCode,
+                        response.result!.homeRoster,
+                        response.result!.awayRoster
+                      )
+                    } else {
+                      return new PlayDisplay(
+                        play,
+                        response.result!.game.awayTeamName,
+                        response.result!.game.awayTeamCode,
+                        response.result!.game.homeTeamName,
+                        response.result!.game.homeTeamCode,
+                        response.result!.awayRoster,
+                        response.result!.homeRoster
+                      )
+                    }
+                  }
+                    
+                )
+              );
+            })
+          );
+      })
+    );
   }
 }

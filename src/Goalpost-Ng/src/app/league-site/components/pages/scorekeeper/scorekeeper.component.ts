@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, Input, inject } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -13,18 +13,15 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessagesModule } from 'primeng/messages';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TooltipModule } from 'primeng/tooltip';
-import { Observable, combineLatest, map, take, takeUntil, tap } from 'rxjs';
-import { mustBeDifferentValidator } from 'src/app/league-site/helpers/custom-validators';
-import { Game } from 'src/app/league-site/models/game';
-import { Play } from 'src/app/league-site/models/play';
+import { Observable, tap } from 'rxjs';
+import { Player } from 'src/app/league-site/models/dtos/player';
 import { PlayType } from 'src/app/league-site/models/play-type';
-import { Player } from 'src/app/league-site/models/player';
 import { TurnoverType } from 'src/app/league-site/models/turnover-type';
 import { GamePipe } from 'src/app/league-site/pipes/game.pipe';
-import { LeagueService } from 'src/app/league-site/services/league.service';
+import { GameService } from 'src/app/league-site/services/game.service';
+import { PlayListComponent } from '../../controls/play-list/play-list.component';
 import { PassPlayComponent } from '../../controls/plays/pass-play/pass-play.component';
 import { RushPlayComponent } from '../../controls/plays/rush-play/rush-play.component';
-import { PlayListComponent } from '../../controls/play-list/play-list.component';
 
 @Component({
   standalone: true,
@@ -50,13 +47,14 @@ import { PlayListComponent } from '../../controls/play-list/play-list.component'
   ],
 })
 export class ScorekeeperComponent {
-  #leagueService = inject(LeagueService);
+  #gameService = inject(GameService);
   #router = inject(Router);
-  @Input() id!: string;
+  @Input() id!: number;
   #fb = inject(FormBuilder);
 
+  isHomePlay = false;
   form = this.#fb.group({
-    type: this.#fb.nonNullable.control<PlayType>('passing', [
+    playType: this.#fb.nonNullable.control<PlayType>('passing', [
       Validators.required,
     ]),
     down: this.#fb.nonNullable.control(1, [
@@ -64,32 +62,22 @@ export class ScorekeeperComponent {
       Validators.min(1),
       Validators.max(4),
     ]),
-    distanceToGo: this.#fb.nonNullable.control(40, [
-      Validators.required,
-      Validators.min(0),
-      Validators.max(40),
-    ]),
     yardLine: this.#fb.nonNullable.control(0, [
       Validators.required,
       Validators.min(0),
       Validators.max(40),
     ]),
-    points: this.#fb.nonNullable.control(0, [
-      Validators.required,
-      Validators.min(0),
-      Validators.max(6),
-    ]),
     yardage: this.#fb.nonNullable.control(0, [Validators.required]),
     offensiveTeamId: this.#fb.nonNullable.control('', [Validators.required]),
     defensiveTeamId: this.#fb.nonNullable.control('', [Validators.required]),
-    completedPass: this.#fb.nonNullable.control(false, [Validators.required]),
+    isCompletedPass: this.#fb.nonNullable.control(false, [Validators.required]),
     earnedFirstDown: this.#fb.nonNullable.control(false, [Validators.required]),
-    sack: this.#fb.nonNullable.control(false, [Validators.required]),
+    isSack: this.#fb.nonNullable.control(false, [Validators.required]),
     passer: this.#fb.nonNullable.control('', [Validators.required]),
     rusher: this.#fb.nonNullable.control('', [Validators.required]),
     receiver: this.#fb.nonNullable.control('', [Validators.required]),
     flagPuller: this.#fb.nonNullable.control('', [Validators.required]),
-    turnoverType: this.#fb.control<TurnoverType | 'none'>('none'),
+    turnoverType: this.#fb.nonNullable.control<TurnoverType>('none'),
     turnoverPlayer: this.#fb.nonNullable.control('', [Validators.required]),
     penalty: this.#fb.nonNullable.control('', [Validators.required]),
     penaltyPlayer: this.#fb.nonNullable.control('', [Validators.required]),
@@ -106,38 +94,33 @@ export class ScorekeeperComponent {
     { label: '2-PT Rush', value: 'two-point-rush' },
   ];
 
-  turnoverTypes: Array<{ label: string; value: TurnoverType | 'none' }> = [
+  turnoverTypes: Array<{ label: string; value: TurnoverType }> = [
     { label: 'No Turnover', value: 'none' },
     { label: 'Interception', value: 'interception' },
     { label: 'Fumble', value: 'fumble' },
   ];
 
   teams: Array<{ label: string; value: string }> = [
-    { label: 'Away Team', value: '' },
-    { label: 'Home Team', value: '' },
+    { label: 'Away Team', value: 'away' },
+    { label: 'Home Team', value: 'home' },
   ];
 
-  teams$ = this.#leagueService.watchTeams$();
-  players$ = this.#leagueService.watchPlayers$();
-  plays$ = new Observable<Play[]>();
-  homeRoster$ = new Observable<Player[]>();
-  awayRoster$ = new Observable<Player[]>();
+  gameData$ = this.#gameService.getGameData(this.id);
   offensiveTeamRoster$ = new Observable<Player[]>();
   defensiveTeamRoster$ = new Observable<Player[]>();
   errors = new Array<Message>();
-  game$ = new Observable<Game | undefined>();
   possibleDistances: Array<number> = [];
 
   constructor() {
-    this.form.controls.type.valueChanges.pipe(takeUntilDestroyed()).subscribe({
+    this.form.controls.playType.valueChanges.pipe(takeUntilDestroyed()).subscribe({
       next: (playType) => this.#updateForm(playType),
     });
-    this.form.controls.points.valueChanges
+    this.form.controls.yardage.valueChanges
       .pipe(takeUntilDestroyed())
       .subscribe({
-        next: (points) => {
+        next: (yardage) => {
           this.form.controls.flagPuller.disable();
-          if (!points) {
+          if (this.form.controls.yardLine.value - yardage > 0) {
             this.form.controls.flagPuller.enable();
           }
         },
@@ -145,7 +128,7 @@ export class ScorekeeperComponent {
     this.form.controls.yardLine.valueChanges.pipe(takeUntilDestroyed()).subscribe({
       next: (yardLine) => {
         this.possibleDistances = [];
-        for (let i = 0 - yardLine; i <= 40 - yardLine; i++) {
+        for (let i = 0 - (40 - yardLine); i <= yardLine; i++) {
           this.possibleDistances.push(i);
         }
       }
@@ -162,32 +145,29 @@ export class ScorekeeperComponent {
             this.form.controls.flagPuller.disable();
             this.form.controls.yardage.disable();
           }
-          if (this.form.controls.points.value !== 0) {
+          if (this.form.controls.yardLine.value - this.form.controls.yardage.value > 0) {
             this.form.controls.flagPuller.disable();
           }
         },
       });
-    this.#updateForm(this.form.controls.type.value);
+    this.#updateForm(this.form.controls.playType.value);
     this.form.controls.offensiveTeamId.valueChanges
       .pipe(takeUntilDestroyed())
       .subscribe({
         next: (teamId) => {
           if (teamId === this.teams[1].value) {
-            this.offensiveTeamRoster$ = this.homeRoster$;
-            this.defensiveTeamRoster$ = this.awayRoster$;
             this.form.controls.defensiveTeamId.setValue(this.teams[0].value);
+            this.isHomePlay = true;
           } else {
-            this.offensiveTeamRoster$ = this.awayRoster$;
-            this.defensiveTeamRoster$ = this.homeRoster$;
             this.form.controls.defensiveTeamId.setValue(this.teams[1].value);
+            this.isHomePlay = false;
           }
         },
       });
-    this.form.controls.points.setValue(0);
   }
 
   #updateForm(playType: PlayType) {
-    this.form.controls.completedPass.disable();
+    this.form.controls.isCompletedPass.disable();
     this.form.controls.flagPuller.disable();
     this.form.controls.passer.disable();
     this.form.controls.penalty.disable();
@@ -202,7 +182,7 @@ export class ScorekeeperComponent {
       case 'passing':
         this.form.controls.passer.enable();
         this.form.controls.receiver.enable();
-        this.form.controls.completedPass.enable();
+        this.form.controls.isCompletedPass.enable();
         break;
       case 'one-point-rush':
       case 'two-point-rush':
@@ -214,21 +194,28 @@ export class ScorekeeperComponent {
       default:
         throw new Error(`Unknown play type: '${playType}'`);
     }
-    if (this.form.controls.points.value === 0) {
+    if (this.form.controls.yardLine.value - this.form.controls.yardage.value > 0) {
       this.form.controls.flagPuller.enable();
     }
   }
 
+  #updateGameData() {
+    this.gameData$ = this.#gameService.getGameData(this.id).pipe(tap((response) => {
+      if (!response.result) {
+        return;
+      }
+      this.teams[0].label = response.result.game.awayTeamCode;
+      this.teams[1].label = response.result.game.homeTeamCode;
+    }));
+  }
+
   createPlayClicked() {
     const formValue = this.form.getRawValue();
+    const isHomePlay = this.isHomePlay;
     try {
-      this.#leagueService
-        .createPlay(this.id, {
-          ...formValue,
-          turnoverType:
-            formValue.turnoverType != 'none'
-              ? formValue.turnoverType!
-              : undefined,
+      this.#gameService
+        .addPlay(this.id, {
+          ...formValue, isHomePlay
         })
         .subscribe({
           // next: (team) => this.#router.navigate(['/', 'teams', team.id]),
@@ -259,23 +246,8 @@ export class ScorekeeperComponent {
     //   receiver: '009',
     //   flagPuller: '010',
     // }).subscribe();
-    this.homeRoster$ = this.#leagueService.watchRoster$(this.id, true);
-    this.awayRoster$ = this.#leagueService.watchRoster$(this.id, false);
-    this.plays$ = this.#leagueService.watchPlays$(this.id);
-    this.game$ = this.#leagueService.watchGame$(this.id).pipe(
-      tap((game) => {
-        if (!game) {
-          return;
-        }
-        this.teams[0].label = game.awayTeamId;
-        this.teams[0].value = game.awayTeamId;
-        this.teams[1].label = game.homeTeamId;
-        this.teams[1].value = game.homeTeamId;
-        if (!this.form.controls.offensiveTeamId.value) {
-          this.form.controls.offensiveTeamId.setValue(game.homeTeamId);
-        }
-      })
-    );
+    console.log("Running GameData");
+    this.#updateGameData();
     for (let i = 0; i <= 40; i++) {
       this.possibleDistances.push(i);
     }

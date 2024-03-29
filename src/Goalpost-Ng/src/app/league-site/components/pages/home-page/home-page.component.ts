@@ -7,6 +7,7 @@ import { Game } from 'src/app/league-site/models/game';
 import { GameStats } from 'src/app/league-site/models/game-stats';
 import { GameInfoPipe } from 'src/app/league-site/pipes/game-info.pipe';
 import { GamePipe } from 'src/app/league-site/pipes/game.pipe';
+import { GameService } from 'src/app/league-site/services/game.service';
 import { LeagueService } from 'src/app/league-site/services/league.service';
 
 @Component({
@@ -16,10 +17,10 @@ import { LeagueService } from 'src/app/league-site/services/league.service';
   imports: [CommonModule, RouterModule, CardModule, ButtonModule, GamePipe, GameInfoPipe],
 })
 export class HomePageComponent {
-  #leagueService = inject(LeagueService);
-  league$ = this.#leagueService.watchLeague$();
+  #gameService = inject(GameService);
   gameStats: GameStats;
 
+  games$ = this.#gameService.searchGames({});
 
   constructor() {
     const game: Game = {

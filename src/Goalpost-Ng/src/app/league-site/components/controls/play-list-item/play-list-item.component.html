@@ -1,90 +1,98 @@
-@if (playStats.isPassingPlay) {
+@if (this.isPassingPlay) {
   <div class="mb-3">
-    <a class="font-semibold" [routerLink]="['/', 'teams', playStats.offensiveTeam.id]">
-      {{playStats.offensiveTeam.name}}
-    </a>
+    {{this.offensiveTeamName}}
     <span>
-      - {{playDisplay[playStats.play.down - 1]}} & {{playStats.play.distanceToGo}} from {{playStats.play.yardLine}} -
+      - {{playDisplay[playStats.play.down - 1]}} & {{playStats.play.yardLine}} from {{playStats.play.yardLine}} -
     </span>
-    <a class="font-semibold" [routerLink]="['/', 'players', playStats.passer!.id]">
-      {{playStats.passer!.name}}
+    <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.passerId]">
+      {{this.passerName}}
     </a>
     <span>
       pass to
     </span>
-    <a class="font-semibold" [routerLink]="['/', 'players', playStats.receiver!.id]">{{playStats.receiver!.name}}</a>
-    @if (playStats.play.completedPass) {
+    <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.receiverId]">{{this.receiverName}}</a>
+    @if (playStats.play.isCompletedPass) {
       completed for {{playStats.play.yardage}} yards,
     } @else if (playStats.play.turnoverType === 'interception') {
       INTERCEPTED by
-      <a class="font-semibold" [routerLink]="['/', 'players', playStats.turnoverPlayer!.id]">{{playStats.turnoverPlayer!.name}}</a>
-      @if (playStats.play.points === 6) {
+      <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.turnoverPlayerId]">{{this.turnoverPlayerName}}</a>
+      @if (playStats.play.yardLine - playStats.play.yardage === 40) {
         AND RETURNED FOR A TOUCHDOWN!!!
       }
     } @else if (playStats.play.turnoverType === 'fumble') {
       FUMBLED!!! Recovered by
-      <a class="font-semibold" [routerLink]="['/', 'players', playStats.turnoverPlayer!.id]">{{playStats.turnoverPlayer!.name}}</a>
-      @if (playStats.play.points === 6) {
+      <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.turnoverPlayerId]">{{this.turnoverPlayerName}}</a>
+      @if (playStats.play.yardLine - playStats.play.yardage === 40) {
         AND RETURNED FOR A TOUCHDOWN!!!
       }
     }
-    @if (playStats.play.points === 6 && !playStats.play.turnoverType) {
-      TOUCHDOWN!!!
+    @if (playStats.play.yardLine - playStats.play.yardage === 0 && !playStats.play.turnoverType) {
+      @switch (playStats.play.playType) {
+        @case ("passing") {
+          TOUCHDOWN!!!
+        }
+        @case ("two-point-pass") {
+          2-PT CONVERSION GOOD!!!
+        }
+        @case ("one-point-pass") {
+          1-PT CONVERSION GOOD!!!
+        }
+      }
     }
-    @else if (playStats.play.points === 2 && !playStats.play.turnoverType) {
-      2-PT CONVERSION GOOD!!!
-    }
-    @else if (playStats.play.points === 1 && !playStats.play.turnoverType) {
-      1-PT CONVERSION GOOD!!!
-    }
-    @else if (playStats.play.points === 0 && !playStats.play.turnoverType) {
+    @else if (playStats.play.yardLine - playStats.play.yardage > 0 && !playStats.play.turnoverType) {
       flag pulled by
-      <a class="font-semibold" [routerLink]="['/', 'players', playStats.flagPuller!.id]">{{playStats.flagPuller!.name}}.</a>
+      <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.flagPullerId]">{{this.flagPullerName}}.</a>
     }
-    @if (playStats.play.type === "two-point-pass" && (playStats.play.points === 0 || playStats.play.turnoverType)) {
+    @if (playStats.play.playType === "two-point-pass" && playStats.play.yardLine - playStats.play.yardage > 0){
       2-PT Conversion is no good.
     }
-    @if (playStats.play.type === "one-point-pass" && (playStats.play.points === 0 || playStats.play.turnoverType)) {
+    @if (playStats.play.playType === "one-point-pass" && playStats.play.yardLine - playStats.play.yardage > 0) {
       1-PT Conversion is no good.
     }
   </div>
 } @else {
   <div class="mb-3">
-    <a class="font-semibold" [routerLink]="['/', 'teams', playStats.offensiveTeam.id]">{{playStats.offensiveTeam.name}}</a>
-    - {{playDisplay[playStats.play.down - 1]}} & {{playStats.play.distanceToGo}} from {{playStats.play.yardLine}} - Rush by
-    <a class="font-semibold" [routerLink]="['/', 'players', playStats.rusher!.id]">{{playStats.rusher!.name}}</a>
-    @if (!playStats.play.turnoverType) {
+    {{this.offensiveTeamName}}
+    <span>
+      - {{playDisplay[playStats.play.down - 1]}} & {{playStats.play.yardLine}} from {{playStats.play.yardLine}} - Rush by
+    </span>
+    <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.rusherId]">{{this.rusherName}}</a>
+    @if (playStats.play.turnoverType === 'none') {
       for a gain of {{playStats.play.yardage}} yards,
     } @else if (playStats.play.turnoverType === 'interception') {
       INTERCEPTED by
-      <a class="font-semibold" [routerLink]="['/', 'players', playStats.turnoverPlayer!.id]">{{playStats.turnoverPlayer!.name}}</a>
-      @if (playStats.play.points === 6) {
+      <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.turnoverPlayerId]">{{this.turnoverPlayerName}}</a>
+      @if (playStats.play.yardLine - playStats.play.yardage === 40) {
         AND RETURNED FOR A TOUCHDOWN!!!
       }
     } @else if (playStats.play.turnoverType === 'fumble') {
       FUMBLED!!! Recovered by
-      <a class="font-semibold" [routerLink]="['/', 'players', playStats.turnoverPlayer!.id]">{{playStats.turnoverPlayer!.name}}</a>
-      @if (playStats.play.points === 6) {
+      <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.turnoverPlayerId]">{{this.turnoverPlayerName}}</a>
+      @if (playStats.play.yardLine - playStats.play.yardage === 40) {
         AND RETURNED FOR A TOUCHDOWN!!!
       }
     }
-    @if (playStats.play.points === 6 && !playStats.play.turnoverType) {
-      TOUCHDOWN!!!
+    @if (playStats.play.yardLine - playStats.play.yardage === 0 && !playStats.play.turnoverType) {
+      @switch (playStats.play.playType) {
+        @case ("rushing") {
+          TOUCHDOWN!!!
+        }
+        @case ("two-point-rush") {
+          2-PT CONVERSION GOOD!!!
+        }
+        @case ("one-point-rush") {
+          1-PT CONVERSION GOOD!!!
+        }
+      }
     }
-    @else if (playStats.play.points === 2 && !playStats.play.turnoverType) {
-      2-PT CONVERSION GOOD!!!
-    }
-    @else if (playStats.play.points === 1 && !playStats.play.turnoverType) {
-      1-PT CONVERSION GOOD!!!
-    }
-    @else if (playStats.play.points === 0 && !playStats.play.turnoverType) {
+    @else if (playStats.play.yardLine - playStats.play.yardage > 0 && !playStats.play.turnoverType) {
       flag pulled by
-      <a class="font-semibold" [routerLink]="['/', 'players', playStats.flagPuller!.id]">{{playStats.flagPuller!.name}}.</a>
+      <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.flagPullerId]">{{this.flagPullerName}}.</a>
     }
-    @if (playStats.play.type === "two-point-rush" && (playStats.play.points === 0 || playStats.play.turnoverType)) {
+    @if (playStats.play.playType === "two-point-rush" && playStats.play.yardLine - playStats.play.yardage > 0){
       2-PT Conversion is no good.
     }
-    @if (playStats.play.type === "one-point-rush" && (playStats.play.points === 0 || playStats.play.turnoverType)) {
+    @if (playStats.play.playType === "one-point-rush" && playStats.play.yardLine - playStats.play.yardage > 0) {
       1-PT Conversion is no good.
     }
   </div>

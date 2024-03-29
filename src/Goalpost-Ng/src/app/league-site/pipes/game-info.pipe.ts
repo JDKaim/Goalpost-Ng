@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { Team } from '../models/team';
-import { Game } from '../models/game';
+import { Game } from '../models/dtos/game';
 
 @Pipe({
   standalone: true,

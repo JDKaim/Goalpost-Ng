@@ -1,7 +1,7 @@
 <h1>Schedule</h1>
-@if (games$ | async; as games) {
+@if (games$ | async; as response) { @if (response.result; as games) {
 <p-card [header]="'Current Games'" class="w-30rem">
-  @for(game of games; track $index) {
+  @for(game of games; track game.id) {
   <div class="flex gap-3 align-items-center mb-3">
     <p-button
       size="small"
@@ -15,9 +15,9 @@
       severity="primary"
       [routerLink]="['/', 'edit-game', game.id]"
     />
-    <!-- <div class="p-card-title text-center align-items-center">
+    <div class="p-card-title text-center align-items-center">
       {{ game | game }}
-    </div> -->
+    </div>
     <div class="text-center text-600 mb-3">
       {{ game | gameinfo }}
     </div>
@@ -26,4 +26,4 @@
   <div>No Games.</div>
   }
 </p-card>
-}
+} }

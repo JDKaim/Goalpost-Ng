@@ -3,7 +3,9 @@
 <div class="flex gap-3 mb-3">
   <p-card class="w-30rem">
     <div class="p-card-title text-center">Edit Game</div>
-    <!-- <div class="text-center font-semibold text-900">{{ game | game }}</div> -->
+    <div class="text-center font-semibold text-900">
+      {{ gameData.game | game }}
+    </div>
     <div class="text-center text-600 mb-3">Game ID: {{ gameData.game.id }}</div>
     <div class="text-center">
       <p-button
@@ -12,6 +14,13 @@
         icon="pi pi-eye"
         severity="primary"
         [routerLink]="['/', 'games', gameData.game.id]"
+      />
+      <p-button
+        size="small"
+        class="mr-2"
+        icon="pi pi-stopwatch"
+        severity="success"
+        [routerLink]="['/', 'scorekeeper', gameData.game.id]"
       />
       @if (gameData.game.status === 'Final' || gameData.game.status ===
       'Ongoing') {

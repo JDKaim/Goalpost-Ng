@@ -1,9 +1,9 @@
-@if (playStats$ | async; as playStats) {
-  @for (playStat of playStats; track $index) {
-    <play-list-item [playStats]="playStat"></play-list-item>
+@if (plays$ | async; as response) { @if (response.result; as plays) {
+  @for (play of plays; track play.play.id) {
+    <play-list-item [playStats]="play"></play-list-item>
   } @empty {
     <span>No current plays.</span>
   }
 } @else {
   <p-progressBar mode="indeterminate"></p-progressBar>
-}
+}}

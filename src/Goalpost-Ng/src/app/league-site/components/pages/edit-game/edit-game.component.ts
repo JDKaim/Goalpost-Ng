@@ -112,6 +112,22 @@ export class EditGameComponent {
           new Date(response.result!.game.startTime)
         );
         this.form.controls.status.setValue(response.result!.game.status);
+        this.players$ = this.#playerService.searchPlayers({}).pipe(
+          tap((playerResponse) => {
+            if (!playerResponse.result) {
+              return;
+            }
+            playerResponse.result.filter(
+              (player) =>
+                !response.result!.homeRoster.find(
+                  (homePlayer) => homePlayer.player.id === player.id
+                ) ||
+                !response.result!.awayRoster.find(
+                  (awayPlayer) => awayPlayer.player.id === player.id
+                )
+            );
+          })
+        );
       })
     );
   }

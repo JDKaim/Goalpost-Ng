@@ -17,7 +17,7 @@ export class PlayListItemComponent implements OnInit{
   receiverName: string | undefined;
   flagPullerName: string | undefined;
   turnoverPlayerName: string | undefined;
-  isPassingPlay = this.playStats.play.playType == "passing" || this.playStats.play.playType ==  "one-point-pass" || this.playStats.play.playType == "two-point-pass";
+  isPassingPlay = this.playStats.play.type == "Passing" || this.playStats.play.type ==  "OnePointPass" || this.playStats.play.type == "TwoPointPass";
   offensiveTeamName = this.playStats.play.isHomePlay ? this.playStats.homeTeamName : this.playStats.awayTeamName;
   defensiveTeamName = this.playStats.play.isHomePlay ? this.playStats.awayTeamName : this.playStats.homeTeamName;
   offensiveTeamCode = this.playStats.play.isHomePlay ? this.playStats.homeTeamCode : this.playStats.awayTeamCode;

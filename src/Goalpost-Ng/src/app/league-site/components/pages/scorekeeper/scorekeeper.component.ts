@@ -13,7 +13,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessagesModule } from 'primeng/messages';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TooltipModule } from 'primeng/tooltip';
-import { Observable, tap } from 'rxjs';
+import { Observable, of, tap } from 'rxjs';
 import { Player } from 'src/app/league-site/models/dtos/player';
 import { PlayType } from 'src/app/league-site/models/play-type';
 import { TurnoverType } from 'src/app/league-site/models/turnover-type';
@@ -22,6 +22,7 @@ import { GameService } from 'src/app/league-site/services/game.service';
 import { PlayListComponent } from '../../controls/play-list/play-list.component';
 import { PassPlayComponent } from '../../controls/plays/pass-play/pass-play.component';
 import { RushPlayComponent } from '../../controls/plays/rush-play/rush-play.component';
+import { RosterPlayer } from 'src/app/league-site/models/dtos/roster-player';
 
 @Component({
   standalone: true,
@@ -54,7 +55,7 @@ export class ScorekeeperComponent {
 
   isHomePlay = false;
   form = this.#fb.group({
-    playType: this.#fb.nonNullable.control<PlayType>('passing', [
+    type: this.#fb.nonNullable.control<PlayType>('Passing', [
       Validators.required,
     ]),
     down: this.#fb.nonNullable.control(1, [
@@ -73,25 +74,25 @@ export class ScorekeeperComponent {
     isCompletedPass: this.#fb.nonNullable.control(false, [Validators.required]),
     earnedFirstDown: this.#fb.nonNullable.control(false, [Validators.required]),
     isSack: this.#fb.nonNullable.control(false, [Validators.required]),
-    passer: this.#fb.nonNullable.control('', [Validators.required]),
-    rusher: this.#fb.nonNullable.control('', [Validators.required]),
-    receiver: this.#fb.nonNullable.control('', [Validators.required]),
-    flagPuller: this.#fb.nonNullable.control('', [Validators.required]),
+    passerId: this.#fb.nonNullable.control(0, [Validators.required]),
+    rusherId: this.#fb.nonNullable.control(0, [Validators.required]),
+    receiverId: this.#fb.nonNullable.control(0, [Validators.required]),
+    flagPullerId: this.#fb.nonNullable.control(0, [Validators.required]),
     turnoverType: this.#fb.nonNullable.control<TurnoverType>('none'),
-    turnoverPlayer: this.#fb.nonNullable.control('', [Validators.required]),
+    turnoverPlayerId: this.#fb.nonNullable.control(0, [Validators.required]),
     penalty: this.#fb.nonNullable.control('', [Validators.required]),
     penaltyPlayer: this.#fb.nonNullable.control('', [Validators.required]),
     penaltyYardage: this.#fb.nonNullable.control(0, [Validators.required]),
   });
 
-  playTypes: Array<{ label: string; value: PlayType }> = [
-    { label: 'Rushing', value: 'rushing' },
-    { label: 'Passing', value: 'passing' },
-    { label: 'Punt', value: 'punt' },
-    { label: '1-PT Pass', value: 'one-point-pass' },
-    { label: '2-PT Pass', value: 'two-point-pass' },
-    { label: '1-PT Rush', value: 'one-point-rush' },
-    { label: '2-PT Rush', value: 'two-point-rush' },
+  types: Array<{ label: string; value: PlayType }> = [
+    { label: 'Rushing', value: 'Rushing' },
+    { label: 'Passing', value: 'Passing' },
+    { label: 'Punt', value: 'Punt' },
+    { label: '1-PT Pass', value: 'OnePointPass' },
+    { label: '2-PT Pass', value: 'TwoPointPass' },
+    { label: '1-PT Rush', value: 'OnePointRush' },
+    { label: '2-PT Rush', value: 'TwoPointRush' },
   ];
 
   turnoverTypes: Array<{ label: string; value: TurnoverType }> = [
@@ -106,22 +107,22 @@ export class ScorekeeperComponent {
   ];
 
   gameData$ = this.#gameService.getGameData(this.id);
-  offensiveTeamRoster$ = new Observable<Player[]>();
-  defensiveTeamRoster$ = new Observable<Player[]>();
+  offensiveTeamRoster$ = new Observable<RosterPlayer[]>();
+  defensiveTeamRoster$ = new Observable<RosterPlayer[]>();
   errors = new Array<Message>();
   possibleDistances: Array<number> = [];
 
   constructor() {
-    this.form.controls.playType.valueChanges.pipe(takeUntilDestroyed()).subscribe({
-      next: (playType) => this.#updateForm(playType),
+    this.form.controls.type.valueChanges.pipe(takeUntilDestroyed()).subscribe({
+      next: (type) => this.#updateForm(type),
     });
     this.form.controls.yardage.valueChanges
       .pipe(takeUntilDestroyed())
       .subscribe({
         next: (yardage) => {
-          this.form.controls.flagPuller.disable();
+          this.form.controls.flagPullerId.disable();
           if (this.form.controls.yardLine.value - yardage > 0) {
-            this.form.controls.flagPuller.enable();
+            this.form.controls.flagPullerId.enable();
           }
         },
       });
@@ -137,20 +138,20 @@ export class ScorekeeperComponent {
       .pipe(takeUntilDestroyed())
       .subscribe({
         next: (turnoverType) => {
-          this.form.controls.turnoverPlayer.disable();
-          this.form.controls.flagPuller.enable();
+          this.form.controls.turnoverPlayerId.disable();
+          this.form.controls.flagPullerId.enable();
           this.form.controls.yardage.enable();
           if (turnoverType === 'interception' || turnoverType === 'fumble') {
-            this.form.controls.turnoverPlayer.enable();
-            this.form.controls.flagPuller.disable();
+            this.form.controls.turnoverPlayerId.enable();
+            this.form.controls.flagPullerId.disable();
             this.form.controls.yardage.disable();
           }
           if (this.form.controls.yardLine.value - this.form.controls.yardage.value > 0) {
-            this.form.controls.flagPuller.disable();
+            this.form.controls.flagPullerId.disable();
           }
         },
       });
-    this.#updateForm(this.form.controls.playType.value);
+    this.#updateForm(this.form.controls.type.value);
     this.form.controls.offensiveTeamId.valueChanges
       .pipe(takeUntilDestroyed())
       .subscribe({
@@ -166,36 +167,36 @@ export class ScorekeeperComponent {
       });
   }
 
-  #updateForm(playType: PlayType) {
+  #updateForm(type: PlayType) {
     this.form.controls.isCompletedPass.disable();
-    this.form.controls.flagPuller.disable();
-    this.form.controls.passer.disable();
+    this.form.controls.flagPullerId.disable();
+    this.form.controls.passerId.disable();
     this.form.controls.penalty.disable();
     this.form.controls.penaltyPlayer.disable();
     this.form.controls.penaltyYardage.disable();
-    this.form.controls.receiver.disable();
-    this.form.controls.rusher.disable();
-    this.form.controls.turnoverPlayer.disable();
-    switch (playType) {
-      case 'one-point-pass':
-      case 'two-point-pass':
-      case 'passing':
-        this.form.controls.passer.enable();
-        this.form.controls.receiver.enable();
+    this.form.controls.receiverId.disable();
+    this.form.controls.rusherId.disable();
+    this.form.controls.turnoverPlayerId.disable();
+    switch (type) {
+      case 'OnePointPass':
+      case 'TwoPointPass':
+      case 'Passing':
+        this.form.controls.passerId.enable();
+        this.form.controls.receiverId.enable();
         this.form.controls.isCompletedPass.enable();
         break;
-      case 'one-point-rush':
-      case 'two-point-rush':
-      case 'rushing':
-        this.form.controls.rusher.enable();
+      case 'OnePointRush':
+      case 'TwoPointRush':
+      case 'Rushing':
+        this.form.controls.rusherId.enable();
         break;
-      case 'punt':
+      case 'Punt':
         break;
       default:
-        throw new Error(`Unknown play type: '${playType}'`);
+        throw new Error(`Unknown play type: '${type}'`);
     }
     if (this.form.controls.yardLine.value - this.form.controls.yardage.value > 0) {
-      this.form.controls.flagPuller.enable();
+      this.form.controls.flagPullerId.enable();
     }
   }
 
@@ -206,6 +207,13 @@ export class ScorekeeperComponent {
       }
       this.teams[0].label = response.result.game.awayTeamCode;
       this.teams[1].label = response.result.game.homeTeamCode;
+      if (this.form.controls.offensiveTeamId.value === response.result.game.awayTeamCode) {
+        this.offensiveTeamRoster$ = of(response.result.awayRoster);
+        this.defensiveTeamRoster$ = of(response.result.homeRoster);
+      } else {
+        this.offensiveTeamRoster$ = of(response.result.homeRoster);
+        this.defensiveTeamRoster$ = of(response.result.awayRoster);
+      }
     }));
   }
 
@@ -235,7 +243,7 @@ export class ScorekeeperComponent {
     //   distanceToGo: 10,
     //   yardLine: 25,
     //   yardage: 6,
-    //   type: 'passing',
+    //   type: 'Passing',
     //   offensiveTeamId: 'WASH',
     //   defensiveTeamId: 'ORE',
     //   completedPass: true,
@@ -246,7 +254,6 @@ export class ScorekeeperComponent {
     //   receiver: '009',
     //   flagPuller: '010',
     // }).subscribe();
-    console.log("Running GameData");
     this.#updateGameData();
     for (let i = 0; i <= 40; i++) {
       this.possibleDistances.push(i);

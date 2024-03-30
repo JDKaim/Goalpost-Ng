@@ -6,7 +6,7 @@ export interface Play {
   id: number;
   index: number;
   isHomePlay: boolean;
-  playType: PlayType;
+  type: PlayType;
   yardLine: number;
   down: number;
   yardage: number;

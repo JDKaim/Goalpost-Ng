@@ -27,14 +27,14 @@
       }
     }
     @if (playStats.play.yardLine - playStats.play.yardage === 0 && !playStats.play.turnoverType) {
-      @switch (playStats.play.playType) {
-        @case ("passing") {
+      @switch (playStats.play.type) {
+        @case ("Passing") {
           TOUCHDOWN!!!
         }
-        @case ("two-point-pass") {
+        @case ("TwoPointPass") {
           2-PT CONVERSION GOOD!!!
         }
-        @case ("one-point-pass") {
+        @case ("OnePointPass") {
           1-PT CONVERSION GOOD!!!
         }
       }
@@ -43,10 +43,10 @@
       flag pulled by
       <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.flagPullerId]">{{this.flagPullerName}}.</a>
     }
-    @if (playStats.play.playType === "two-point-pass" && playStats.play.yardLine - playStats.play.yardage > 0){
+    @if (playStats.play.type === "TwoPointPass" && playStats.play.yardLine - playStats.play.yardage > 0){
       2-PT Conversion is no good.
     }
-    @if (playStats.play.playType === "one-point-pass" && playStats.play.yardLine - playStats.play.yardage > 0) {
+    @if (playStats.play.type === "OnePointPass" && playStats.play.yardLine - playStats.play.yardage > 0) {
       1-PT Conversion is no good.
     }
   </div>
@@ -73,14 +73,14 @@
       }
     }
     @if (playStats.play.yardLine - playStats.play.yardage === 0 && !playStats.play.turnoverType) {
-      @switch (playStats.play.playType) {
-        @case ("rushing") {
+      @switch (playStats.play.type) {
+        @case ("Rushing") {
           TOUCHDOWN!!!
         }
-        @case ("two-point-rush") {
+        @case ("TwoPointRush") {
           2-PT CONVERSION GOOD!!!
         }
-        @case ("one-point-rush") {
+        @case ("OnePointRush") {
           1-PT CONVERSION GOOD!!!
         }
       }
@@ -89,10 +89,10 @@
       flag pulled by
       <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.flagPullerId]">{{this.flagPullerName}}.</a>
     }
-    @if (playStats.play.playType === "two-point-rush" && playStats.play.yardLine - playStats.play.yardage > 0){
+    @if (playStats.play.type === "TwoPointRush" && playStats.play.yardLine - playStats.play.yardage > 0){
       2-PT Conversion is no good.
     }
-    @if (playStats.play.playType === "one-point-rush" && playStats.play.yardLine - playStats.play.yardage > 0) {
+    @if (playStats.play.type === "OnePointRush" && playStats.play.yardLine - playStats.play.yardage > 0) {
       1-PT Conversion is no good.
     }
   </div>

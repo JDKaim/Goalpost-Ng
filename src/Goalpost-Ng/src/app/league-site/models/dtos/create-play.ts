@@ -4,7 +4,7 @@ import { TurnoverType } from '../turnover-type';
 
 export interface CreatePlay {
   isHomePlay: boolean;
-  playType: PlayType;
+  type: PlayType;
   yardLine: number;
   down: number;
   yardage: number;

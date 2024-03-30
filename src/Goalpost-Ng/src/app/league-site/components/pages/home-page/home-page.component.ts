@@ -45,7 +45,7 @@ export class HomePageComponent {
           distanceToGo: 10,
           yardLine: 25,
           yardage: 6,
-          type: 'passing',
+          type: 'Passing',
           offensiveTeamId: '01',
           defensiveTeamId: '02',
           completedPass: true,

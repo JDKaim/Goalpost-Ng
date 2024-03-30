@@ -116,9 +116,9 @@ export class LeagueService {
             );
             return plays.map((play) => {
               switch (play.type) {
-                case 'rushing':
-                case 'one-point-rush':
-                case 'two-point-rush':
+                case 'Rushing':
+                case 'OnePointRush':
+                case 'TwoPointRush':
                   return PlayStats.createRush(
                     play,
                     teamMap.get(play.offensiveTeamId)!,
@@ -131,9 +131,9 @@ export class LeagueService {
                       ? playerMap.get(play.turnoverPlayer)
                       : undefined
                   );
-                case 'passing':
-                case 'one-point-pass':
-                case 'two-point-pass':
+                case 'Passing':
+                case 'OnePointPass':
+                case 'TwoPointPass':
                   return PlayStats.createPass(
                     play,
                     teamMap.get(play.offensiveTeamId)!,

@@ -11,9 +11,9 @@ export class PlayStats {
 
   get isPassingPlay() {
     switch (this.play.type) {
-      case 'passing':
-      case 'one-point-pass':
-      case 'two-point-pass':
+      case 'Passing':
+      case 'OnePointPass':
+      case 'TwoPointPass':
         return true;
       default:
         return false;
@@ -22,9 +22,9 @@ export class PlayStats {
 
   get isRushingPlay() {
     switch (this.play.type) {
-      case 'rushing':
-      case 'one-point-rush':
-      case 'two-point-rush':
+      case 'Rushing':
+      case 'OnePointRush':
+      case 'TwoPointRush':
         return true;
       default:
         return false;

@@ -8,13 +8,13 @@
     <a class="font-semibold" [routerLink]="['/', 'players', results.receivePlayer.id]">{{results.receivePlayer.name}}</a>
     @if (play.completedPass) {
       completed for {{play.yardage}} yards,
-    } @else if (play.turnoverType === 'interception') {
+    } @else if (play.turnoverType === 'Interception') {
       INTERCEPTED by
       <a class="font-semibold" [routerLink]="['/', 'players', results.turnoverPlayer!.id]">{{results.turnoverPlayer!.name}}</a>
       @if (play.points === 6) {
         AND RETURNED FOR A TOUCHDOWN!!!
       }
-    } @else if (play.turnoverType === 'fumble') {
+    } @else if (play.turnoverType === 'Fumble') {
       FUMBLED!!! Recovered by
       <a class="font-semibold" [routerLink]="['/', 'players', results.turnoverPlayer!.id]">{{results.turnoverPlayer!.name}}</a>
       @if (play.points === 6) {

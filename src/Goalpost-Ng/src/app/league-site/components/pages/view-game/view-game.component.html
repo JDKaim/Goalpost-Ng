@@ -15,13 +15,6 @@
         severity="primary"
         [routerLink]="['/', 'edit-game', gameData.game.id]"
       />
-      <p-button
-        size="small"
-        class="mr-2"
-        icon="pi pi-stopwatch"
-        severity="success"
-        [routerLink]="['/', 'scorekeeper', gameData.game.id]"
-      />
       @if (gameData.game.status === 'Final' || gameData.game.status ===
       'Ongoing') {
       <p-button

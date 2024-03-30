@@ -52,7 +52,7 @@ export class PlayerStats {
       (play) => play.points === 2
     ).length;
     this.passingInterceptions = passPlays.filter(
-      (play) => play.turnoverType === 'interception'
+      (play) => play.turnoverType === 'Interception'
     ).length;
 
     const rushPlays = plays.filter((play) => play.rusher === this.playerGame.id);
@@ -68,7 +68,7 @@ export class PlayerStats {
       (play) => play.points === 2
     ).length;
     this.offensiveFumbles = rushPlays.filter(
-      (play) => play.turnoverType === 'fumble'
+      (play) => play.turnoverType === 'Fumble'
     ).length;
     this.offensiveSacks = rushPlays.filter((play) => play.sack).length;
 
@@ -91,7 +91,7 @@ export class PlayerStats {
       (play) => play.points === 2
     ).length;
     this.offensiveFumbles += completedReceivingPlays.filter(
-      (play) => play.turnoverType === 'fumble'
+      (play) => play.turnoverType === 'Fumble'
     ).length;
 
     const flagPullPlays = plays.filter((play) => play.flagPuller === this.playerGame.id);
@@ -100,10 +100,10 @@ export class PlayerStats {
 
     const turnovers = plays.filter((play) => play.turnoverPlayer === this.playerGame.id);
     this.defensiveFumbles = turnovers.filter(
-      (play) => play.turnoverType === 'fumble'
+      (play) => play.turnoverType === 'Fumble'
     ).length;
     this.defensiveInterceptions = turnovers.filter(
-      (play) => play.turnoverType === 'interception'
+      (play) => play.turnoverType === 'Interception'
     ).length;
     this.defensiveTds = turnovers.filter((play) => play.points === 6).length;
     this.defensiveOnePointConversions = turnovers.filter(

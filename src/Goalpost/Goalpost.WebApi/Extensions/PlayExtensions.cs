@@ -19,12 +19,12 @@ namespace Goalpost.WebApi.Extensions
                 Points = play.Points,
                 Yardage = play.Yardage,
                 IsCompletedPass = play.IsCompletedPass,
-                PasserId = play.Passer?.Id,
-                RusherId = play.Rusher?.Id,
-                ReceiverId = play.Receiver?.Id,
+                PasserId = play.PasserId,
+                RusherId = play.RusherId,
+                ReceiverId = play.ReceiverId,
                 TurnoverType = play.TurnoverType,
-                FlagPullerId = play.FlagPuller?.Id,
-                TurnoverPlayerId = play.TurnoverPlayer?.Id,
+                FlagPullerId = play.FlagPullerId,
+                TurnoverPlayerId = play.TurnoverPlayerId,
                 IsSack = play.IsSack
             };
         }

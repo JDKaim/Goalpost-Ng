@@ -29,48 +29,38 @@ export class PlayListComponent implements OnInit {
   plays$ = new Observable<ApiResponse<PlayDisplay[]>>();
 
   ngOnInit(): void {
-    this.gameData$ = this.#gameService.getGameData(this.gameId).pipe(
-      tap((response) => {
+    this.plays$ = this.#gameService.getGameData(this.gameId).pipe(
+      map((response) => {
         if (!response.result) {
-          return;
+          return response as any as ApiResponse<PlayDisplay[]>;
         }
-        this.plays$ = this.#gameService
-          .searchPlays({ gameId: this.gameId })
-          .pipe(
-            map((playsResponse) => {
-              if (!playsResponse.result) {
-                return playsResponse as any as ApiResponse<PlayDisplay[]>;
-              }
-              return new SuccessApiResponse(
-                playsResponse.result!.map(
-                  (play) => {
-                    if (play.isHomePlay) {
-                      return new PlayDisplay(
-                        play,
-                        response.result!.game.awayTeamName,
-                        response.result!.game.awayTeamCode,
-                        response.result!.game.homeTeamName,
-                        response.result!.game.homeTeamCode,
-                        response.result!.homeRoster,
-                        response.result!.awayRoster
-                      )
-                    } else {
-                      return new PlayDisplay(
-                        play,
-                        response.result!.game.awayTeamName,
-                        response.result!.game.awayTeamCode,
-                        response.result!.game.homeTeamName,
-                        response.result!.game.homeTeamCode,
-                        response.result!.awayRoster,
-                        response.result!.homeRoster
-                      )
-                    }
-                  }
-                    
+        return new SuccessApiResponse(
+          response.result.plays.map(
+            (play) => {
+              if (play.isHomePlay) {
+                return new PlayDisplay(
+                  play,
+                  response.result!.game.awayTeamName,
+                  response.result!.game.awayTeamCode,
+                  response.result!.game.homeTeamName,
+                  response.result!.game.homeTeamCode,
+                  response.result!.homeRoster,
+                  response.result!.awayRoster
                 )
-              );
-            })
-          );
+              } else {
+                return new PlayDisplay(
+                  play,
+                  response.result!.game.awayTeamName,
+                  response.result!.game.awayTeamCode,
+                  response.result!.game.homeTeamName,
+                  response.result!.game.homeTeamCode,
+                  response.result!.awayRoster,
+                  response.result!.homeRoster
+                )
+              }
+            }
+          )
+        );
       })
     );
   }

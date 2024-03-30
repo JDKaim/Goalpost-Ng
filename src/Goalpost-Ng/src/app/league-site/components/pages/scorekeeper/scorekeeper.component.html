@@ -87,11 +87,21 @@
             placeholder="Select a Player"
           />
         </div>
-        } 
+        }
+        @if (form.controls.isCompletedPass.enabled) {
+          <div class="col-12">
+            <p-checkbox formControlName="isCompletedPass" [binary]="true" label="Completed Pass"/>
+          </div>
+        }
+        @if (form.controls.isSack.enabled) {
+          <div class="col-12">
+            <p-checkbox formControlName="isSack" [binary]="true" label="Sack"/>
+          </div>
+        }
         @if (form.controls.yardage.enabled) {
         <div class="col-12">
           <label htmlFor="yardage">Yardage Gained</label>
-          <p-dropdown formControlName="yardage" [options]="possibleDistances"/>
+          <p-dropdown formControlName="yardage" [options]="possibleDistances" placeholder="0"/>
         </div>
         }
         <div class="col-12">

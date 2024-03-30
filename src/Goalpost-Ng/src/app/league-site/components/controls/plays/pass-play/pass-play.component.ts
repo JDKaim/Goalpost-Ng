@@ -3,16 +3,13 @@ import { Component, Input, OnInit, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
-import { Observable, combineLatest, map, switchMap, take } from 'rxjs';
-import { Game } from 'src/app/league-site/models/game';
-import { GameStats } from 'src/app/league-site/models/game-stats';
+import { Observable, combineLatest, map, take } from 'rxjs';
+import { Play } from 'src/app/league-site/models/play';
 import { Player } from 'src/app/league-site/models/player';
 import { Team } from 'src/app/league-site/models/team';
-import { TeamPipe } from 'src/app/league-site/pipes/team.pipe';
 import { PlayerPipe } from 'src/app/league-site/pipes/player.pipe';
+import { TeamPipe } from 'src/app/league-site/pipes/team.pipe';
 import { LeagueService } from 'src/app/league-site/services/league.service';
-import { Play } from 'src/app/league-site/models/play';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   standalone: true,

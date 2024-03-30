@@ -17,11 +17,12 @@ export class PlayListItemComponent implements OnInit{
   receiverName: string | undefined;
   flagPullerName: string | undefined;
   turnoverPlayerName: string | undefined;
-  isPassingPlay = this.playStats.play.type == "Passing" || this.playStats.play.type ==  "OnePointPass" || this.playStats.play.type == "TwoPointPass";
-  offensiveTeamName = this.playStats.play.isHomePlay ? this.playStats.homeTeamName : this.playStats.awayTeamName;
-  defensiveTeamName = this.playStats.play.isHomePlay ? this.playStats.awayTeamName : this.playStats.homeTeamName;
-  offensiveTeamCode = this.playStats.play.isHomePlay ? this.playStats.homeTeamCode : this.playStats.awayTeamCode;
-  defensiveTeamCode = this.playStats.play.isHomePlay ? this.playStats.awayTeamCode : this.playStats.homeTeamCode;
+  isPassingPlay = false;
+  offensiveTeamName = "";
+  defensiveTeamName = "";
+  offensiveTeamCode = "";
+  defensiveTeamCode = "";
+
   
   ngOnInit(): void {
     if (this.playStats.play.passerId) {
@@ -42,5 +43,10 @@ export class PlayListItemComponent implements OnInit{
         this.flagPullerName = this.playStats.offensiveTeamRoster.find((player) => player.player.id === this.playStats.play.flagPullerId)!.player.name;
       }
     }
+    this.isPassingPlay = this.playStats.play.type === "Passing" || this.playStats.play.type ===  "OnePointPass" || this.playStats.play.type === "TwoPointPass";
+    this.offensiveTeamName = this.playStats.play.isHomePlay ? this.playStats.homeTeamName : this.playStats.awayTeamName;
+    this.defensiveTeamName = this.playStats.play.isHomePlay ? this.playStats.awayTeamName : this.playStats.homeTeamName;
+    this.offensiveTeamCode = this.playStats.play.isHomePlay ? this.playStats.homeTeamCode : this.playStats.awayTeamCode;
+    this.defensiveTeamCode = this.playStats.play.isHomePlay ? this.playStats.awayTeamCode : this.playStats.homeTeamCode;
   }
 }

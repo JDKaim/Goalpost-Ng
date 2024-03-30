@@ -321,7 +321,10 @@ namespace Goalpost.WebApi.Controllers
 
             if (dto.PasserId != null)
             {
-                play.Passer = (await this.Db.PlayerGames.Where((playerGame) => playerGame.GameId == game.Id && playerGame.PlayerId == dto.PasserId && playerGame.IsHome == dto.IsHomePlay && playerGame.IsCurrent).FirstOrDefaultAsync())?.Player;
+                play.Passer = await this.Db.PlayerGames
+                    .Where((playerGame) => playerGame.GameId == game.Id && playerGame.PlayerId == dto.PasserId && playerGame.IsHome == dto.IsHomePlay && playerGame.IsCurrent)
+                    .Select((player) => player.Player)
+                    .FirstOrDefaultAsync();
                 if (play.Passer == null)
                 {
                     return ApiResponseDto<PlayDto>.CreateError("Passing player was not found on this roster.");
@@ -329,7 +332,10 @@ namespace Goalpost.WebApi.Controllers
             }
             if (dto.RusherId != null)
             {
-                play.Rusher = (await this.Db.PlayerGames.Include(playerGame => playerGame.Player).Where((playerGame) => playerGame.GameId == game.Id && playerGame.PlayerId == dto.RusherId && playerGame.IsHome == dto.IsHomePlay && playerGame.IsCurrent).FirstOrDefaultAsync())?.Player;
+                play.Rusher = await this.Db.PlayerGames
+                    .Where((playerGame) => playerGame.GameId == game.Id && playerGame.PlayerId == dto.RusherId && playerGame.IsHome == dto.IsHomePlay && playerGame.IsCurrent)
+                    .Select((player) => player.Player)
+                    .FirstOrDefaultAsync();
                 if (play.Rusher == null)
                 {
                     return ApiResponseDto<PlayDto>.CreateError("Rushing player was not found on this roster.");
@@ -337,7 +343,7 @@ namespace Goalpost.WebApi.Controllers
             }
             if (dto.ReceiverId != null)
             {
-                play.Receiver = (await this.Db.PlayerGames.Where((playerGame) => playerGame.GameId == game.Id && playerGame.PlayerId == dto.ReceiverId && playerGame.IsHome == dto.IsHomePlay && playerGame.IsCurrent).FirstOrDefaultAsync())?.Player;
+                play.Receiver = await this.Db.PlayerGames.Where((playerGame) => playerGame.GameId == game.Id && playerGame.PlayerId == dto.ReceiverId && playerGame.IsHome == dto.IsHomePlay && playerGame.IsCurrent).Select((player) => player.Player).FirstOrDefaultAsync();
                 if (play.Receiver == null)
                 {
                     return ApiResponseDto<PlayDto>.CreateError("Receiving player was not found on this roster.");
@@ -345,7 +351,7 @@ namespace Goalpost.WebApi.Controllers
             }
             if (dto.TurnoverPlayerId != null)
             {
-                play.TurnoverPlayer = (await this.Db.PlayerGames.Where((playerGame) => playerGame.GameId == game.Id && playerGame.PlayerId == dto.TurnoverPlayerId && playerGame.IsHome != dto.IsHomePlay && playerGame.IsCurrent).FirstOrDefaultAsync())?.Player;
+                play.TurnoverPlayer = await this.Db.PlayerGames.Where((playerGame) => playerGame.GameId == game.Id && playerGame.PlayerId == dto.TurnoverPlayerId && playerGame.IsHome != dto.IsHomePlay && playerGame.IsCurrent).Select((player) => player.Player).FirstOrDefaultAsync();
                 if (play.TurnoverPlayer == null)
                 {
                     return ApiResponseDto<PlayDto>.CreateError("Turnover player was not found on this roster.");
@@ -358,7 +364,7 @@ namespace Goalpost.WebApi.Controllers
                 {
                     flagPullerTeam = !flagPullerTeam;
                 }
-                play.FlagPuller = (await this.Db.PlayerGames.Where((playerGame) => playerGame.GameId == game.Id && playerGame.PlayerId == dto.FlagPullerId && playerGame.IsHome != flagPullerTeam && playerGame.IsCurrent).FirstOrDefaultAsync())?.Player;
+                play.FlagPuller = await this.Db.PlayerGames.Where((playerGame) => playerGame.GameId == game.Id && playerGame.PlayerId == dto.FlagPullerId && playerGame.IsHome != flagPullerTeam && playerGame.IsCurrent).Select((player) => player.Player).FirstOrDefaultAsync();
                 if (play.FlagPuller == null)
                 {
                     return ApiResponseDto<PlayDto>.CreateError("Flag pulling player was not found on this roster.");
@@ -476,10 +482,10 @@ namespace Goalpost.WebApi.Controllers
 
             if (dto.PlayerId is not null)
             {
-                query = query.Where((play) => (((play.Passer != null) && (play.Passer.Id == dto.PlayerId)) || 
-                ((play.Rusher != null) && (play.Rusher.Id == dto.PlayerId)) || 
-                ((play.Receiver != null) && (play.Receiver.Id == dto.PlayerId)) || 
-                ((play.TurnoverPlayer != null) && (play.TurnoverPlayer.Id == dto.PlayerId)) || 
+                query = query.Where((play) => (((play.Passer != null) && (play.Passer.Id == dto.PlayerId)) ||
+                ((play.Rusher != null) && (play.Rusher.Id == dto.PlayerId)) ||
+                ((play.Receiver != null) && (play.Receiver.Id == dto.PlayerId)) ||
+                ((play.TurnoverPlayer != null) && (play.TurnoverPlayer.Id == dto.PlayerId)) ||
                 ((play.FlagPuller != null) && (play.FlagPuller.Id == dto.PlayerId))));
             }
 

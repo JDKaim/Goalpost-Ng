@@ -13,20 +13,20 @@
     <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.receiverId]">{{this.receiverName}}</a>
     @if (playStats.play.isCompletedPass) {
       completed for {{playStats.play.yardage}} yards,
-    } @else if (playStats.play.turnoverType === 'interception') {
+    } @else if (playStats.play.turnoverType === 'Interception') {
       INTERCEPTED by
       <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.turnoverPlayerId]">{{this.turnoverPlayerName}}</a>
       @if (playStats.play.yardLine - playStats.play.yardage === 40) {
         AND RETURNED FOR A TOUCHDOWN!!!
       }
-    } @else if (playStats.play.turnoverType === 'fumble') {
+    } @else if (playStats.play.turnoverType === 'Fumble') {
       FUMBLED!!! Recovered by
       <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.turnoverPlayerId]">{{this.turnoverPlayerName}}</a>
       @if (playStats.play.yardLine - playStats.play.yardage === 40) {
         AND RETURNED FOR A TOUCHDOWN!!!
       }
     }
-    @if (playStats.play.yardLine - playStats.play.yardage === 0 && !playStats.play.turnoverType) {
+    @if (playStats.play.yardLine - playStats.play.yardage === 0 && playStats.play.turnoverType === "None") {
       @switch (playStats.play.type) {
         @case ("Passing") {
           TOUCHDOWN!!!
@@ -39,7 +39,7 @@
         }
       }
     }
-    @else if (playStats.play.yardLine - playStats.play.yardage > 0 && !playStats.play.turnoverType) {
+    @else if (playStats.play.yardLine - playStats.play.yardage > 0 && playStats.play.turnoverType === "None") {
       flag pulled by
       <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.flagPullerId]">{{this.flagPullerName}}.</a>
     }
@@ -57,22 +57,22 @@
       - {{playDisplay[playStats.play.down - 1]}} & {{playStats.play.yardLine}} from {{playStats.play.yardLine}} - Rush by
     </span>
     <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.rusherId]">{{this.rusherName}}</a>
-    @if (playStats.play.turnoverType === 'none') {
+    @if (playStats.play.turnoverType === 'None') {
       for a gain of {{playStats.play.yardage}} yards,
-    } @else if (playStats.play.turnoverType === 'interception') {
+    } @else if (playStats.play.turnoverType === 'Interception') {
       INTERCEPTED by
       <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.turnoverPlayerId]">{{this.turnoverPlayerName}}</a>
       @if (playStats.play.yardLine - playStats.play.yardage === 40) {
         AND RETURNED FOR A TOUCHDOWN!!!
       }
-    } @else if (playStats.play.turnoverType === 'fumble') {
+    } @else if (playStats.play.turnoverType === 'Fumble') {
       FUMBLED!!! Recovered by
       <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.turnoverPlayerId]">{{this.turnoverPlayerName}}</a>
       @if (playStats.play.yardLine - playStats.play.yardage === 40) {
         AND RETURNED FOR A TOUCHDOWN!!!
       }
     }
-    @if (playStats.play.yardLine - playStats.play.yardage === 0 && !playStats.play.turnoverType) {
+    @if (playStats.play.yardLine - playStats.play.yardage === 0 && playStats.play.turnoverType === "None") {
       @switch (playStats.play.type) {
         @case ("Rushing") {
           TOUCHDOWN!!!
@@ -85,7 +85,7 @@
         }
       }
     }
-    @else if (playStats.play.yardLine - playStats.play.yardage > 0 && !playStats.play.turnoverType) {
+    @else if (playStats.play.yardLine - playStats.play.yardage > 0 && playStats.play.turnoverType === "None") {
       flag pulled by
       <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.flagPullerId]">{{this.flagPullerName}}.</a>
     }

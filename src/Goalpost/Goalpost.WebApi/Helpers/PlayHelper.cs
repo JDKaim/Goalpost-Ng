@@ -1,5 +1,6 @@
 ﻿using Goalpost.WebApi.Entities;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Goalpost.WebApi.Helpers
 {
@@ -7,11 +8,13 @@ namespace Goalpost.WebApi.Helpers
     {
         public static void VerifyPlay(CreatePlayDto dto)
         {
+            bool isPassingPlay = dto.Type == PlayType.Passing || dto.Type == PlayType.OnePointPass || dto.Type == PlayType.TwoPointPass;
+            bool isRushingPlay = dto.Type == PlayType.Rushing || dto.Type == PlayType.OnePointRush || dto.Type == PlayType.TwoPointRush;
             if (dto.Down > 4 || dto.Down < 1)
             {
                 throw new Exception($"{nameof(dto.Down)} must be between 1 and 4.");
             }
-            if (dto.Type == PlayType.Passing || dto.Type == PlayType.OnePointPass || dto.Type == PlayType.TwoPointPass)
+            if (isPassingPlay)
             {
                 if (dto.PasserId == null)
                 {
@@ -22,7 +25,7 @@ namespace Goalpost.WebApi.Helpers
                     throw new Exception($"{nameof(dto.ReceiverId)} needs to exist on passing play.");
                 }
             }
-            else if (dto.Type == PlayType.Rushing || dto.Type == PlayType.OnePointPass || dto.Type == PlayType.TwoPointPass)
+            else if (isRushingPlay)
             {
                 if (dto.RusherId == null)
                 {
@@ -56,12 +59,16 @@ namespace Goalpost.WebApi.Helpers
             }
             else if (endYardLine == 40)
             {
-                if (dto.TurnoverPlayerId == null)
+                if (dto.TurnoverPlayerId == null && (dto.IsSack || dto.IsCompletedPass || isRushingPlay))
                 {
                     if (dto.FlagPullerId == null)
                     {
                         throw new Exception($"{nameof(dto.FlagPullerId)} needs to exist on safety play.");
                     }
+                }
+                else if (isPassingPlay && (!dto.IsCompletedPass || dto.TurnoverType == TurnoverType.None))
+                {
+
                 }
                 else
                 {

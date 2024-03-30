@@ -1,18 +1,17 @@
 @if (combined$ | async; as results) {
-  
   <div class="mb-3">
     <a class="font-semibold" [routerLink]="['/', 'teams', results.offensiveTeam.id]">{{results.offensiveTeam.name}}</a>
     - {{playDisplay[play.down - 1]}} & {{play.distanceToGo}} from {{play.yardLine}} - Rush by
     <a class="font-semibold" [routerLink]="['/', 'players', results.rushPlayer.id]">{{results.rushPlayer.name}}</a>
     @if (!play.turnoverType) {
       for a gain of {{play.yardage}} yards,
-    } @else if (play.turnoverType === 'interception') {
+    } @else if (play.turnoverType === 'Interception') {
       INTERCEPTED by
       <a class="font-semibold" [routerLink]="['/', 'players', results.turnoverPlayer!.id]">{{results.turnoverPlayer!.name}}</a>
       @if (play.points === 6) {
         AND RETURNED FOR A TOUCHDOWN!!!
       }
-    } @else if (play.turnoverType === 'fumble') {
+    } @else if (play.turnoverType === 'Fumble') {
       FUMBLED!!! Recovered by
       <a class="font-semibold" [routerLink]="['/', 'players', results.turnoverPlayer!.id]">{{results.turnoverPlayer!.name}}</a>
       @if (play.points === 6) {

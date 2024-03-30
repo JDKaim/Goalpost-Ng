@@ -1,1 +1,1 @@
-export type TurnoverType = "none" | "fumble" | "interception";
+export type TurnoverType = "None" | "Fumble" | "Interception";

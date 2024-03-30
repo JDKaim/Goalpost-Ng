@@ -13,11 +13,16 @@
         public int Yardage { get; set; }
         public bool IsCompletedPass { get; set; }
         public Player? Passer { get; set; }
+        public int? PasserId { get; set; }
         public Player? Rusher { get; set; }
+        public int? RusherId { get; set; }
         public Player? Receiver { get; set; }
+        public int? ReceiverId {  get; set; }
         public TurnoverType TurnoverType { get; set; }
         public Player? FlagPuller { get; set; }
+        public int? FlagPullerId {  get; set; }
         public Player? TurnoverPlayer { get; set; }
+        public int? TurnoverPlayerId {  get; set; }
         public bool IsSack { get; set; }
     }
 }

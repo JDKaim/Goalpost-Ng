@@ -58,7 +58,7 @@
           <p-dropdown
             id="passerId"
             formControlName="passerId"
-            [options]="$any(offensiveTeamRoster$ | async)"
+            [options]="offensiveTeamRoster"
             optionLabel="player.name"
             optionValue="player.id"
             placeholder="Select a Player"
@@ -69,7 +69,7 @@
           <p-dropdown
             id="receiverId"
             formControlName="receiverId"
-            [options]="$any(offensiveTeamRoster$ | async)"
+            [options]="offensiveTeamRoster"
             optionLabel="player.name"
             optionValue="player.id"
             placeholder="Select a Player"
@@ -81,7 +81,7 @@
           <p-dropdown
             id="rusherId"
             formControlName="rusherId"
-            [options]="$any(offensiveTeamRoster$ | async)"
+            [options]="offensiveTeamRoster"
             optionLabel="player.name"
             optionValue="player.id"
             placeholder="Select a Player"
@@ -119,7 +119,7 @@
           <p-dropdown
             id="flagPullerId"
             formControlName="flagPullerId"
-            [options]="$any(defensiveTeamRoster$ | async)"
+            [options]="defensiveTeamRoster"
             optionLabel="player.name"
             optionValue="player.id"
             placeholder="Select a Player"
@@ -131,7 +131,7 @@
           <p-dropdown
             id="turnoverPlayerId"
             formControlName="turnoverPlayerId"
-            [options]="$any(defensiveTeamRoster$ | async)"
+            [options]="defensiveTeamRoster"
             optionLabel="player.name"
             optionValue="player.id"
             placeholder="Select a Player"
@@ -210,6 +210,24 @@
     <div>No current plays.</div>
     }
   </p-card> -->
+  <div>
+    <div class="flex mb-2">
+      <p-card class="w-14rem mr-2">
+        <div class="p-card-title text-center">{{gameData.game.awayTeamName}}</div>
+        <div class="p-card-title text-center">{{gameData.game.awayScore}}</div>      
+      </p-card>
+      <p-card class="w-14rem">
+        <div class="p-card-title text-center">{{gameData.game.homeTeamName}}</div>
+        <div class="p-card-title text-center">{{gameData.game.homeScore}}</div>      
+      </p-card>
+    </div>
+    @if (form.valid && currentPlay != undefined) {
+      <p-card class="w-30rem">
+        <div class="p-card-title text-center">Current Play</div>
+        <play-list-item [playStats]="currentPlay"></play-list-item>
+      </p-card>
+    }
+  </div>
   
   <p-card class="w-30rem">
     <div class="p-card-title text-center">Plays</div>

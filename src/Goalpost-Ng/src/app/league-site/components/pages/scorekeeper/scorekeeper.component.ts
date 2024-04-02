@@ -13,7 +13,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessagesModule } from 'primeng/messages';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TooltipModule } from 'primeng/tooltip';
-import { Observable, of, startWith, tap } from 'rxjs';
+import { Observable, of, startWith, take, tap } from 'rxjs';
 import { Player } from 'src/app/league-site/models/dtos/player';
 import { PlayType } from 'src/app/league-site/models/play-type';
 import { TurnoverType } from 'src/app/league-site/models/turnover-type';
@@ -24,6 +24,9 @@ import { PassPlayComponent } from '../../controls/plays/pass-play/pass-play.comp
 import { RushPlayComponent } from '../../controls/plays/rush-play/rush-play.component';
 import { RosterPlayer } from 'src/app/league-site/models/dtos/roster-player';
 import { CheckboxModule } from 'primeng/checkbox';
+import { PlayDisplay } from 'src/app/league-site/models/dtos/play-display';
+import { Play } from 'src/app/league-site/models/dtos/play';
+import { PlayListItemComponent } from '../../controls/play-list-item/play-list-item.component';
 
 @Component({
   standalone: true,
@@ -47,6 +50,7 @@ import { CheckboxModule } from 'primeng/checkbox';
     RushPlayComponent,
     PlayListComponent,
     CheckboxModule,
+    PlayListItemComponent,
   ],
 })
 export class ScorekeeperComponent {
@@ -57,6 +61,7 @@ export class ScorekeeperComponent {
 
   isHomePlay = false;
   isCompletedPass = false;
+  currentPlay: PlayDisplay | undefined;
   form = this.#fb.group({
     type: this.#fb.nonNullable.control<PlayType>('Passing', [
       Validators.required,
@@ -109,9 +114,11 @@ export class ScorekeeperComponent {
     { label: 'Home Team', value: 'home' },
   ];
 
+  awayTeamName = '';
+  homeTeamName = '';
   gameData$ = this.#gameService.getGameData(this.id);
-  offensiveTeamRoster$ = new Observable<RosterPlayer[]>();
-  defensiveTeamRoster$ = new Observable<RosterPlayer[]>();
+  offensiveTeamRoster = new Array<RosterPlayer>();
+  defensiveTeamRoster = new Array<RosterPlayer>();
   errors = new Array<Message>();
   possibleDistances: Array<number> = [];
 
@@ -126,8 +133,10 @@ export class ScorekeeperComponent {
       .subscribe({
         next: (yardage) => {
           this.#updateFlagPullerState();
+          this.#displayPlay();
         },
       });
+    this.form.controls.flagPullerId.valueChanges.pipe(takeUntilDestroyed()).subscribe({next: () => this.#displayPlay()});
     this.form.controls.isCompletedPass.valueChanges
       .pipe(takeUntilDestroyed())
       .subscribe({
@@ -180,6 +189,23 @@ export class ScorekeeperComponent {
           this.#updateFlagPullerState();
         },
       });
+  }
+
+  #displayPlay() {
+    if (this.form.valid) {
+      const formValue = this.form.value;
+      const isHomePlay = this.isHomePlay;
+      console.log(formValue.flagPullerId);
+      this.currentPlay = new PlayDisplay(
+        { id: 0, index: 0, ...(<any>formValue), isHomePlay },
+        this.awayTeamName,
+        this.teams[0].label,
+        this.homeTeamName,
+        this.teams[1].label,
+        this.offensiveTeamRoster,
+        this.defensiveTeamRoster
+      );
+    }
   }
 
   #onTypeChanged(type: PlayType) {
@@ -252,8 +278,8 @@ export class ScorekeeperComponent {
         value.type === 'OnePointPass' ||
         value.type === 'TwoPointPass') &&
       !value.isCompletedPass &&
-      (value.turnoverType !== 'Fumble' &&
-      value.turnoverType !== 'Interception')
+      value.turnoverType !== 'Fumble' &&
+      value.turnoverType !== 'Interception'
     ) {
       this.form.controls.yardage.disable();
     }
@@ -267,15 +293,17 @@ export class ScorekeeperComponent {
         }
         this.teams[0].label = response.result.game.awayTeamCode;
         this.teams[1].label = response.result.game.homeTeamCode;
+        this.awayTeamName = response.result.game.awayTeamName;
+        this.homeTeamName = response.result.game.homeTeamName;
         if (
           this.form.controls.offensiveTeamId.value ===
           response.result.game.awayTeamCode
         ) {
-          this.offensiveTeamRoster$ = of(response.result.awayRoster);
-          this.defensiveTeamRoster$ = of(response.result.homeRoster);
+          this.offensiveTeamRoster = response.result.awayRoster;
+          this.defensiveTeamRoster = response.result.homeRoster;
         } else {
-          this.offensiveTeamRoster$ = of(response.result.homeRoster);
-          this.defensiveTeamRoster$ = of(response.result.awayRoster);
+          this.offensiveTeamRoster = response.result.homeRoster;
+          this.defensiveTeamRoster = response.result.awayRoster;
         }
       })
     );
@@ -284,15 +312,15 @@ export class ScorekeeperComponent {
   createPlayClicked() {
     const formValue = this.form.value;
     const isHomePlay = this.isHomePlay;
-
+    console.log(isHomePlay);
     try {
       this.#gameService
         .addPlay(this.id, {
-          ...<any>formValue,
+          ...(<any>formValue),
           isHomePlay,
         })
         .subscribe({
-          // next: (team) => this.#router.navigate(['/', 'teams', team.id]),
+          // next: (team) => this.#router.navigate(['/', 'games', this.id]),
         });
     } catch (e: any) {
       this.errors.push({

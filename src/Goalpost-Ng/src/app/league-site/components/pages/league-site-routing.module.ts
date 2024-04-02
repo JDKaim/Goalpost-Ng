@@ -12,21 +12,22 @@ import { EditGameComponent } from './edit-game/edit-game.component';
 import { ViewGameComponent } from './view-game/view-game.component';
 import { ScorekeeperComponent } from './scorekeeper/scorekeeper.component';
 import { ScheduleComponent } from './schedule/schedule.component';
+import { authGuard } from '../../guards/auth.guard';
+import { adminGuard } from '../../guards/admin.guard';
 
 @NgModule({
     imports: [RouterModule.forChild([
         { path: '', component: HomePageComponent },
-        { path: 'teams/:id', component: ViewTeamComponent},
         { path: 'players/:id', component: ViewPlayerComponent},
         { path: 'games/:id', component: ViewGameComponent},
-        { path: 'create-team', component: CreateTeamComponent},
-        { path: 'create-player', component: CreatePlayerComponent},
-        { path: 'create-game', component: CreateGameComponent},
-        { path: 'edit-team/:id', component: EditTeamComponent},
-        { path: 'edit-game/:id', component: EditGameComponent},
-        { path: 'edit-player/:id', component: EditPlayerComponent},
-        { path: 'scorekeeper/:id', component: ScorekeeperComponent},
         { path: 'schedule', component: ScheduleComponent},
+        
+        { path: 'create-player', canActivate: [adminGuard], component: CreatePlayerComponent},
+        { path: 'create-game', canActivate: [adminGuard], component: CreateGameComponent},
+        { path: 'edit-game/:id', canActivate: [adminGuard], component: EditGameComponent},
+        { path: 'edit-player/:id', canActivate: [adminGuard], component: EditPlayerComponent},
+        
+        { path: 'scorekeeper/:id', canActivate: [authGuard], component: ScorekeeperComponent},
     ])],
     exports: [RouterModule]
 })

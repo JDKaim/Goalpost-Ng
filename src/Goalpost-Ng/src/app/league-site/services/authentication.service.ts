@@ -39,7 +39,10 @@ export class AuthenticationService {
     return `Bearer ${this.#bearerToken}`;
   }
 
-  
+  logOut() {
+    this.#bearerToken = null;
+    localStorage.removeItem(AuthenticationService.BearerTokenKey); 
+  }
 
   logIn(email: string, password: string) {
     return this.#dataService.logIn(email, password).pipe(tap((response) => {
@@ -47,6 +50,7 @@ export class AuthenticationService {
         return;
       }
       this.#bearerToken = response.result;
+      localStorage.setItem(AuthenticationService.BearerTokenKey, this.#bearerToken);
     }));
   }
 }

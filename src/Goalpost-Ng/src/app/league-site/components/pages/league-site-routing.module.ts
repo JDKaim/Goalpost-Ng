@@ -11,6 +11,8 @@ import { ScheduleComponent } from './schedule/schedule.component';
 import { ScorekeeperComponent } from './scorekeeper/scorekeeper.component';
 import { ViewGameComponent } from './view-game/view-game.component';
 import { ViewPlayerComponent } from './view-player/view-player.component';
+import { LoginComponent } from 'src/app/demo/components/auth/login/login.component';
+import { AccountComponent } from './account/account.component';
 
 @NgModule({
     imports: [RouterModule.forChild([
@@ -24,6 +26,7 @@ import { ViewPlayerComponent } from './view-player/view-player.component';
         { path: 'edit-game/:id', canActivate: [adminGuard], component: EditGameComponent},
         { path: 'edit-player/:id', canActivate: [adminGuard], component: EditPlayerComponent},
         
+        { path: 'account', canActivate: [authGuard], component: AccountComponent},
         { path: 'scorekeeper/:id', canActivate: [authGuard], component: ScorekeeperComponent},
     ])],
     exports: [RouterModule]

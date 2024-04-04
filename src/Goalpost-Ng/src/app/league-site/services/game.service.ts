@@ -7,11 +7,11 @@ import { UpdateGame } from '../models/dtos/update-game';
 import { DataService } from './data.service';
 import { combineLatest, map, of, switchMap } from 'rxjs';
 import { ApiResponse } from '../models/api/api-response';
-import { RosterPlayer } from '../models/dtos/roster-player';
+import { RosterPlayer } from '../models/entities/roster-player';
 import { PlayerService } from './player.service';
 import { SuccessApiResponse } from '../models/api/success-api-response';
 import { SearchPlays } from '../models/dtos/search-plays';
-import { GameData } from '../models/dtos/game-data';
+import { GameData } from '../models/entities/game-data';
 
 @Injectable({
   providedIn: 'root',

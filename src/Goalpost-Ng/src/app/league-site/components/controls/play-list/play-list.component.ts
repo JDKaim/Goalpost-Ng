@@ -7,8 +7,8 @@ import { ApiResponse } from 'src/app/league-site/models/api/api-response';
 import { Play } from 'src/app/league-site/models/dtos/play';
 import { GameService } from 'src/app/league-site/services/game.service';
 import { PlayListItemComponent } from '../play-list-item/play-list-item.component';
-import { GameData } from 'src/app/league-site/models/dtos/game-data';
-import { PlayDisplay } from 'src/app/league-site/models/dtos/play-display';
+import { GameData } from 'src/app/league-site/models/entities/game-data';
+import { PlayDisplay } from 'src/app/league-site/models/entities/play-display';
 import { SuccessApiResponse } from 'src/app/league-site/models/api/success-api-response';
 
 @Component({

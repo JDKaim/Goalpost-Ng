@@ -1,19 +1,16 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { HomePageComponent } from './home-page/home-page.component';
-import { ViewTeamComponent } from './view-team/view-team.component';
-import { CreateTeamComponent } from './create-team/create-team.component';
-import { EditTeamComponent } from './edit-team/edit-team.component';
-import { CreatePlayerComponent } from './create-player/create-player.component';
-import { ViewPlayerComponent } from './view-player/view-player.component';
-import { EditPlayerComponent } from './edit-player/edit-player.component';
-import { CreateGameComponent } from './create-game/create-game.component';
-import { EditGameComponent } from './edit-game/edit-game.component';
-import { ViewGameComponent } from './view-game/view-game.component';
-import { ScorekeeperComponent } from './scorekeeper/scorekeeper.component';
-import { ScheduleComponent } from './schedule/schedule.component';
-import { authGuard } from '../../guards/auth.guard';
 import { adminGuard } from '../../guards/admin.guard';
+import { authGuard } from '../../guards/auth.guard';
+import { CreateGameComponent } from './create-game/create-game.component';
+import { CreatePlayerComponent } from './create-player/create-player.component';
+import { EditGameComponent } from './edit-game/edit-game.component';
+import { EditPlayerComponent } from './edit-player/edit-player.component';
+import { HomePageComponent } from './home-page/home-page.component';
+import { ScheduleComponent } from './schedule/schedule.component';
+import { ScorekeeperComponent } from './scorekeeper/scorekeeper.component';
+import { ViewGameComponent } from './view-game/view-game.component';
+import { ViewPlayerComponent } from './view-player/view-player.component';
 
 @NgModule({
     imports: [RouterModule.forChild([

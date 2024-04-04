@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Player } from '../models/player';
+import { Player } from '../models/dtos/player';
 
 @Pipe({
   standalone: true,

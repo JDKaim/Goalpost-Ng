@@ -13,7 +13,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { Observable } from 'rxjs';
 import { ApiResponse } from 'src/app/league-site/models/api/api-response';
-import { GameData } from 'src/app/league-site/models/dtos/game-data';
+import { GameData } from 'src/app/league-site/models/entities/game-data';
 import { GamePipe } from 'src/app/league-site/pipes/game.pipe';
 import { GameService } from 'src/app/league-site/services/game.service';
 import { PlayerService } from 'src/app/league-site/services/player.service';

@@ -1,5 +1,5 @@
-import { Game } from "./game";
-import { Play } from "./play";
+import { Game } from "../dtos/game";
+import { Play } from "../dtos/play";
 import { RosterPlayer } from "./roster-player";
 
 export class GameData {

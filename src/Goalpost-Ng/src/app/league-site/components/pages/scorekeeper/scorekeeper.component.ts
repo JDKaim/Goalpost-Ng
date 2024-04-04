@@ -3,30 +3,25 @@ import { Component, Input, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { PlayListItemComponent } from '@league-site/components/controls/play-list-item/play-list-item.component';
+import { PlayListComponent } from '@league-site/components/controls/play-list/play-list.component';
+import { PlayDisplay, RosterPlayer } from '@league-site';
+import { PlayType } from '@league-site/models/play-type';
+import { TurnoverType } from '@league-site/models/turnover-type';
+import { GamePipe } from '@league-site/pipes/game.pipe';
+import { GameService } from '@league-site/services/game.service';
 import { Message } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
 import { CardModule } from 'primeng/card';
+import { CheckboxModule } from 'primeng/checkbox';
 import { DropdownModule } from 'primeng/dropdown';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputTextModule } from 'primeng/inputtext';
 import { MessagesModule } from 'primeng/messages';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TooltipModule } from 'primeng/tooltip';
-import { Observable, of, startWith, take, tap } from 'rxjs';
-import { Player } from 'src/app/league-site/models/dtos/player';
-import { PlayType } from 'src/app/league-site/models/play-type';
-import { TurnoverType } from 'src/app/league-site/models/turnover-type';
-import { GamePipe } from 'src/app/league-site/pipes/game.pipe';
-import { GameService } from 'src/app/league-site/services/game.service';
-import { PlayListComponent } from '../../controls/play-list/play-list.component';
-import { PassPlayComponent } from '../../controls/plays/pass-play/pass-play.component';
-import { RushPlayComponent } from '../../controls/plays/rush-play/rush-play.component';
-import { RosterPlayer } from 'src/app/league-site/models/dtos/roster-player';
-import { CheckboxModule } from 'primeng/checkbox';
-import { PlayDisplay } from 'src/app/league-site/models/dtos/play-display';
-import { Play } from 'src/app/league-site/models/dtos/play';
-import { PlayListItemComponent } from '../../controls/play-list-item/play-list-item.component';
+import { startWith, tap } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -46,8 +41,6 @@ import { PlayListItemComponent } from '../../controls/play-list-item/play-list-i
     CalendarModule,
     GamePipe,
     SelectButtonModule,
-    PassPlayComponent,
-    RushPlayComponent,
     PlayListComponent,
     CheckboxModule,
     PlayListItemComponent,

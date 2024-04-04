@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { PlayDisplay } from 'src/app/league-site/models/dtos/play-display';
+import { PlayDisplay } from 'src/app/league-site/models/entities/play-display';
 
 @Component({
   standalone: true,

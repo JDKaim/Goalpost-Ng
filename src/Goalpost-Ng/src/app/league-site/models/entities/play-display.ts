@@ -1,4 +1,4 @@
-import { Play } from './play';
+import { Play } from '../dtos/play';
 import { RosterPlayer } from './roster-player';
 
 export class PlayDisplay {

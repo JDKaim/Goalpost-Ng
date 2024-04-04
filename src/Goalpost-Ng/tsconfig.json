@@ -22,7 +22,9 @@
     "lib": ["ES2022", "dom"],
     "paths": {
       "@goalpost": ["src/app/goalpost"],
-      "@goalpost/*": ["src/app/goalpost/*"]
+      "@goalpost/*": ["src/app/goalpost/*"],
+      "@league-site": ["src/app/league-site"],
+      "@league-site/*": ["src/app/league-site/*"]
     }
   },
   "exclude": ["node_modules", "**/node_modules/*"],

@@ -1,6 +1,7 @@
 @if (gameData$ | async; as response) { @if (response.result; as gameData) {
 
 <div class="flex gap-3 mb-3">
+  <div>
   <p-card class="w-30rem align-items-center">
     <div class="p-card-title text-center align-items-center">View Game</div>
     <div class="text-center font-semibold text-900">
@@ -26,16 +27,30 @@
       }
     </div>
   </p-card>
+  @if (gameData.game.status === 'Ongoing') {
+    <div class="mt-3">    
+      <p-card class="w-30rem mt-3">
+        <div class="p-card-title text-center">Current Down</div>
+        @if (this.currentHomePossession) {
+          <span> {{ gameData.game.homeTeamName }} - {{this.playDisplay[this.currentDown - 1]}} & {{this.currentYardLine}}</span>
+        } @else {
+          <span> {{ gameData.game.awayTeamName }} - {{this.playDisplay[this.currentDown - 1]}} & {{this.currentYardLine}}</span>
+        }
+
+      </p-card>
+    </div>
+  }
+  </div>
 
   <p-card
     [header]="
-      'Away Team - ' +
+      'Away - ' +
       gameData.game.awayTeamCode +
       ' [' +
       gameData.game.awayScore +
       ']'
     "
-    class="w-30rem"
+    class="w-20rem"
   >
     @for (player of gameData.awayRoster; track player.player.id) {
     <div class="flex gap-2 align-items-center mb-1">
@@ -50,13 +65,13 @@
 
   <p-card
     [header]="
-      'Home Team - ' +
+      'Home - ' +
       gameData.game.homeTeamCode +
       ' [' +
       gameData.game.homeScore +
       ']'
     "
-    class="w-30rem"
+    class="w-20rem"
   >
     @for(player of gameData.homeRoster; track player.player.id) {
     <div class="flex gap-2 align-items-center mb-1">
@@ -68,7 +83,11 @@
     <div>No Players.</div>
     }
   </p-card>
-
+  
+  <p-card class="w-30rem">
+    <div class="p-card-title text-center">Plays</div>
+    <play-list [gameId]="id"></play-list>
+  </p-card>
 </div>
 } @else if (response.type === "Success") {
 <div>Game does not exist.</div>

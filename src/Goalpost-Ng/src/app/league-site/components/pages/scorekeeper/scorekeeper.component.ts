@@ -298,6 +298,37 @@ export class ScorekeeperComponent {
           this.offensiveTeamRoster = response.result.homeRoster;
           this.defensiveTeamRoster = response.result.awayRoster;
         }
+        if (!response.result.plays.length) {
+          return;
+        }
+        const lastPlay = response.result.plays[response.result.plays.length - 1];
+        this.form.controls.defensiveTeamId.setValue(lastPlay.isHomePlay ? this.teams[0].value : this.teams[1].value);
+        this.form.controls.offensiveTeamId.setValue(lastPlay.isHomePlay ? this.teams[1].value : this.teams[0].value);
+        if (lastPlay.down === 4) {
+          this.form.controls.down.setValue(1);
+          this.form.controls.yardLine.setValue(40);
+          this.form.controls.defensiveTeamId.setValue(lastPlay.isHomePlay ? this.teams[1].value : this.teams[0].value);
+          this.form.controls.offensiveTeamId.setValue(lastPlay.isHomePlay ? this.teams[0].value : this.teams[1].value);
+        } else {
+          if (lastPlay.turnoverType != 'None') {
+            this.form.controls.down.setValue(1);
+            if (lastPlay.yardLine - lastPlay.yardage === 40) {
+              this.form.controls.yardLine.setValue(40);
+            } else {
+              this.form.controls.defensiveTeamId.setValue(lastPlay.isHomePlay ? this.teams[1].value : this.teams[0].value);
+              this.form.controls.offensiveTeamId.setValue(lastPlay.isHomePlay ? this.teams[0].value : this.teams[1].value);
+              this.form.controls.yardLine.setValue(40 - (lastPlay.yardLine - lastPlay.yardage));
+            }
+          } else if (lastPlay.yardLine - lastPlay.yardage === 0) {
+            this.form.controls.down.setValue(1);
+            this.form.controls.yardLine.setValue(40);
+            this.form.controls.defensiveTeamId.setValue(lastPlay.isHomePlay ? this.teams[1].value : this.teams[0].value);
+            this.form.controls.offensiveTeamId.setValue(lastPlay.isHomePlay ? this.teams[0].value : this.teams[1].value);
+          } else {
+            this.form.controls.down.setValue(lastPlay.down + 1);
+            this.form.controls.yardLine.setValue(lastPlay.yardLine - lastPlay.yardage);
+          }
+        }
       })
     );
   }
@@ -322,6 +353,7 @@ export class ScorekeeperComponent {
         detail: e.message,
       });
     }
+    this.#updateGameData();
   }
 
   ngOnInit(): void {

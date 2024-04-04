@@ -1,12 +1,14 @@
 import { Injectable, inject } from '@angular/core';
-import { CreatePlayer } from '../models/dtos/create-player';
-import { UpdatePlayer } from '../models/dtos/update-player';
+import {
+  ApiResponse,
+  Player,
+  CreatePlayer,
+  UpdatePlayer,
+  SuccessApiResponse,
+  SearchPlayers,
+} from '@league-site/models';
+import { tap, of, map } from 'rxjs';
 import { DataService } from './data.service';
-import { SearchPlayers } from '../models/dtos/search-players';
-import { Player } from '../models/dtos/player';
-import { map, of, tap } from 'rxjs';
-import { ApiResponse } from '../models/api/api-response';
-import { SuccessApiResponse } from '../models/api/success-api-response';
 
 @Injectable({
   providedIn: 'root',
@@ -68,9 +70,10 @@ export class PlayerService {
         response.result?.forEach((player) =>
           this.#players.set(player.id, new SuccessApiResponse(player))
         );
-      }), map((response) => {
+      }),
+      map((response) => {
         if (players.length) {
-          response.result?.push(...players); 
+          response.result?.push(...players);
         }
         return response;
       })

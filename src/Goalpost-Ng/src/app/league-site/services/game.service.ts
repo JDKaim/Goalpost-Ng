@@ -1,17 +1,19 @@
 import { Injectable, inject } from '@angular/core';
-import { CreateGame } from '../models/dtos/create-game';
-import { CreatePlay } from '../models/dtos/create-play';
-import { SearchGames } from '../models/dtos/search-games';
-import { SearchPlayerGames } from '../models/dtos/search-player-games';
-import { UpdateGame } from '../models/dtos/update-game';
+import {
+  CreateGame,
+  UpdateGame,
+  SearchGames,
+  ApiResponse,
+  RosterPlayer,
+  SuccessApiResponse,
+  SearchPlayerGames,
+  CreatePlay,
+  SearchPlays,
+  GameData,
+} from '@league-site/models';
+import { switchMap, of, map, combineLatest } from 'rxjs';
 import { DataService } from './data.service';
-import { combineLatest, map, of, switchMap } from 'rxjs';
-import { ApiResponse } from '../models/api/api-response';
-import { RosterPlayer } from '../models/entities/roster-player';
 import { PlayerService } from './player.service';
-import { SuccessApiResponse } from '../models/api/success-api-response';
-import { SearchPlays } from '../models/dtos/search-plays';
-import { GameData } from '../models/entities/game-data';
 
 @Injectable({
   providedIn: 'root',
@@ -110,21 +112,30 @@ export class GameService {
       this.getGame(gameId),
       this.searchPlays({ gameId }),
       this.getRoster(gameId, false),
-      this.getRoster(gameId, true)
-    ]).pipe(map((results) => {
-      if (!results[0].result) {
-        return results[0] as any as ApiResponse<GameData>;
-      }
-      if (!results[1].result) {
-        return results[1] as any as ApiResponse<GameData>;
-      }
-      if (!results[2].result) {
-        return results[2] as any as ApiResponse<GameData>;
-      }
-      if (!results[3].result) {
-        return results[3] as any as ApiResponse<GameData>;
-      }
-      return new SuccessApiResponse(new GameData(results[0].result, results[1].result, results[2].result, results[3].result));
-    }));
+      this.getRoster(gameId, true),
+    ]).pipe(
+      map((results) => {
+        if (!results[0].result) {
+          return results[0] as any as ApiResponse<GameData>;
+        }
+        if (!results[1].result) {
+          return results[1] as any as ApiResponse<GameData>;
+        }
+        if (!results[2].result) {
+          return results[2] as any as ApiResponse<GameData>;
+        }
+        if (!results[3].result) {
+          return results[3] as any as ApiResponse<GameData>;
+        }
+        return new SuccessApiResponse(
+          new GameData(
+            results[0].result,
+            results[1].result,
+            results[2].result,
+            results[3].result
+          )
+        );
+      })
+    );
   }
 }

@@ -104,20 +104,20 @@ export class DataService {
 
   addPlayerToRoster(gameId: number, team: string, playerId: number) {
     return this.#http.post<ApiResponse<PlayerGame>>(
-      `${this.#apiUrl}/Games/${gameId}/${team}`,
+      `${this.#apiUrl}/Games/${gameId}/Roster/${team}`,
       { id: playerId }
     );
   }
 
   removePlayerFromRoster(gameId: number, team: string, playerId: number) {
     return this.#http.delete<ApiResponse<boolean>>(
-      `${this.#apiUrl}/Games/${gameId}/${team}/${playerId}`
+      `${this.#apiUrl}/Games/${gameId}/Roster/${team}/${playerId}`
     );
   }
 
   getRoster(gameId: number, team: string) {
     return this.#http.get<ApiResponse<Array<PlayerGame>>>(
-      `${this.#apiUrl}/Games/${gameId}/${team}`
+      `${this.#apiUrl}/Games/${gameId}/Roster/${team}`
     );
   }
 

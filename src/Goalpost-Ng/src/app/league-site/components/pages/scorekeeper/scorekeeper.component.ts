@@ -188,7 +188,6 @@ export class ScorekeeperComponent {
     if (this.form.valid) {
       const formValue = this.form.value;
       const isHomePlay = this.isHomePlay;
-      console.log(formValue.flagPullerId);
       this.currentPlay = new PlayDisplay(
         { id: 0, index: 0, ...(<any>formValue), isHomePlay },
         this.awayTeamName,
@@ -210,6 +209,7 @@ export class ScorekeeperComponent {
     this.form.controls.rusherId.disable();
     this.form.controls.turnoverPlayerId.disable();
     this.#updateIsSackState();
+    this.#displayPlay();
     switch (type) {
       case 'OnePointPass':
       case 'TwoPointPass':
@@ -336,7 +336,6 @@ export class ScorekeeperComponent {
   createPlayClicked() {
     const formValue = this.form.value;
     const isHomePlay = this.isHomePlay;
-    console.log(isHomePlay);
     try {
       this.#gameService
         .addPlay(this.id, {
@@ -374,6 +373,7 @@ export class ScorekeeperComponent {
     //   flagPuller: '010',
     // }).subscribe();
     this.#updateGameData();
+    this.#onTypeChanged('Passing');
     for (let i = 0; i <= 40; i++) {
       this.possibleDistances.push(i);
     }

@@ -176,7 +176,7 @@ namespace Goalpost.WebApi.Controllers
             }).ToListAsync());
         }
 
-        [HttpPost("{gameId}/{team}")]
+        [HttpPost("{gameId}/Roster/{team}")]
         public async Task<ApiResponseDto<PlayerGameDto>> AddPlayerToRoster(int gameId, string team, IdDto playerId)
         {
             if (team != "home" && team != "away")
@@ -219,7 +219,7 @@ namespace Goalpost.WebApi.Controllers
             return ApiResponseDto<PlayerGameDto>.CreateSuccess(playerGame.ToDto());
         }
 
-        [HttpDelete("{gameId}/{team}/{playerId}")]
+        [HttpDelete("{gameId}/Roster/{team}/{playerId}")]
         public async Task<ApiResponseDto<bool>> RemovePlayerFromRoster(int gameId, string team, int playerId)
         {
             if (team != "home" && team != "away")
@@ -238,7 +238,7 @@ namespace Goalpost.WebApi.Controllers
             return ApiResponseDto<bool>.CreateSuccess(true);
         }
 
-        [HttpGet("{gameId}/{team}")]
+        [HttpGet("{gameId}/Roster/{team}")]
         public async Task<ApiResponseDto<List<PlayerGameDto>>> GetRoster(int gameId, string team)
         {
             if (team != "home" && team != "away")

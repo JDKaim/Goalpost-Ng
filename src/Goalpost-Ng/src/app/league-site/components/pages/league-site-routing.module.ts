@@ -13,6 +13,7 @@ import { ViewGameComponent } from './view-game/view-game.component';
 import { ViewPlayerComponent } from './view-player/view-player.component';
 import { LoginComponent } from 'src/app/demo/components/auth/login/login.component';
 import { AccountComponent } from './account/account.component';
+import { ViewPlayerGameComponent } from './view-player-game/view-player-game.component';
 
 @NgModule({
     imports: [RouterModule.forChild([
@@ -20,6 +21,7 @@ import { AccountComponent } from './account/account.component';
         { path: 'players/:id', component: ViewPlayerComponent},
         { path: 'games/:id', component: ViewGameComponent},
         { path: 'schedule', component: ScheduleComponent},
+        { path: 'games/:gameId/team/:team/player/:playerId', component: ViewPlayerGameComponent},
         
         { path: 'create-player', canActivate: [adminGuard], component: CreatePlayerComponent},
         { path: 'create-game', canActivate: [adminGuard], component: CreateGameComponent},
@@ -28,6 +30,7 @@ import { AccountComponent } from './account/account.component';
         
         { path: 'account', canActivate: [authGuard], component: AccountComponent},
         { path: 'scorekeeper/:id', canActivate: [authGuard], component: ScorekeeperComponent},
+        
     ])],
     exports: [RouterModule]
 })

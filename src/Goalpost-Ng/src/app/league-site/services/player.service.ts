@@ -100,7 +100,7 @@ export class PlayerService {
     );
   }
 
-  getGamesForPlayer(id: number) {
-    return this.#dataService.getGamesForPlayer(id);
+  getPlayerGamesForPlayer(id: number) {
+    return this.#dataService.getPlayerGamesForPlayer(id);
   }
 }

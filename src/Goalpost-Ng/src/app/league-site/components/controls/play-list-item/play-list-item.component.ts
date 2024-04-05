@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { PlayDisplay } from 'src/app/league-site/models/entities/play-display';
 
@@ -9,8 +9,8 @@ import { PlayDisplay } from 'src/app/league-site/models/entities/play-display';
   templateUrl: './play-list-item.component.html',
   imports: [CommonModule, RouterModule],
 })
-export class PlayListItemComponent implements OnInit{
-  @Input() playStats!: PlayDisplay;
+export class PlayListItemComponent implements OnChanges{
+  @Input({required: true}) playStats!: PlayDisplay;
   playDisplay: Array<string> = ['1st', '2nd', '3rd', '4th'];
   passerName: string | undefined;
   rusherName: string | undefined;
@@ -24,7 +24,7 @@ export class PlayListItemComponent implements OnInit{
   defensiveTeamCode = "";
 
   
-  ngOnInit(): void {
+  ngOnChanges(changes: SimpleChanges): void {
     if (this.playStats.play.passerId) {
       this.passerName = this.playStats.offensiveTeamRoster.find((player) => player.player.id === this.playStats.play.passerId)!.player.name;
     }

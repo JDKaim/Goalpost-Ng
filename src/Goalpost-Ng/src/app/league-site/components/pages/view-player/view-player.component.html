@@ -4,21 +4,15 @@
   <div class="flex justify-content-end gap-2 mb-3">
     <p-button label="Edit Player" icon="pi pi-pencil" severity="primary" [routerLink]="['/', 'edit-player', player.id]"/>
   </div>
-  <!-- <p-card [header]="'Schedule'" class="w-30rem">
-    @if (games$ | async; as games) {
+  <p-card [header]="'Schedule'" class="w-30rem">
+    @if (games$ | async; as gamesResponse) { @if (gamesResponse.result; as games) {
       @for(game of games; track $index) {
         <div class="flex gap-3 align-items-center mb-3">
           <p-button
             size="small"
             icon="pi pi-eye"
-            severity="success"
-            [routerLink]="['/', 'games', game.id]"
-          />
-          <p-button
-            size="small"
-            icon="pi pi-pencil"
             severity="primary"
-            [routerLink]="['/', 'edit-game', game.id]"
+            [routerLink]="['/', 'games', game.id]"
           />
           <div class="p-card-title text-center align-items-center">
             {{ game | game }}
@@ -30,8 +24,8 @@
         } @empty {
         <div>No Games.</div>
         }
-    }
-  </p-card> -->
+    } }
+  </p-card>
 }
 @else {
   <h1>Player is not found.</h1>

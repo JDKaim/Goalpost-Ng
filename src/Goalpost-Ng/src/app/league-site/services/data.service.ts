@@ -148,9 +148,16 @@ export class DataService {
     );
   }
 
-  getGamesForPlayer(id: number) {
+  getPlayerGamesForPlayer(id: number) {
     return this.#http.get<ApiResponse<Array<PlayerGame>>>(
-      `${this.#apiUrl}/Players/${id}/Games`
+      `${this.#apiUrl}/Players/${id}/PlayerGames`
+    );
+  }
+
+  getGames(ids: Array<number>) {
+    return this.#http.post<ApiResponse<Game[]>>(
+      `${this.#apiUrl}/Games/List`,
+      ids
     );
   }
 }

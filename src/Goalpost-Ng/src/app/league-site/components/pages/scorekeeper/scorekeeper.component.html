@@ -166,28 +166,7 @@
       </div>
     </form>
 
-    @if(errors.length) {
-    <p-messages [(value)]="errors" [enableService]="false"></p-messages>
-    }
-
-    <ng-template pTemplate="footer">
-      <div class="flex justify-content-end">
-        <p-button
-          label="Save"
-          icon="pi pi-check"
-          severity="success"
-          [disabled]="!form.valid || !form.dirty"
-          (onClick)="createPlayClicked()"
-        />
-        <p-button
-          label="Cancel"
-          icon="pi pi-times"
-          severity="danger"
-          class="ml-2"
-          [routerLink]="['/']"
-        />
-      </div>
-    </ng-template>
+    
   </p-card>
 
   <!-- <p-card class="w-30rem">
@@ -225,7 +204,31 @@
     @if (form.valid && currentPlay != undefined) {
       <p-card class="w-30rem">
         <div class="p-card-title text-center">Current Play</div>
-        <play-list-item [playStats]="currentPlay"></play-list-item>
+        <play-list-item [playStats]="currentPlay"/>
+
+        <ng-template pTemplate="footer">
+          <div class="flex justify-content-end">
+            <p-button
+              label="Save"
+              icon="pi pi-check"
+              severity="success"
+              [disabled]="!form.valid || !form.dirty"
+              (onClick)="createPlayClicked()"
+            />
+            <p-button
+              label="Cancel"
+              icon="pi pi-times"
+              severity="danger"
+              class="ml-2"
+              [routerLink]="['/']"
+            />
+          </div>
+
+          @if(errors.length) {
+            <p-messages [(value)]="errors" [enableService]="false"></p-messages>
+            }
+        </ng-template>
+
       </p-card>
     }
   </div>

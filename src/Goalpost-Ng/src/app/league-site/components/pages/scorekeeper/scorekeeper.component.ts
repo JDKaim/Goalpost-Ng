@@ -319,7 +319,7 @@ export class ScorekeeperComponent {
               this.form.controls.offensiveTeamId.setValue(lastPlay.isHomePlay ? this.teams[0].value : this.teams[1].value);
               this.form.controls.yardLine.setValue(40 - (lastPlay.yardLine - lastPlay.yardage));
             }
-          } else if (lastPlay.yardLine - lastPlay.yardage === 0) {
+          } else if (lastPlay.yardLine - lastPlay.yardage === 0 || lastPlay.yardLine - lastPlay.yardage === 40) {
             this.form.controls.down.setValue(1);
             this.form.controls.yardLine.setValue(40);
             this.form.controls.defensiveTeamId.setValue(lastPlay.isHomePlay ? this.teams[1].value : this.teams[0].value);
@@ -343,6 +343,11 @@ export class ScorekeeperComponent {
           isHomePlay,
         })
         .subscribe({
+          next: (response) => {
+            if (response.errorMessages?.length) {
+              this.errors.push(...response.errorMessages.map((errorMessage) => <Message>{severity: 'error', summary: 'Error', detail: errorMessage}));
+            }
+          }
           // next: (team) => this.#router.navigate(['/', 'games', this.id]),
         });
     } catch (e: any) {

@@ -77,7 +77,7 @@ export class ViewGameComponent {
             this.currentHomePossession = !this.currentHomePossession;
             this.currentYardLine = 40 - (lastPlay.yardLine - lastPlay.yardage);
           }
-        } else if (lastPlay.yardLine - lastPlay.yardage === 0) {
+        } else if (lastPlay.yardLine - lastPlay.yardage === 0 || lastPlay.yardLine - lastPlay.yardage === 40) {
           this.currentDown = 1;
           this.currentYardLine = 40;
           this.currentHomePossession = !this.currentHomePossession;

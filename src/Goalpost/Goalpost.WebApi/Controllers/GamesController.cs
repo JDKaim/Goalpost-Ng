@@ -509,6 +509,16 @@ namespace Goalpost.WebApi.Controllers
             return ApiResponseDto<List<PlayDto>>.CreateSuccess(await query.Select((play) => play.ToDto()).ToListAsync());
         }
 
+        [HttpPost("List")]
+        public async Task<ApiResponseDto<List<GameDto>>> GetGames(int[] ids)
+        {
+            if (!ids.Any())
+            {
+                return ApiResponseDto<List<GameDto>>.CreateSuccess(new List<GameDto>());
+            }
+            return ApiResponseDto<List<GameDto>>.CreateSuccess(await this.Db.Games.Where(game => ids.Contains(game.Id)).Select((game) => game.ToDto()).ToListAsync());
+        }
+
         private async Task UpdateGameStatsAsync(Play play)
         {
             List<Play> plays = await this.Db.Plays.Where((playItem) => playItem.Game.Id == play.Game.Id).ToListAsync();
@@ -662,5 +672,6 @@ namespace Goalpost.WebApi.Controllers
 
             await this.Db.SaveChangesAsync();
         }
+
     }
 }

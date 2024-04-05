@@ -10,8 +10,9 @@ import {
   CreatePlay,
   SearchPlays,
   GameData,
+  Game,
 } from '@league-site/models';
-import { switchMap, of, map, combineLatest } from 'rxjs';
+import { switchMap, of, map, combineLatest, tap } from 'rxjs';
 import { DataService } from './data.service';
 import { PlayerService } from './player.service';
 
@@ -21,6 +22,7 @@ import { PlayerService } from './player.service';
 export class GameService {
   #dataService = inject(DataService);
   #playerService = inject(PlayerService);
+  #games = new Map<number, ApiResponse<Game>>();
 
   createGame(createGame: CreateGame) {
     // if (createGame.homeTeamCode === "AWAY") {
@@ -135,6 +137,54 @@ export class GameService {
             results[3].result
           )
         );
+      })
+    );
+  }
+
+  getGames(ids: Array<number>) {
+    const games = new Array<Game>();
+    const requestIds = new Array<number>();
+    ids.forEach((id) => {
+      const player = this.#games.get(id);
+      if (player) {
+        games.push(player.result!);
+      } else {
+        requestIds.push(id);
+      }
+    });
+    if (!requestIds.length) {
+      return of(new SuccessApiResponse<Game[]>(games));
+    }
+    return this.#dataService.getGames(requestIds).pipe(
+      tap((response) => {
+        response.result?.forEach((game) =>
+          this.#games.set(game.id, new SuccessApiResponse(game))
+        );
+      }),
+      map((response) => {
+        if (games.length) {
+          response.result?.push(...games);
+        }
+        return response;
+      })
+    );
+  }
+
+  getGamesForPlayer(id: number) {
+    return this.#dataService.getPlayerGamesForPlayer(id).pipe(
+      switchMap((response) => {
+        if (!response.result) {
+          return of(response as any as ApiResponse<Game[]>);
+        }
+        return this.getGames(response.result.map((playerGame) => playerGame.gameId))
+          .pipe(
+            map((getGameResponse) => {
+              if (!getGameResponse.result) {
+                return getGameResponse as any as ApiResponse<Game[]>;
+              }
+              return new SuccessApiResponse(getGameResponse.result);
+            })
+          );
       })
     );
   }

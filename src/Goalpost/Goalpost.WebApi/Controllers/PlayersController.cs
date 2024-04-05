@@ -120,8 +120,8 @@ namespace Goalpost.WebApi.Controllers
             player.ToDto()).ToListAsync());
         }
 
-        [HttpGet("{id}/Games")]
-        public async Task<ApiResponseDto<List<PlayerGameDto>>> GetGamesForPlayer(int id)
+        [HttpGet("{id}/PlayerGames")]
+        public async Task<ApiResponseDto<List<PlayerGameDto>>> GetPlayerGamesForPlayer(int id)
         {
             return ApiResponseDto<List<PlayerGameDto>>.CreateSuccess(
                 await this.Db.PlayerGames
@@ -129,5 +129,6 @@ namespace Goalpost.WebApi.Controllers
                     .Select(playerGame => playerGame.ToDto())
                     .ToListAsync());
         }
+
     }
 }

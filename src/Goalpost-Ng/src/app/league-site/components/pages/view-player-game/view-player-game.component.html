@@ -1,0 +1,21 @@
+@if (playerGame$ | async; as playerGame) { 
+  @if (player$ | async; as playerResponse) { @if (playerResponse.result; as player) {
+  <h1>{{player.name}}</h1>
+  }} @else {
+    <h1>Player name could not be found.</h1>
+  }
+  @if (game$ | async; as gameResponse) { @if (gameResponse.result; as game) {
+    @if (playerGame.isHome) {
+      <h2>on {{game.homeTeamName}} against {{game.awayTeamName}}.</h2>
+    } @else {
+      <h2>on {{game.awayTeamName}} against {{game.homeTeamName}}.</h2>
+    }
+  }}
+
+  <p-card [header]="'Stats'" class="w-30rem">
+      
+  </p-card>
+}
+@else {
+  <h1>Player is not found.</h1>
+}

@@ -1,18 +1,20 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, inject } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { ApiResponse, Player, Game, PlayerGame } from '@league-site/models';
+import { PlayerGameStatsComponent } from '@league-site/components/controls/player-game-stats/player-game-stats.component';
+import { ApiResponse, Player, Game, PlayerGame, SearchPlayerGames } from '@league-site/models';
 import { PlayerPipe, GamePipe, GameInfoPipe } from '@league-site/pipes';
 import { PlayerService, GameService } from '@league-site/services';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
+import { ProgressBarModule } from 'primeng/progressbar';
 import { Observable, of, tap } from 'rxjs';
 
 @Component({
     standalone: true,
     selector: 'view-player-game',
     templateUrl: './view-player-game.component.html',
-    imports: [CommonModule, RouterModule, CardModule, ButtonModule, PlayerPipe, GamePipe, GameInfoPipe]
+    imports: [CommonModule, RouterModule, CardModule, ButtonModule, PlayerPipe, GamePipe, GameInfoPipe, ProgressBarModule, PlayerGameStatsComponent]
 })
 export class ViewPlayerGameComponent implements OnInit {
   #playerService = inject(PlayerService);
@@ -21,7 +23,7 @@ export class ViewPlayerGameComponent implements OnInit {
   @Input() gameId!: number;
   @Input() playerId!: number;
   @Input() team!: number;
-  trueTeam = this.team == 1;
+  trueTeam = false;
   playerGames$ = new Observable<ApiResponse<PlayerGame[]>>();
   playerGame$ = new Observable<PlayerGame>();
   player$ = new Observable<ApiResponse<Player>>();
@@ -31,7 +33,11 @@ export class ViewPlayerGameComponent implements OnInit {
   // rushYardage = 0;
 
   ngOnInit(): void {
-    this.playerGames$ = this.#gameService.searchPlayerGames({gameId: this.gameId, playerId: this.playerId}).pipe(tap((response) => {
+    console.log("Enter");
+    this.trueTeam = (this.team == 1);
+    console.log(this.trueTeam);
+    this.playerGames$ = this.#gameService.searchPlayerGames(<SearchPlayerGames>{gameId: this.gameId, playerId: this.playerId})
+    .pipe(tap((response) => {
       if (!response.result) {
         return;
       }
@@ -49,6 +55,7 @@ export class ViewPlayerGameComponent implements OnInit {
         return;
       }
     }));
+    console.log("Exit");
     this.game$ = this.#gameService.getGame(this.gameId);
     this.player$ = this.#playerService.getPlayer(this.playerId);
     // this.games$ = this.#leagueService.watchGames$().pipe(map(games => games.filter(game => game.awayRoster.find((player) => player.id === this.id) || game.homeRoster.find((player) => player.id === this.id))));

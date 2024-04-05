@@ -4,28 +4,56 @@
   <div class="flex justify-content-end gap-2 mb-3">
     <p-button label="Edit Player" icon="pi pi-pencil" severity="primary" [routerLink]="['/', 'edit-player', player.id]"/>
   </div>
-  <p-card [header]="'Schedule'" class="w-30rem">
-    @if (games$ | async; as gamesResponse) { @if (gamesResponse.result; as games) {
-      @for(game of games; track $index) {
-        <div class="flex gap-3 align-items-center mb-3">
-          <p-button
-            size="small"
-            icon="pi pi-eye"
-            severity="primary"
-            [routerLink]="['/', 'games', game.id]"
-          />
-          <div class="p-card-title text-center align-items-center">
-            {{ game | game }}
-          </div>
-          <div class="text-center text-600 mb-3">
-            {{ game | gameinfo }}
-          </div>
-        </div>
-        } @empty {
-        <div>No Games.</div>
-        }
-    } }
-  </p-card>
+  <form [formGroup]="form" (ngSubmit)="(form.valid)">
+    <div class="p-fluid p-formgrid grid">
+    <div class="col-12">
+      <p-selectButton
+        [options]="views"
+        formControlName="view"
+        optionLabel="label"
+        optionValue="value"
+      />
+    </div>
+    </div>
+  </form>
+  @if (this.form.controls.view.value == 'schedule') {
+    <p-card [header]="'Schedule'" class="w-30rem">
+      @if (playerGameGameArray$ | async; as playerGameGameArrayResponse) { @if (playerGameGameArrayResponse.result; as playerGameGamesArray) {
+        @if (playerGameGames$ | async; as playerGameGames) {
+          @for (playerGameGame of playerGameGames; track $index) {
+            <div class="flex gap-3 align-items-center mb-3">
+              <p-button
+                size="small"
+                icon="pi pi-eye"
+                severity="primary"
+                [routerLink]="['/', 'games', playerGameGame.game.id]"
+              />
+              <p-button
+                size="small"
+                icon="pi pi-calculator"
+                severity="primary"
+                [routerLink]="['/', 'games', playerGameGame.game.id, 'team', playerGameGame.playerGame.isHome ? 1 : 0, 'player', playerGameGame.playerGame.playerId]"
+              />
+              <div class="p-card-title text-center align-items-center">
+                {{ playerGameGame | gamewithteam }}
+              </div>
+              <div class="text-center text-600 mb-3">
+                {{ playerGameGame.game | gameinfo }}
+              </div>
+            </div>
+            } @empty {
+            <div>No Games.</div>
+            }
+        }      
+         
+      } }
+      
+    </p-card>
+  } @else {
+    <p-card class="w-30rem">
+    <player-stats [player]="player"></player-stats>
+    </p-card>
+  }
 }
 @else {
   <h1>Player is not found.</h1>

@@ -1,0 +1,49 @@
+<div class="mb-3">
+  <div class="mb-3">
+    <div class="p-card-title text-center">Points</div>
+    <p>Points Scored: {{this.player.pointsScored}}</p>
+  </div>
+  <div class="mb-3">
+    <div class="p-card-title text-center">Passing</div>
+    <p>Passing Yardage: {{this.player.passingYardage}} ({{this.passingYardagePerAttempt}} y/A) ({{this.passingYardagePerCompletion}} y/C)</p>
+    <p>Completion Percentage: {{this.completionPercentage}}% ({{this.player.passingCompletions}}/{{this.player.passingAttempts}})</p>
+    <p>Passing Points: {{this.passingPoints}}</p>
+    <p>Passing Touchdowns: {{this.player.passingTds}}</p>
+    <p>Passing 1-PT Conversions: {{this.player.passingOnePointConversions}}</p>
+    <p>Passing 2-PT Conversions: {{this.player.passingTwoPointConversions}}</p>
+    <p>Interceptions: {{this.player.passingInterceptions}}</p>
+    <p>Sacks Taken: {{this.player.offensiveSacks}}</p>
+  </div>
+  <div class="mb-3">
+    <div class="p-card-title text-center">Rushing</div>
+    <p>Rushing Yardage: {{this.player.rushingYardage}} ({{this.rushingYardagePerAttempt}} y/C)</p>
+    <p>Rushing Attempts: {{this.player.rushingAttempts}}</p>
+    <p>Rushing Points: {{this.rushingPoints}}</p>
+    <p>Rushing Touchdowns: {{this.player.rushingTds}}</p>
+    <p>Rushing 1-PT Conversions: {{this.player.rushingOnePointConversions}}</p>
+    <p>Rushing 2-PT Conversions: {{this.player.rushingTwoPointConversions}}</p>
+    <p>Fumbles: {{this.player.offensiveFumbles}}</p>
+    <p>Safeties: {{this.player.offensiveSafeties}}</p>
+  </div>
+  <div class="mb-3">
+    <div class="p-card-title text-center">Receiving</div>
+    <p>Receiving Yardage: {{this.player.receivingYardage}} ({{this.receivingYardagePerAttempt}} y/T) ({{this.receivingYardagePerCompletion}} y/C)</p>
+    <p>Reception Percentage: {{this.receptionPercentage}}% ({{this.player.receivingCompletions}}/{{this.player.receivingTargets}})</p>
+    <p>Receiving Points: {{this.receivingPoints}}</p>
+    <p>Receiving Touchdowns: {{this.player.receivingTds}}</p>
+    <p>Receiving 1-PT Conversions: {{this.player.receivingOnePointConversions}}</p>
+    <p>Receiving 2-PT Conversions: {{this.player.receivingTwoPointConversions}}</p>
+  </div>
+  <div class="mb-3">
+    <div class="p-card-title text-center">Defense</div>
+    <p>Flag Pulls: {{this.player.flagPulls}}</p>
+    <p>Interceptions: {{this.player.defensiveInterceptions}}</p>
+    <p>Fumble Recoveries: {{this.player.defensiveFumbles}}</p>
+    <p>Safeties: {{this.player.defensiveSafeties}}</p>
+    <p>Sacks: {{this.player.defensiveSacks}}</p>
+    <p>Defensive Points: {{this.defensivePoints}}</p>
+    <p>Defensive Touchdowns: {{this.player.defensiveTds}}</p>
+    <p>Defensive 1-PT Conversions: {{this.player.defensiveOnePointConversions}}</p>
+    <p>Defensive 2-PT Conversions: {{this.player.defensiveTwoPointConversions}}</p>
+  </div>
+</div>

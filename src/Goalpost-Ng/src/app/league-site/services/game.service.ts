@@ -11,10 +11,12 @@ import {
   SearchPlays,
   GameData,
   Game,
+  PlayerGame,
 } from '@league-site/models';
 import { switchMap, of, map, combineLatest, tap } from 'rxjs';
 import { DataService } from './data.service';
 import { PlayerService } from './player.service';
+import { PlayerGameGameArray } from '@league-site/models/entities/player-game-game-array';
 
 @Injectable({
   providedIn: 'root',
@@ -183,6 +185,25 @@ export class GameService {
                 return getGameResponse as any as ApiResponse<Game[]>;
               }
               return new SuccessApiResponse(getGameResponse.result);
+            })
+          );
+      })
+    );
+  }
+
+  getGamesAndPlayerGamesForPlayer(id: number) {
+    return this.#dataService.getPlayerGamesForPlayer(id).pipe(
+      switchMap((response) => {
+        if (!response.result) {
+          return of(response as any as ApiResponse<PlayerGameGameArray>);
+        }
+        return this.getGames(response.result.map((playerGame) => playerGame.gameId))
+          .pipe(
+            map((getGameResponse) => {
+              if (!getGameResponse.result) {
+                return getGameResponse as any as ApiResponse<PlayerGameGameArray>;
+              }
+              return new SuccessApiResponse(new PlayerGameGameArray(response.result!, getGameResponse.result));
             })
           );
       })

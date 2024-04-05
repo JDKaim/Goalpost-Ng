@@ -52,7 +52,9 @@ namespace Goalpost.WebApi.Helpers
             bool isScoringPlay = (endYardLine == 0) || (endYardLine == 40);
             if (!isScoringPlay)
             {
-                if (dto.FlagPullerId == null)
+                if (isPassingPlay && dto.TurnoverType == TurnoverType.None && dto.IsCompletedPass == false)
+                { }
+                else if (dto.FlagPullerId == null)
                 {
                     throw new Exception($"{nameof(dto.FlagPullerId)} needs to exist on non-scoring play.");
                 }

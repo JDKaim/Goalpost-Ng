@@ -39,6 +39,13 @@
         }
       }
     }
+    @else if (playStats.play.isSack) {
+      SACKED by
+      <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.flagPullerId]">{{this.flagPullerName}}.</a>
+    }
+    @else if (!playStats.play.isCompletedPass && !playStats.play.isSack) {
+      pass falls incomplete.
+    }
     @else if (playStats.play.yardLine - playStats.play.yardage > 0 && playStats.play.turnoverType === "None") {
       flag pulled by
       <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.flagPullerId]">{{this.flagPullerName}}.</a>

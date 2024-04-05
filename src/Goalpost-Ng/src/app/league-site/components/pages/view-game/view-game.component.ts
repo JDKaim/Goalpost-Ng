@@ -77,6 +77,9 @@ export class ViewGameComponent {
             this.currentHomePossession = !this.currentHomePossession;
             this.currentYardLine = 40 - (lastPlay.yardLine - lastPlay.yardage);
           }
+        }else if ((lastPlay.type === 'Passing' || lastPlay.type === 'OnePointPass' || lastPlay.type === 'TwoPointPass') && !lastPlay.isCompletedPass && !lastPlay.isSack && lastPlay.turnoverType === 'None') {
+            this.currentDown = lastPlay.down + 1;
+            this.currentYardLine = lastPlay.yardLine - lastPlay.yardage;
         } else if (lastPlay.yardLine - lastPlay.yardage === 0 || lastPlay.yardLine - lastPlay.yardage === 40) {
           this.currentDown = 1;
           this.currentYardLine = 40;

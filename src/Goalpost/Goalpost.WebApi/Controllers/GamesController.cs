@@ -390,7 +390,8 @@ namespace Goalpost.WebApi.Controllers
                         break;
                 }
             }
-            if (endYardLine == 40)
+            bool isPassingPlay = play.Type == PlayType.Passing || play.Type == PlayType.OnePointPass || play.Type == PlayType.TwoPointPass;
+            if (endYardLine == 40 && (!isPassingPlay || play.IsCompletedPass || play.IsSack))
             {
                 switch (dto.Type)
                 {
@@ -538,6 +539,11 @@ namespace Goalpost.WebApi.Controllers
             if (play.Points is not 0)
             {
                 bool isHomePoints = (play.IsHomePlay == play.TurnoverPlayer is null);
+                bool isPassingPlay = play.Type == PlayType.Passing || play.Type == PlayType.OnePointPass || play.Type == PlayType.TwoPointPass;
+                if (play.YardLine - play.Yardage == 40 && (!isPassingPlay || play.IsCompletedPass || play.IsSack) && play.TurnoverType == TurnoverType.None)
+                {
+                    isHomePoints = !isHomePoints;
+                }
 
                 if (isHomePoints)
                 {

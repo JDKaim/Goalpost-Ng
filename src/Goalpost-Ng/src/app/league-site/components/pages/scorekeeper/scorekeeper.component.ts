@@ -319,6 +319,9 @@ export class ScorekeeperComponent {
               this.form.controls.offensiveTeamId.setValue(lastPlay.isHomePlay ? this.teams[0].value : this.teams[1].value);
               this.form.controls.yardLine.setValue(40 - (lastPlay.yardLine - lastPlay.yardage));
             }
+          } else if ((lastPlay.type === 'Passing' || lastPlay.type === 'OnePointPass' || lastPlay.type === 'TwoPointPass') && !lastPlay.isCompletedPass && !lastPlay.isSack && lastPlay.turnoverType === 'None') {
+            this.form.controls.down.setValue(lastPlay.down + 1);
+            this.form.controls.yardLine.setValue(lastPlay.yardLine - lastPlay.yardage);
           } else if (lastPlay.yardLine - lastPlay.yardage === 0 || lastPlay.yardLine - lastPlay.yardage === 40) {
             this.form.controls.down.setValue(1);
             this.form.controls.yardLine.setValue(40);

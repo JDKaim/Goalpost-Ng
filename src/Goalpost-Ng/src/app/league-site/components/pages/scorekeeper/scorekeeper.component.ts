@@ -110,6 +110,8 @@ export class ScorekeeperComponent {
   awayTeamName = '';
   homeTeamName = '';
   gameData$ = this.#gameService.getGameData(this.id);
+  awayRoster = new Array<RosterPlayer>();
+  homeRoster = new Array<RosterPlayer>();
   offensiveTeamRoster = new Array<RosterPlayer>();
   defensiveTeamRoster = new Array<RosterPlayer>();
   errors = new Array<Message>();
@@ -168,9 +170,13 @@ export class ScorekeeperComponent {
         next: (teamId) => {
           if (teamId === this.teams[1].value) {
             this.form.controls.defensiveTeamId.setValue(this.teams[0].value);
+            this.offensiveTeamRoster = this.homeRoster;
+            this.defensiveTeamRoster = this.awayRoster;
             this.isHomePlay = true;
           } else {
             this.form.controls.defensiveTeamId.setValue(this.teams[1].value);
+            this.offensiveTeamRoster = this.awayRoster;
+            this.defensiveTeamRoster = this.homeRoster;
             this.isHomePlay = false;
           }
         },
@@ -288,6 +294,8 @@ export class ScorekeeperComponent {
         this.teams[1].label = response.result.game.homeTeamCode;
         this.awayTeamName = response.result.game.awayTeamName;
         this.homeTeamName = response.result.game.homeTeamName;
+        this.awayRoster = response.result.awayRoster;
+        this.homeRoster = response.result.homeRoster;
         if (
           this.form.controls.offensiveTeamId.value ===
           response.result.game.awayTeamCode

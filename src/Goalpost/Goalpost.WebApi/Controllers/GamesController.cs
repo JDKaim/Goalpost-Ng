@@ -449,26 +449,7 @@ namespace Goalpost.WebApi.Controllers
             {
                 return ApiResponseDto<PlayDto>.CreateError("Play not found.");
             }
-            PlayDto playDto = new PlayDto()
-            {
-                Id = play.Id,
-                Index = play.Index,
-                IsHomePlay = play.IsHomePlay,
-                Type = play.Type,
-                YardLine = play.YardLine,
-                Down = play.Down,
-                Points = play.Points,
-                Yardage = play.Yardage,
-                IsCompletedPass = play.IsCompletedPass,
-                PasserId = play.Passer?.Id,
-                RusherId = play.Rusher?.Id,
-                ReceiverId = play.Receiver?.Id,
-                TurnoverType = play.TurnoverType,
-                FlagPullerId = play.FlagPuller?.Id,
-                TurnoverPlayerId = play.TurnoverPlayer?.Id,
-                IsSack = play.IsSack
-            };
-            return ApiResponseDto<PlayDto>.CreateSuccess(playDto);
+            return ApiResponseDto<PlayDto>.CreateSuccess(play.ToDto());
         }
 
         [HttpPost("Plays/Search")]
@@ -508,6 +489,20 @@ namespace Goalpost.WebApi.Controllers
             }
 
             return ApiResponseDto<List<PlayDto>>.CreateSuccess(await query.Select((play) => play.ToDto()).ToListAsync());
+        }
+
+        [HttpDelete("Plays/{id}")]
+        [Authorize(Roles = ApplicationRoles.Administrator)]
+        public async Task<ApiResponseDto<bool>> DeletePlay(int id)
+        {
+            Play? play = await this.Db.Plays.FirstOrDefaultAsync(play => play.Id == id);
+            if (play is not null)
+            {
+                this.Db.Plays.Remove(play);
+                await this.Db.SaveChangesAsync();
+                await SyncGameStatsAsync(play.GameId);
+            }
+            return ApiResponseDto<bool>.CreateSuccess(true);
         }
 
         [HttpPost("List")]
@@ -557,6 +552,45 @@ namespace Goalpost.WebApi.Controllers
             }
         }
 
+        private async Task SyncGameStatsAsync(int gameId)
+        {
+            Game? game = await this.Db.Games.FirstOrDefaultAsync((game) => game.Id == gameId);
+            if (game is null)
+            {
+                return;
+            }
+            List<Play> plays = await this.Db.Plays.Where((playItem) => playItem.GameId == gameId).ToListAsync();
+            List<PlayerGame> homeRoster = await this.Db.PlayerGames.Where((playerGame) => (playerGame.GameId == gameId && playerGame.IsHome)).ToListAsync();
+            List<PlayerGame> awayRoster = await this.Db.PlayerGames.Where((playerGame) => (playerGame.GameId == gameId && !playerGame.IsHome)).ToListAsync();
+            foreach (var playerGame in homeRoster)
+            {
+                await UpdatePlayerGameStatsAsync(playerGame.PlayerId, gameId, true, plays);
+            }
+            foreach (var playerGame in awayRoster)
+            {
+                await UpdatePlayerGameStatsAsync(playerGame.PlayerId, gameId, false, plays);
+            }
+            foreach (var play in plays.Where(play => play.Points is not 0))
+            {
+                bool isHomePoints = (play.IsHomePlay == play.TurnoverPlayer is null);
+                bool isPassingPlay = play.Type == PlayType.Passing || play.Type == PlayType.OnePointPass || play.Type == PlayType.TwoPointPass;
+                if (play.YardLine - play.Yardage == 40 && (!isPassingPlay || play.IsCompletedPass || play.IsSack) && play.TurnoverType == TurnoverType.None)
+                {
+                    isHomePoints = !isHomePoints;
+                }
+
+                if (isHomePoints)
+                {
+                    game.HomeScore += play.Points;
+                }
+                else
+                {
+                    game.AwayScore += play.Points;
+                }
+            }
+            await this.Db.SaveChangesAsync();
+        }
+
         private async Task UpdatePlayerGameStatsAsync(int? playerId, int gameId, bool isHome, List<Play> plays)
         {
             if (playerId is null)
@@ -575,19 +609,19 @@ namespace Goalpost.WebApi.Controllers
             }
 
             List<Play> passingPlays = plays
-                    .Where((play) => play.Game.Id == gameId && play.Passer == player && play.IsHomePlay == isHome)
+                    .Where((play) => play.GameId == gameId && play.Passer == player && play.IsHomePlay == isHome)
                     .ToList();
             List<Play> rushingPlays = plays
-                    .Where((play) => play.Game.Id == gameId && play.Rusher == player && play.IsHomePlay == isHome)
+                    .Where((play) => play.GameId == gameId && play.Rusher == player && play.IsHomePlay == isHome)
                     .ToList();
             List<Play> receivingPlays = plays
-                    .Where((play) => play.Game.Id == gameId && play.Receiver == player && play.IsHomePlay == isHome)
+                    .Where((play) => play.GameId == gameId && play.Receiver == player && play.IsHomePlay == isHome)
                     .ToList();
             List<Play> turnoverPlays = plays
-                    .Where((play) => play.Game.Id == gameId && play.TurnoverPlayer == player && play.IsHomePlay != isHome)
+                    .Where((play) => play.GameId == gameId && play.TurnoverPlayer == player && play.IsHomePlay != isHome)
                     .ToList();
             List<Play> flagPullerPlays = plays
-                    .Where((play) => play.Game.Id == gameId && play.FlagPuller == player &&
+                    .Where((play) => play.GameId == gameId && play.FlagPuller == player &&
                     ((play.IsHomePlay == isHome && (play.TurnoverType == TurnoverType.Interception || play.TurnoverType == TurnoverType.Fumble)) ||
                     (play.IsHomePlay != isHome && (play.TurnoverType != TurnoverType.Interception && play.TurnoverType != TurnoverType.Fumble))))
                     .ToList();

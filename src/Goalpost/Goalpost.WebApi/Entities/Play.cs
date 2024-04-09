@@ -5,6 +5,7 @@
         public int Id { get; set; }
         public long Index { get; set; }
         public required Game Game { get; set; }
+        public int GameId { get; set; }
         public bool IsHomePlay { get; set; }
         public PlayType Type { get; set; }
         public int YardLine { get; set; }

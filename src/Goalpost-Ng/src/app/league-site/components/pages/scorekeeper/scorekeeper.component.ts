@@ -179,6 +179,7 @@ export class ScorekeeperComponent {
             this.defensiveTeamRoster = this.homeRoster;
             this.isHomePlay = false;
           }
+          this.#displayPlay();
         },
       });
     this.form.controls.isSack.valueChanges
@@ -191,19 +192,17 @@ export class ScorekeeperComponent {
   }
 
   #displayPlay() {
-    if (this.form.valid) {
-      const formValue = this.form.value;
-      const isHomePlay = this.isHomePlay;
-      this.currentPlay = new PlayDisplay(
-        { id: 0, index: 0, ...(<any>formValue), isHomePlay },
-        this.awayTeamName,
-        this.teams[0].label,
-        this.homeTeamName,
-        this.teams[1].label,
-        this.offensiveTeamRoster,
-        this.defensiveTeamRoster
-      );
-    }
+    const formValue = this.form.value;
+    const isHomePlay = this.isHomePlay;
+    this.currentPlay = new PlayDisplay(
+      { id: 0, index: 0, ...(<any>formValue), isHomePlay },
+      this.awayTeamName,
+      this.teams[0].label,
+      this.homeTeamName,
+      this.teams[1].label,
+      this.offensiveTeamRoster,
+      this.defensiveTeamRoster
+    );
   }
 
   #onTypeChanged(type: PlayType) {

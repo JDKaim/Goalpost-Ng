@@ -24,7 +24,8 @@ import { SuccessApiResponse } from 'src/app/league-site/models/api/success-api-r
 })
 export class PlayListComponent implements OnInit {
   #gameService = inject(GameService);
-  @Input() gameId!: number;
+  @Input({required: true}) gameId!: number;
+  @Input() canDelete = false;
   gameData$ = new Observable<ApiResponse<GameData>>();
   plays$ = new Observable<ApiResponse<PlayDisplay[]>>();
 

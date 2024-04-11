@@ -116,7 +116,7 @@ namespace Goalpost.WebApi.Helpers
             playerGame.DefensiveOnePointConversions = turnoverPlays.FindAll((play) => play.Points == 1).Count;
             playerGame.DefensiveTwoPointConversions = turnoverPlays.FindAll((play) => play.Points == 2).Count;
             playerGame.DefensiveTds = turnoverPlays.FindAll((play) => play.Points == 6).Count;
-            playerGame.DefensiveSafeties = flagPullerPlays.FindAll((play) => play.Points == 2 && (play.Yardage + play.YardLine == 0)).Count;
+            playerGame.DefensiveSafeties = flagPullerPlays.FindAll((play) => play.Points == 2 && (play.YardLine - play.Yardage == 40)).Count;
             playerGame.DefensiveSacks = flagPullerPlays.FindAll((play) => play.IsSack).Count;
             playerGame.OffensiveSacks = passingPlays.FindAll((play) => play.IsSack).Count;
             playerGame.PassingAttempts = passingPlays.FindAll((play) => !play.IsSack).Count;
@@ -142,9 +142,9 @@ namespace Goalpost.WebApi.Helpers
                 rushingPlays.FindAll((play) => play.TurnoverType == TurnoverType.Fumble).Count +
                 receivingPlays.FindAll((play) => play.TurnoverType == TurnoverType.Fumble && play.IsCompletedPass).Count;
             playerGame.OffensiveSafeties = passingPlays.FindAll((play) => play.IsSack && play.Points == 2).Count +
-                rushingPlays.FindAll((play) => (play.Yardage + play.YardLine == 40)).Count +
-                receivingPlays.FindAll((play) => (play.Yardage + play.YardLine == 40) && play.IsCompletedPass).Count;
-            playerGame.PointsScored = playerGame.DefensiveOnePointConversions + playerGame.PassingOnePointConversions + playerGame.ReceivingOnePointConversions + playerGame.RushingOnePointConversions +
+                rushingPlays.FindAll((play) => (play.YardLine - play.Yardage == 40)).Count +
+                receivingPlays.FindAll((play) => (play.YardLine - play.Yardage == 40) && play.IsCompletedPass).Count;
+            playerGame.PointsScored = (2 * playerGame.DefensiveSafeties) + playerGame.DefensiveOnePointConversions + playerGame.PassingOnePointConversions + playerGame.ReceivingOnePointConversions + playerGame.RushingOnePointConversions +
                 (2 * (playerGame.DefensiveTwoPointConversions + playerGame.PassingTwoPointConversions + playerGame.ReceivingTwoPointConversions + playerGame.RushingTwoPointConversions)) +
                 (6 * (playerGame.DefensiveTds + playerGame.PassingTds + playerGame.ReceivingTds + playerGame.RushingTds));
         }

@@ -141,6 +141,12 @@ export class DataService {
     );
   }
 
+  deletePlay(playId: number) {
+    return this.#http.delete<ApiResponse<boolean>>(
+      `${this.#apiUrl}/Games/Plays/${playId}`
+    )
+  }
+
   searchPlays(searchPlays: SearchPlays) {
     return this.#http.post<ApiResponse<Play[]>>(
       `${this.#apiUrl}/Games/Plays/Search`,

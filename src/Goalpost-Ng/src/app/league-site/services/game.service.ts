@@ -107,6 +107,10 @@ export class GameService {
     return this.#dataService.getPlay(playId);
   }
 
+  deletePlay(playId: number) {
+    return this.#dataService.deletePlay(playId);
+  }
+
   searchPlays(searchPlays: SearchPlays) {
     return this.#dataService.searchPlays(searchPlays);
   }

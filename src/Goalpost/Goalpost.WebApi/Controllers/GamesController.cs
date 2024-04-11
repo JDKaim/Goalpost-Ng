@@ -492,7 +492,8 @@ namespace Goalpost.WebApi.Controllers
         }
 
         [HttpDelete("Plays/{id}")]
-        [Authorize(Roles = ApplicationRoles.Administrator)]
+        [Authorize(Roles = $"{ApplicationRoles.Administrator},{ApplicationRoles.Scorekeeper}")]
+        //[Authorize(Roles = ApplicationRoles.Administrator)]
         public async Task<ApiResponseDto<bool>> DeletePlay(int id)
         {
             Play? play = await this.Db.Plays.FirstOrDefaultAsync(play => play.Id == id);
@@ -570,6 +571,8 @@ namespace Goalpost.WebApi.Controllers
             {
                 await UpdatePlayerGameStatsAsync(playerGame.PlayerId, gameId, false, plays);
             }
+            game.HomeScore = 0;
+            game.AwayScore = 0;
             foreach (var play in plays.Where(play => play.Points is not 0))
             {
                 bool isHomePoints = (play.IsHomePlay == play.TurnoverPlayer is null);
@@ -598,7 +601,7 @@ namespace Goalpost.WebApi.Controllers
                 return;
             }
             PlayerGame playerGame = await this.Db.PlayerGames.FindAsync(playerId, gameId, isHome) ?? throw new Exception($"{nameof(playerGame)} does not exist.");
-            
+
             PlayHelper.UpdatePlayerStats(plays, playerGame);
 
             await UpdatePlayerStatsAsync(playerId.Value);

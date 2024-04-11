@@ -1,16 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { GameService } from '@league-site/services';
+import { ButtonModule } from 'primeng/button';
 import { PlayDisplay } from 'src/app/league-site/models/entities/play-display';
 
 @Component({
   standalone: true,
   selector: 'play-list-item',
   templateUrl: './play-list-item.component.html',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ButtonModule],
 })
 export class PlayListItemComponent implements OnChanges{
+  #gameService = inject(GameService);
   @Input({required: true}) playStats!: PlayDisplay;
+  @Input() canDelete = false;
   playDisplay: Array<string> = ['1st', '2nd', '3rd', '4th'];
   passerName: string | undefined;
   rusherName: string | undefined;
@@ -22,6 +26,8 @@ export class PlayListItemComponent implements OnChanges{
   defensiveTeamName = "";
   offensiveTeamCode = "";
   defensiveTeamCode = "";
+  is40 = false;
+  is0 = false;
 
   
   ngOnChanges(changes: SimpleChanges): void {
@@ -48,5 +54,11 @@ export class PlayListItemComponent implements OnChanges{
     this.defensiveTeamName = this.playStats.play.isHomePlay ? this.playStats.awayTeamName : this.playStats.homeTeamName;
     this.offensiveTeamCode = this.playStats.play.isHomePlay ? this.playStats.homeTeamCode : this.playStats.awayTeamCode;
     this.defensiveTeamCode = this.playStats.play.isHomePlay ? this.playStats.awayTeamCode : this.playStats.homeTeamCode;
+    this.is40 = (this.playStats.play.yardLine - this.playStats.play.yardage === 40);
+    this.is0 = (this.playStats.play.yardLine - this.playStats.play.yardage === 0);
+  }
+
+  deletePlay() {
+    this.#gameService.deletePlay(this.playStats.play.id).subscribe();
   }
 }

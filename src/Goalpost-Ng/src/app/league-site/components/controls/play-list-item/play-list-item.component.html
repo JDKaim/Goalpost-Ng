@@ -1,3 +1,14 @@
+<div class="flex">
+@if (this.canDelete) {
+  <p-button
+      size="small"
+      class="mr-2"
+      icon="pi pi-trash"
+      severity="danger"
+      (onClick)="deletePlay()"
+  />
+}
+
 @if (this.isPassingPlay) {
   <div class="mb-3">
     {{this.offensiveTeamName}}
@@ -12,21 +23,21 @@
     </span>
     <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.receiverId]">{{this.receiverName}}</a>
     @if (playStats.play.isCompletedPass) {
-      completed for {{playStats.play.yardage}} yards,
+      <span> completed for {{playStats.play.yardage}} yards,</span>
     } @else if (playStats.play.turnoverType === 'Interception') {
-      INTERCEPTED by
+      <span>INTERCEPTED by</span>
       <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.turnoverPlayerId]">{{this.turnoverPlayerName}}</a>
-      @if (playStats.play.yardLine - playStats.play.yardage === 40) {
-        AND RETURNED FOR A TOUCHDOWN!!!
+      @if (this.is40) {
+        <span>AND RETURNED FOR A TOUCHDOWN!!!</span>
       }
     } @else if (playStats.play.turnoverType === 'Fumble') {
-      FUMBLED!!! Recovered by
+      <span>FUMBLED!!! Recovered by</span>
       <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.turnoverPlayerId]">{{this.turnoverPlayerName}}</a>
-      @if (playStats.play.yardLine - playStats.play.yardage === 40) {
-        AND RETURNED FOR A TOUCHDOWN!!!
+      @if (this.is40) {
+        <span>AND RETURNED FOR A TOUCHDOWN!!!</span>
       }
     }
-    @if (playStats.play.yardLine - playStats.play.yardage === 0 && playStats.play.turnoverType === "None") {
+    @if (this.is0 && playStats.play.turnoverType === "None") {
       @switch (playStats.play.type) {
         @case ("Passing") {
           TOUCHDOWN!!!
@@ -69,17 +80,17 @@
     } @else if (playStats.play.turnoverType === 'Interception') {
       INTERCEPTED by
       <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.turnoverPlayerId]">{{this.turnoverPlayerName}}</a>
-      @if (playStats.play.yardLine - playStats.play.yardage === 40) {
+      @if (this.is40) {
         AND RETURNED FOR A TOUCHDOWN!!!
       }
     } @else if (playStats.play.turnoverType === 'Fumble') {
       FUMBLED!!! Recovered by
       <a class="font-semibold" [routerLink]="['/', 'players', playStats.play.turnoverPlayerId]">{{this.turnoverPlayerName}}</a>
-      @if (playStats.play.yardLine - playStats.play.yardage === 40) {
+      @if (this.is40) {
         AND RETURNED FOR A TOUCHDOWN!!!
       }
     }
-    @if (playStats.play.yardLine - playStats.play.yardage === 0 && playStats.play.turnoverType === "None") {
+    @if (this.is0 && playStats.play.turnoverType === "None") {
       @switch (playStats.play.type) {
         @case ("Rushing") {
           TOUCHDOWN!!!
@@ -104,3 +115,4 @@
     }
   </div>
 }
+</div>

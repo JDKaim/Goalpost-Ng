@@ -38,13 +38,13 @@ export class PlayerStatsComponent implements OnInit{
   defensivePoints = 0;
   
   ngOnInit(): void {
-    this.completionPercentage = Math.round(100 * this.player.passingCompletions / this.player.passingAttempts);
+    this.completionPercentage = this.player.passingCompletions / this.player.passingAttempts;
     this.passingPoints = this.player.passingTds * 6 + this.player.passingTwoPointConversions * 2 + this.player.passingOnePointConversions;
     this.passingYardagePerAttempt = Math.round(10 * this.player.passingYardage / this.player.passingAttempts) / 10;
     this.passingYardagePerCompletion = Math.round(10 * this.player.passingYardage / this.player.passingCompletions) / 10;
     this.rushingYardagePerAttempt = Math.round(10 * this.player.rushingYardage / this.player.rushingAttempts) / 10;
     this.rushingPoints = this.player.rushingTds * 6 + this.player.rushingTwoPointConversions * 2 + this.player.rushingOnePointConversions;
-    this.receptionPercentage = Math.round(100 * this.player.receivingCompletions / this.player.receivingTargets);
+    this.receptionPercentage = this.player.receivingCompletions / this.player.receivingTargets;
     this.receivingYardagePerAttempt = Math.round(10 * this.player.receivingYardage / this.player.receivingTargets) / 10;
     this.receivingYardagePerCompletion = Math.round(10 * this.player.receivingYardage / this.player.receivingCompletions) / 10;
     this.receivingPoints = this.player.receivingTds * 6 + this.player.receivingTwoPointConversions * 2 + this.player.receivingOnePointConversions;

@@ -1,49 +1,198 @@
 <div class="mb-3">
-  <div class="mb-3">
-    <div class="p-card-title text-center">Points</div>
-    <p>Points Scored: {{this.player.pointsScored}}</p>
-  </div>
-  <div class="mb-3">
-    <div class="p-card-title text-center">Passing</div>
-    <p>Passing Yardage: {{this.player.passingYardage}} ({{this.passingYardagePerAttempt}} y/A) ({{this.passingYardagePerCompletion}} y/C)</p>
-    <p>Completion Percentage: {{this.completionPercentage}}% ({{this.player.passingCompletions}}/{{this.player.passingAttempts}})</p>
-    <p>Passing Points: {{this.passingPoints}}</p>
-    <p>Passing Touchdowns: {{this.player.passingTds}}</p>
-    <p>Passing 1-PT Conversions: {{this.player.passingOnePointConversions}}</p>
-    <p>Passing 2-PT Conversions: {{this.player.passingTwoPointConversions}}</p>
-    <p>Interceptions: {{this.player.passingInterceptions}}</p>
-    <p>Sacks Taken: {{this.player.offensiveSacks}}</p>
-  </div>
-  <div class="mb-3">
-    <div class="p-card-title text-center">Rushing</div>
-    <p>Rushing Yardage: {{this.player.rushingYardage}} ({{this.rushingYardagePerAttempt}} y/C)</p>
-    <p>Rushing Attempts: {{this.player.rushingAttempts}}</p>
-    <p>Rushing Points: {{this.rushingPoints}}</p>
-    <p>Rushing Touchdowns: {{this.player.rushingTds}}</p>
-    <p>Rushing 1-PT Conversions: {{this.player.rushingOnePointConversions}}</p>
-    <p>Rushing 2-PT Conversions: {{this.player.rushingTwoPointConversions}}</p>
-    <p>Fumbles: {{this.player.offensiveFumbles}}</p>
-    <p>Safeties: {{this.player.offensiveSafeties}}</p>
-  </div>
-  <div class="mb-3">
-    <div class="p-card-title text-center">Receiving</div>
-    <p>Receiving Yardage: {{this.player.receivingYardage}} ({{this.receivingYardagePerAttempt}} y/T) ({{this.receivingYardagePerCompletion}} y/C)</p>
-    <p>Reception Percentage: {{this.receptionPercentage}}% ({{this.player.receivingCompletions}}/{{this.player.receivingTargets}})</p>
-    <p>Receiving Points: {{this.receivingPoints}}</p>
-    <p>Receiving Touchdowns: {{this.player.receivingTds}}</p>
-    <p>Receiving 1-PT Conversions: {{this.player.receivingOnePointConversions}}</p>
-    <p>Receiving 2-PT Conversions: {{this.player.receivingTwoPointConversions}}</p>
-  </div>
-  <div class="mb-3">
-    <div class="p-card-title text-center">Defense</div>
-    <p>Flag Pulls: {{this.player.flagPulls}}</p>
-    <p>Interceptions: {{this.player.defensiveInterceptions}}</p>
-    <p>Fumble Recoveries: {{this.player.defensiveFumbles}}</p>
-    <p>Safeties: {{this.player.defensiveSafeties}}</p>
-    <p>Sacks: {{this.player.defensiveSacks}}</p>
-    <p>Defensive Points: {{this.defensivePoints}}</p>
-    <p>Defensive Touchdowns: {{this.player.defensiveTds}}</p>
-    <p>Defensive 1-PT Conversions: {{this.player.defensiveOnePointConversions}}</p>
-    <p>Defensive 2-PT Conversions: {{this.player.defensiveTwoPointConversions}}</p>
-  </div>
+  <table class="mb-3 col-12">
+    <thead>
+      <th colspan="12">Points</th>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Points Scored</td>
+        <td class="text-right">{{ this.player.pointsScored }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <table class="mb-3 col-12">
+    <thead>
+      <th colspan="12">Passing</th>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Passing Yardage</td>
+        <td class="text-right">
+          {{ this.player.passingYardage }} ({{
+            this.passingYardagePerAttempt
+          }}
+          y/A) ({{ this.passingYardagePerCompletion }} y/C)
+        </td>
+      </tr>
+      <tr>
+        <td>Completion Percentage</td>
+        <td class="text-right">
+          {{ this.completionPercentage | percent : "0.2" }} ({{
+            this.player.passingCompletions
+          }}/{{ this.player.passingAttempts }})
+        </td>
+      </tr>
+      <tr>
+        <td>Passing Points</td>
+        <td class="text-right">{{ this.passingPoints }}</td>
+      </tr>
+      <tr>
+        <td>Passing Touchdowns</td>
+        <td class="text-right">{{ this.player.passingTds }}</td>
+      </tr>
+      <tr>
+        <td>Passing 1-PT Conversions</td>
+        <td class="text-right">{{ this.player.passingOnePointConversions }}</td>
+      </tr>
+      <tr>
+        <td>Passing 2-PT Conversions</td>
+        <td class="text-right">{{ this.player.passingTwoPointConversions }}</td>
+      </tr>
+      <tr>
+        <td>Interceptions</td>
+        <td class="text-right">{{ this.player.passingInterceptions }}</td>
+      </tr>
+      <tr>
+        <td>Sacks Taken</td>
+        <td class="text-right">{{ this.player.offensiveSacks }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <table class="mb-3 col-12">
+    <thead>
+      <th colspan="12">Rushing</th>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Rushing Yardage</td>
+        <td class="text-right">
+          {{ this.player.rushingYardage }} ({{ this.rushingYardagePerAttempt }}
+          y/C)
+        </td>
+      </tr>
+      <tr>
+        <td>Rushing Attempts</td>
+        <td class="text-right">{{ this.player.rushingAttempts }}</td>
+      </tr>
+      <tr>
+        <td>Rushing Points</td>
+        <td class="text-right">{{ this.rushingPoints }}</td>
+      </tr>
+      <tr>
+        <td>Rushing Touchdowns</td>
+        <td class="text-right">{{ this.player.rushingTds }}</td>
+      </tr>
+      <tr>
+        <td>Rushing 1-PT Conversions</td>
+        <td class="text-right">
+          {{ this.player.rushingOnePointConversions }}
+        </td>
+      </tr>
+      <tr>
+        <td>Rushing 2-PT Conversions</td>
+        <td class="text-right">
+          {{ this.player.rushingTwoPointConversions }}
+        </td>
+      </tr>
+      <tr>
+        <td>Fumbles</td>
+        <td class="text-right">{{ this.player.offensiveFumbles }}</td>
+      </tr>
+      <tr>
+        <td>Safeties</td>
+        <td class="text-right">{{ this.player.offensiveSafeties }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <table class="mb-3 col-12">
+    <thead>
+      <th colspan="12">Receiving</th>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Receiving Yardage</td>
+        <td class="text-right">
+          {{ this.player.receivingYardage }} ({{
+            this.receivingYardagePerAttempt
+          }}
+          y/T) ({{ this.receivingYardagePerCompletion }} y/C)
+        </td>
+      </tr>
+      <tr>
+        <td>Reception Percentage</td>
+        <td class="text-right">
+          {{ this.receptionPercentage | percent : "0.2" }} ({{
+            this.player.receivingCompletions
+          }}/{{ this.player.receivingTargets }})
+        </td>
+      </tr>
+      <tr>
+        <td>Receiving Points</td>
+        <td class="text-right">{{ this.receivingPoints }}</td>
+      </tr>
+      <tr>
+        <td>Receiving Touchdowns</td>
+        <td class="text-right">{{ this.player.receivingTds }}</td>
+      </tr>
+      <tr>
+        <td>Receiving 1-PT Conversions</td>
+        <td class="text-right">
+          {{ this.player.receivingOnePointConversions }}
+        </td>
+      </tr>
+      <tr>
+        <td>Receiving 2-PT Conversions</td>
+        <td class="text-right">
+          {{ this.player.receivingTwoPointConversions }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <table class="mb-3 col-12">
+    <thead>
+      <th colspan="12">Defense</th>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Flag Pulls</td>
+        <td class="text-right">{{ this.player.flagPulls }}</td>
+      </tr>
+      <tr>
+        <td>Interceptions</td>
+        <td class="text-right">{{ this.player.defensiveInterceptions }}</td>
+      </tr>
+      <tr>
+        <td>Fumble Recoveries</td>
+        <td class="text-right">{{ this.player.defensiveFumbles }}</td>
+      </tr>
+      <tr>
+        <td>Safeties</td>
+        <td class="text-right">{{ this.player.defensiveSafeties }}</td>
+      </tr>
+      <tr>
+        <td>Sacks</td>
+        <td class="text-right">{{ this.player.defensiveSacks }}</td>
+      </tr>
+      <tr>
+        <td>Defensive Points</td>
+        <td class="text-right">{{ this.defensivePoints }}</td>
+      </tr>
+      <tr>
+        <td>Defensive Touchdowns</td>
+        <td class="text-right">{{ this.player.defensiveTds }}</td>
+      </tr>
+      <tr>
+        <td>Defensive 1-PT Conversions</td>
+        <td class="text-right">
+          {{ this.player.defensiveOnePointConversions }}
+        </td>
+      </tr>
+      <tr>
+        <td>Defensive 2-PT Conversions</td>
+        <td class="text-right">
+          {{ this.player.defensiveTwoPointConversions }}
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>

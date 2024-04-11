@@ -1,6 +1,6 @@
 @if (plays$ | async; as response) { @if (response.result; as plays) {
   @for (play of plays; track play.play.id) {
-    <play-list-item [playStats]="play"></play-list-item>
+    <play-list-item [playStats]="play" [canDelete]="canDelete"></play-list-item>
   } @empty {
     <span>No current plays.</span>
   }

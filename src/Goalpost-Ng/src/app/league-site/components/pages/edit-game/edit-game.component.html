@@ -196,6 +196,7 @@
     </div>
   </p-card>
 </div>
+@if (this.deletable) {
 <div class="mt-3">
   <p-button
     label="Delete Game"
@@ -204,4 +205,4 @@
     (onClick)="deleteGameClicked()"
   />
 </div>
-} }
+} } }

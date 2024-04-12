@@ -40,8 +40,8 @@ export class LoginComponent {
             this.errors = response.errorMessages ?? ["Unknown Error Occurred"];
             return;
           }
-          console.log(response.result);
-          console.log(this.#authenticationService.getBearerToken());
+          // console.log(response.result);
+          // console.log(this.#authenticationService.getBearerToken());
           this.#router.navigate(['/']);
         },
       });

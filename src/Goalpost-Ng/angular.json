@@ -32,7 +32,9 @@
                             "src/CNAME"
                         ],
                         "styles": [
-                            "src/styles.scss"
+                            "src/styles.scss",
+                            "node_modules/primeng/resources/themes/lara-light-blue/theme.css",
+                            "node_modules/primeng/resources/primeng.min.css"
                         ],
                         "scripts": [
                             "node_modules/prismjs/prism.js",
@@ -106,7 +108,9 @@
                         "karmaConfig": "karma.conf.js",
                         "inlineStyleLanguage": "scss",
                         "styles": [
-                            "src/styles.scss"
+                            "src/styles.scss",
+                            "node_modules/primeng/resources/themes/lara-light-blue/theme.css",
+                            "node_modules/primeng/resources/primeng.min.css"
                         ],
                         "scripts": [],
                         "assets": [

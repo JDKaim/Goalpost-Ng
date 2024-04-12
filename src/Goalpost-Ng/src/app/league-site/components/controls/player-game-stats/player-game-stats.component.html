@@ -16,18 +16,31 @@
     </thead>
     <tbody>
       <tr>
+        <td>College Passer Rating</td>
+        <td class="text-right">
+          {{ this.collegePasserRating | number : "0.2-2" }}
+        </td>
+      </tr>
+      <tr>
+        <td>NFL Passer Rating</td>
+        <td class="text-right">
+          {{ this.nflPasserRating | number : "0.2-2" }}
+        </td>
+      </tr>
+
+      <tr>
         <td>Passing Yardage</td>
         <td class="text-right">
           {{ this.playerGame.passingYardage }} ({{
-            this.passingYardagePerAttempt
+            this.passingYardagePerAttempt | number : "0.2-2"
           }}
-          y/A) ({{ this.passingYardagePerCompletion }} y/C)
+          y/A) ({{ this.passingYardagePerCompletion | number : "0.2-2" }} y/C)
         </td>
       </tr>
       <tr>
         <td>Completion Percentage</td>
         <td class="text-right">
-          {{ this.completionPercentage | percent : "0.2" }} ({{
+          {{ this.completionPercentage | percent : "0.2-2" }} ({{
             this.playerGame.passingCompletions
           }}/{{ this.playerGame.passingAttempts }})
         </td>
@@ -66,7 +79,7 @@
       <tr>
         <td>Rushing Yardage</td>
         <td class="text-right">
-          {{ this.playerGame.rushingYardage }} ({{ this.rushingYardagePerAttempt }}
+          {{ this.playerGame.rushingYardage }} ({{ this.rushingYardagePerAttempt | number : "0.2-2" }}
           y/C)
         </td>
       </tr>
@@ -113,9 +126,9 @@
         <td>Receiving Yardage</td>
         <td class="text-right">
           {{ this.playerGame.receivingYardage }} ({{
-            this.receivingYardagePerAttempt
+            this.receivingYardagePerAttempt | number : "0.2-2"
           }}
-          y/T) ({{ this.receivingYardagePerCompletion }} y/C)
+          y/T) ({{ this.receivingYardagePerCompletion | number : "0.2-2" }} y/C)
         </td>
       </tr>
       <tr>

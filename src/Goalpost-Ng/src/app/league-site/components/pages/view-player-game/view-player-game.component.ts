@@ -33,9 +33,9 @@ export class ViewPlayerGameComponent implements OnInit {
   // rushYardage = 0;
 
   ngOnInit(): void {
-    console.log("Enter");
+    // console.log("Enter");
     this.trueTeam = (this.team == 1);
-    console.log(this.trueTeam);
+    // console.log(this.trueTeam);
     this.playerGames$ = this.#gameService.searchPlayerGames(<SearchPlayerGames>{gameId: this.gameId, playerId: this.playerId})
     .pipe(tap((response) => {
       if (!response.result) {
@@ -55,7 +55,7 @@ export class ViewPlayerGameComponent implements OnInit {
         return;
       }
     }));
-    console.log("Exit");
+    // console.log("Exit");
     this.game$ = this.#gameService.getGame(this.gameId);
     this.player$ = this.#playerService.getPlayer(this.playerId);
     // this.games$ = this.#leagueService.watchGames$().pipe(map(games => games.filter(game => game.awayRoster.find((player) => player.id === this.id) || game.homeRoster.find((player) => player.id === this.id))));

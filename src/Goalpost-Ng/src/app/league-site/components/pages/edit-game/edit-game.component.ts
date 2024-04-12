@@ -74,6 +74,7 @@ export class EditGameComponent {
   players$ = this.#playerService.searchPlayers({});
   errors = new Array<Message>();
   gameData$ = new Observable<ApiResponse<GameData>>();
+  deletable = false;
 
   statuses: Array<{ label: string; value: Status }> = [
     { label: 'Future', value: 'Future' },
@@ -92,6 +93,9 @@ export class EditGameComponent {
       tap((response) => {
         if (!response.result) {
           return;
+        }
+        if (response.result.plays.length == 0) {
+          this.deletable = true;
         }
         this.form.controls.awayTeamCode.setValue(
           response.result!.game.awayTeamCode

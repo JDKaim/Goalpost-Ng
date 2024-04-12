@@ -99,7 +99,7 @@ namespace Goalpost.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        //[Authorize(Roles = ApplicationRoles.Administrator)]
+        [Authorize(Roles = ApplicationRoles.Administrator)]
         public async Task<ApiResponseDto<GameDto>> UpdateGame(UpdateGameDto dto, int id)
         {
             Game? game = await this.Db.Games.FindAsync(id);
@@ -417,28 +417,9 @@ namespace Goalpost.WebApi.Controllers
             this.Db.Plays.Add(play);
             await this.Db.SaveChangesAsync();
 
-            PlayDto playDto = new PlayDto()
-            {
-                Id = play.Id,
-                Index = play.Index,
-                IsHomePlay = play.IsHomePlay,
-                Type = play.Type,
-                YardLine = play.YardLine,
-                Down = play.Down,
-                Points = play.Points,
-                Yardage = play.Yardage,
-                IsCompletedPass = play.IsCompletedPass,
-                PasserId = dto.PasserId,
-                RusherId = dto.RusherId,
-                ReceiverId = dto.ReceiverId,
-                TurnoverType = dto.TurnoverType,
-                FlagPullerId = dto.FlagPullerId,
-                TurnoverPlayerId = dto.TurnoverPlayerId,
-                IsSack = play.IsSack
-            };
             await UpdateGameStatsAsync(play);
 
-            return ApiResponseDto<PlayDto>.CreateSuccess(playDto);
+            return ApiResponseDto<PlayDto>.CreateSuccess(play.ToDto());
         }
 
         [HttpGet("Plays/{playId}")]
@@ -504,6 +485,131 @@ namespace Goalpost.WebApi.Controllers
                 await UpdateGameStatsAsync(play.GameId);
             }
             return ApiResponseDto<bool>.CreateSuccess(true);
+        }
+
+        [HttpPut("{id}")]
+        //[Authorize(Roles = ApplicationRoles.Administrator)]
+        public async Task<ApiResponseDto<PlayDto>> UpdatePlay(UpdatePlayDto dto, int id)
+        {
+            PlayHelper.VerifyPlay(dto);
+
+            Play? play = await this.Db.Plays.FirstOrDefaultAsync(play => play.Id == id);
+
+            if (play is null)
+            {
+                return ApiResponseDto<PlayDto>.CreateError("Play does not exist.");
+            }
+
+            play.Down = dto.Down;
+            play.IsCompletedPass = dto.IsCompletedPass;
+            play.IsHomePlay = dto.IsHomePlay;
+            play.IsSack = dto.IsSack;
+            play.Type = dto.Type;
+            play.TurnoverType = dto.TurnoverType;
+            play.Yardage = dto.Yardage;
+            play.YardLine = dto.YardLine;
+
+
+            if (dto.PasserId != null)
+            {
+                play.Passer = await this.Db.PlayerGames
+                    .Where((playerGame) => playerGame.GameId == play.GameId && playerGame.PlayerId == dto.PasserId && playerGame.IsHome == dto.IsHomePlay && playerGame.IsCurrent)
+                    .Select((player) => player.Player)
+                    .FirstOrDefaultAsync();
+                if (play.Passer == null)
+                {
+                    return ApiResponseDto<PlayDto>.CreateError("Passing player was not found on this roster.");
+                }
+            }
+            if (dto.RusherId != null)
+            {
+                play.Rusher = await this.Db.PlayerGames
+                    .Where((playerGame) => playerGame.GameId == play.GameId && playerGame.PlayerId == dto.RusherId && playerGame.IsHome == dto.IsHomePlay && playerGame.IsCurrent)
+                    .Select((player) => player.Player)
+                    .FirstOrDefaultAsync();
+                if (play.Rusher == null)
+                {
+                    return ApiResponseDto<PlayDto>.CreateError("Rushing player was not found on this roster.");
+                }
+            }
+            if (dto.ReceiverId != null)
+            {
+                play.Receiver = await this.Db.PlayerGames.Where((playerGame) => playerGame.GameId == play.GameId && playerGame.PlayerId == dto.ReceiverId && playerGame.IsHome == dto.IsHomePlay && playerGame.IsCurrent).Select((player) => player.Player).FirstOrDefaultAsync();
+                if (play.Receiver == null)
+                {
+                    return ApiResponseDto<PlayDto>.CreateError("Receiving player was not found on this roster.");
+                }
+            }
+            if (dto.TurnoverPlayerId != null)
+            {
+                play.TurnoverPlayer = await this.Db.PlayerGames.Where((playerGame) => playerGame.GameId == play.GameId && playerGame.PlayerId == dto.TurnoverPlayerId && playerGame.IsHome != dto.IsHomePlay && playerGame.IsCurrent).Select((player) => player.Player).FirstOrDefaultAsync();
+                if (play.TurnoverPlayer == null)
+                {
+                    return ApiResponseDto<PlayDto>.CreateError("Turnover player was not found on this roster.");
+                }
+            }
+            if (dto.FlagPullerId != null)
+            {
+                bool flagPullerTeam = !dto.IsHomePlay;
+                if (dto.TurnoverPlayerId != null)
+                {
+                    flagPullerTeam = !flagPullerTeam;
+                }
+                play.FlagPuller = await this.Db.PlayerGames.Where((playerGame) => playerGame.GameId == play.GameId && playerGame.PlayerId == dto.FlagPullerId && playerGame.IsHome != flagPullerTeam && playerGame.IsCurrent).Select((player) => player.Player).FirstOrDefaultAsync();
+                if (play.FlagPuller == null)
+                {
+                    return ApiResponseDto<PlayDto>.CreateError("Flag pulling player was not found on this roster.");
+                }
+            }
+
+            int endYardLine = dto.YardLine - dto.Yardage;
+            if (endYardLine == 0)
+            {
+                switch (dto.Type)
+                {
+                    case PlayType.Passing:
+                    case PlayType.Rushing:
+                        play.Points = 6;
+                        break;
+                    case PlayType.OnePointPass:
+                    case PlayType.OnePointRush:
+                        play.Points = 1;
+                        break;
+                    case PlayType.TwoPointPass:
+                    case PlayType.TwoPointRush:
+                        play.Points = 2;
+                        break;
+                }
+            }
+            bool isPassingPlay = play.Type == PlayType.Passing || play.Type == PlayType.OnePointPass || play.Type == PlayType.TwoPointPass;
+            if (endYardLine == 40 && (!isPassingPlay || play.IsCompletedPass || play.IsSack))
+            {
+                switch (dto.Type)
+                {
+                    case PlayType.Passing:
+                    case PlayType.Rushing:
+                        play.Points = 6;
+                        break;
+                    case PlayType.OnePointPass:
+                    case PlayType.OnePointRush:
+                        play.Points = 1;
+                        break;
+                    case PlayType.TwoPointPass:
+                    case PlayType.TwoPointRush:
+                        play.Points = 2;
+                        break;
+                }
+                if (dto.TurnoverPlayerId == null)
+                {
+                    play.Points = 2;
+                }
+            }
+
+            await this.Db.SaveChangesAsync();
+
+            await UpdateGameStatsAsync(play.GameId);
+
+            return ApiResponseDto<PlayDto>.CreateSuccess(play.ToDto());
         }
 
         [HttpPost("List")]

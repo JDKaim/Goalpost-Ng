@@ -360,11 +360,11 @@ namespace Goalpost.WebApi.Controllers
             if (dto.FlagPullerId != null)
             {
                 bool flagPullerTeam = !dto.IsHomePlay;
-                if (dto.TurnoverPlayerId != null)
+                if (dto.TurnoverType != TurnoverType.None)
                 {
                     flagPullerTeam = !flagPullerTeam;
                 }
-                play.FlagPuller = await this.Db.PlayerGames.Where((playerGame) => playerGame.GameId == game.Id && playerGame.PlayerId == dto.FlagPullerId && playerGame.IsHome != flagPullerTeam && playerGame.IsCurrent).Select((player) => player.Player).FirstOrDefaultAsync();
+                play.FlagPuller = await this.Db.PlayerGames.Where((playerGame) => playerGame.GameId == game.Id && playerGame.PlayerId == dto.FlagPullerId && playerGame.IsHome == flagPullerTeam && playerGame.IsCurrent).Select((player) => player.Player).FirstOrDefaultAsync();
                 if (play.FlagPuller == null)
                 {
                     return ApiResponseDto<PlayDto>.CreateError("Flag pulling player was not found on this roster.");

@@ -487,7 +487,7 @@ namespace Goalpost.WebApi.Controllers
             return ApiResponseDto<bool>.CreateSuccess(true);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("Plays/{id}")]
         //[Authorize(Roles = ApplicationRoles.Administrator)]
         public async Task<ApiResponseDto<PlayDto>> UpdatePlay(UpdatePlayDto dto, int id)
         {

@@ -22,7 +22,7 @@ import { StatsComponent } from './stats/stats.component';
         { path: '', component: HomePageComponent },
         { path: 'players/:id', component: ViewPlayerComponent},
         { path: 'games/:id', component: ViewGameComponent},
-        { path: 'games/:id/stats', component: GameStatsComponent},
+        { path: 'games/stats/:id', component: GameStatsComponent},
         { path: 'schedule', component: ScheduleComponent},
         { path: 'stats', component: StatsComponent},
         { path: 'games/:gameId/team/:team/player/:playerId', component: ViewPlayerGameComponent},

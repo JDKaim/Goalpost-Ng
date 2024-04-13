@@ -20,8 +20,8 @@
         size="small"
         class="mr-2"
         icon="pi pi-calculator"
-        severity="primary"
-        [routerLink]="['/', 'games', gameData.game.id, 'stats']"
+        severity="warning"
+        [routerLink]="['/', 'games', 'stats', gameData.game.id]"
       />
       @if (gameData.game.status === 'Final' || gameData.game.status ===
       'Ongoing') {

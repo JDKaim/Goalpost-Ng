@@ -15,6 +15,13 @@
         severity="primary"
         [routerLink]="['/', 'games', gameData.game.id]"
       />
+      <p-button
+        size="small"
+        class="mr-2"
+        icon="pi pi-calculator"
+        severity="primary"
+        [routerLink]="['/', 'games', gameData.game.id, 'stats']"
+      />
       @if (gameData.game.status === 'Final' || gameData.game.status ===
       'Ongoing') {
       <p-button

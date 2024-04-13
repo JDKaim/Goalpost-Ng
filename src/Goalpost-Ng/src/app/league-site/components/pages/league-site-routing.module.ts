@@ -14,13 +14,17 @@ import { ViewPlayerComponent } from './view-player/view-player.component';
 import { LoginComponent } from 'src/app/demo/components/auth/login/login.component';
 import { AccountComponent } from './account/account.component';
 import { ViewPlayerGameComponent } from './view-player-game/view-player-game.component';
+import { GameStatsComponent } from './game-stats/game-stats.component';
+import { StatsComponent } from './stats/stats.component';
 
 @NgModule({
     imports: [RouterModule.forChild([
         { path: '', component: HomePageComponent },
         { path: 'players/:id', component: ViewPlayerComponent},
         { path: 'games/:id', component: ViewGameComponent},
+        { path: 'games/:id/stats', component: GameStatsComponent},
         { path: 'schedule', component: ScheduleComponent},
+        { path: 'stats', component: StatsComponent},
         { path: 'games/:gameId/team/:team/player/:playerId', component: ViewPlayerGameComponent},
         
         { path: 'create-player', canActivate: [adminGuard], component: CreatePlayerComponent},

@@ -1,0 +1,230 @@
+@if (gameData$ | async; as response) { @if (response.result; as gameData) {
+
+  <div class="text-center mb-3">
+    <p-button
+      size="small"
+      class="mr-2"
+      icon="pi pi-pencil"
+      severity="primary"
+      [routerLink]="['/', 'edit-game', gameData.game.id]"
+    />
+    <p-button
+      size="small"
+      class="mr-2"
+      icon="pi pi-eye"
+      severity="primary"
+      [routerLink]="['/', 'games', gameData.game.id]"
+    />
+    @if (gameData.game.status === 'Final' || gameData.game.status ===
+      'Ongoing') {
+      <p-button
+        size="small"
+        icon="pi pi-stopwatch"
+        severity="success"
+        [routerLink]="['/', 'scorekeeper', gameData.game.id]"
+      />
+      }
+  </div>
+  <p-tabMenu [model]="items" [activeItem]="activeItem" (activeItemChange)="onActiveItemChange($event)" [scrollable]="true">
+    <ng-template pTemplate="item" let-item>
+        <a class="p-menuitem-link flex justify-content-between align-items-center p-3">
+            <div>
+                <span [class]="item.icon"></span>
+                <span> {{ item.label }}</span>
+            </div>
+            <div>
+                <span *ngIf="item.shortcut" [class]="item.shortcutClass">{{ item.shortcut }}</span>
+                <p-badge *ngIf="item.badge" [value]="item.badge" [severity]="item.badgeSeverity"></p-badge>
+            </div>
+        </a>
+    </ng-template>
+  </p-tabMenu>
+  @switch (activeItem?.label) {
+    @case ('Passing') {
+      <div class="card">
+        @if (passingGames.length === 0) {
+          No passers.
+        } @else {
+        <p-table [value]="passingGames" [tableStyle]="{'min-width': '60rem'}">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="name" style="min-width:10rem">Name<p-sortIcon field="name"></p-sortIcon></th>
+                    <th pSortableColumn="team" style="min-width:7rem">Team<p-sortIcon field="team"></p-sortIcon></th>
+                    <th pSortableColumn="collegePasserRating" style="min-width:7rem" pTooltip="College Passer Rating" tooltipPosition="top">CQPR<p-sortIcon field="collegePasserRating"></p-sortIcon></th>
+                    <th pSortableColumn="nflPasserRating" style="min-width:7rem" pTooltip="NFL Passer Rating" tooltipPosition="top">NCPR<p-sortIcon field="nflPasserRating"></p-sortIcon></th>
+                    <th pSortableColumn="passingYardage" style="min-width:7rem" pTooltip="Passing Yardage" tooltipPosition="top">YDS<p-sortIcon field="passingYardage"></p-sortIcon></th>
+                    <th pSortableColumn="passingPoints" style="min-width:7rem" pTooltip="Passing Points" tooltipPosition="top">PTS<p-sortIcon field="passingPoints"></p-sortIcon></th>
+                    <th pSortableColumn="passingCompletions" style="min-width:7rem" pTooltip="Passing Completions" tooltipPosition="top">COMP<p-sortIcon field="passingCompletions"></p-sortIcon></th>
+                    <th pSortableColumn="passingAttempts" style="min-width:7rem" pTooltip="Passing Attempts" tooltipPosition="top">ATT<p-sortIcon field="passingAttempts"></p-sortIcon></th>
+                    <th pSortableColumn="passingTds" style="min-width:7rem" pTooltip="Passing Touchdowns" tooltipPosition="top">TD<p-sortIcon field="passingTds"></p-sortIcon></th>
+                    <th pSortableColumn="completionPercentage" style="min-width:7rem" pTooltip="Completion Percentage" tooltipPosition="top">CMP%<p-sortIcon field="completionPercentage"></p-sortIcon></th>
+                    <th pSortableColumn="passingYardagePerCompletion" style="min-width:7rem" pTooltip="Passing Yardage per Completion" tooltipPosition="top">YD/C<p-sortIcon field="passingYardagePerCompletion"></p-sortIcon></th>
+                    <th pSortableColumn="passingYardagePerAttempt" style="min-width:7rem" pTooltip="Passing Yardage per Attempt" tooltipPosition="top">YD/A<p-sortIcon field="passingYardagePerAttempt"></p-sortIcon></th>
+                    <th pSortableColumn="passingOnePointConversions" style="min-width:7rem" pTooltip="Passing One-Point Conversions" tooltipPosition="top">1-PT<p-sortIcon field="passingOnePointConversions"></p-sortIcon></th>
+                    <th pSortableColumn="passingTwoPointConversions" style="min-width:7rem" pTooltip="Passing Two-Point Conversions" tooltipPosition="top">2-PT<p-sortIcon field="passingTwoPointConversions"></p-sortIcon></th>
+                    <th pSortableColumn="passingInterceptions" style="min-width:7rem" pTooltip="Interceptions Thrown" tooltipPosition="top">INT<p-sortIcon field="passingInterceptions"></p-sortIcon></th>
+                    <th pSortableColumn="offensiveSacks" style="min-width:7rem" pTooltip="Sacks Taken" tooltipPosition="top">SACK<p-sortIcon field="offensiveSacks"></p-sortIcon></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-player>
+                <tr>
+                  <td><a [routerLink]="['/', 'players', player.id]">{{
+                    player.name
+                  }}</a></td>
+                  <td>{{player.isHome ? gameData.game.homeTeamCode : gameData.game.awayTeamCode}}</td>
+                  <td>{{player.collegePasserRating}}</td>
+                  <td>{{player.nflPasserRating | number : "0.2-2"}}</td>
+                  <td>{{player.passingYardage}}</td>      
+                  <td>{{player.pointsScored}}</td>
+                  <td>{{player.passingCompletions}}</td>
+                  <td>{{player.passingAttempts}}</td>
+                  <td>{{player.passingTds}}</td>
+                  <td>{{player.completionPercentage | percent : "0.2"}}</td>
+                  <td>{{player.passingYardagePerCompletion | number : "0.2-2"}}</td>
+                  <td>{{player.passingYardagePerAttempt | number : "0.2-2"}}</td>
+                  <td>{{player.passingOnePointConversions}}</td>
+                  <td>{{player.passingTwoPointConversions}}</td>
+                  <td>{{player.passingInterceptions}}</td>
+                  <td>{{player.offensiveSacks}}<td>
+                </tr>
+            </ng-template>
+        </p-table>
+      }
+    </div>
+    }
+    @case ('Rushing') {
+      <div class="card">
+        @if (rushingGames.length === 0) {
+          No rushers.
+        } @else {
+        <p-table [value]="rushingGames" [tableStyle]="{'min-width': '60rem'}">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="name" style="min-width:10rem">Name<p-sortIcon field="name"></p-sortIcon></th>
+                    <th pSortableColumn="team" style="min-width:7rem">Team<p-sortIcon field="team"></p-sortIcon></th>
+                    <th pSortableColumn="rushingYardage" style="min-width:7rem" pTooltip="Rushing Yardage" tooltipPosition="top">YDS<p-sortIcon field="rushingYardage"></p-sortIcon></th>
+                    <th pSortableColumn="rushingAttempts" style="min-width:7rem" pTooltip="Rushing Attempts" tooltipPosition="top">ATT<p-sortIcon field="rushingAttempts"></p-sortIcon></th>
+                    <th pSortableColumn="rushingYardagePerAttempt" style="min-width:7rem" pTooltip="Rushing Yardage per Attempt" tooltipPosition="top">YD/A<p-sortIcon field="rushingYardagePerAttempt"></p-sortIcon></th>
+                    <th pSortableColumn="rushingPoints" style="min-width:7rem" pTooltip="Rushing Points" tooltipPosition="top">PTS<p-sortIcon field="rushingPoints"></p-sortIcon></th>
+                    <th pSortableColumn="rushingTds" style="min-width:7rem" pTooltip="Rushing Touchdowns" tooltipPosition="top">TD<p-sortIcon field="rushingTds"></p-sortIcon></th>
+                    <th pSortableColumn="rushingOnePointConversions" style="min-width:7rem" pTooltip="Rushing One-Point Conversions" tooltipPosition="top">1-PT<p-sortIcon field="rushingOnePointConversions"></p-sortIcon></th>
+                    <th pSortableColumn="rushingTwoPointConversions" style="min-width:7rem" pTooltip="Rushing Two-Point Conversions" tooltipPosition="top">2-PT<p-sortIcon field="rushingTwoPointConversions"></p-sortIcon></th>
+                    <th pSortableColumn="fumbles" style="min-width:7rem" pTooltip="Fumbles" tooltipPosition="top">FMB<p-sortIcon field="fumbles"></p-sortIcon></th>
+                    <th pSortableColumn="safeties" style="min-width:7rem" pTooltip="Safeties" tooltipPosition="top">SFT<p-sortIcon field="safeties"></p-sortIcon></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-player>
+                <tr>
+                  <td><a [routerLink]="['/', 'players', player.id]">{{
+                    player.name
+                  }}</a></td>
+                  <td>{{player.isHome ? gameData.game.homeTeamCode : gameData.game.awayTeamCode}}</td>
+                  <td>{{player.rushingYardage}}</td>
+                  <td>{{player.rushingAttempts}}</td>
+                  <td>{{player.rushingYardagePerAttempt | number : "0.2-2"}}</td>      
+                  <td>{{player.pointsScored}}</td>
+                  <td>{{player.rushingTds}}</td>
+                  <td>{{player.rushingOnePointConversions}}</td>
+                  <td>{{player.rushingTwoPointConversions}}</td>
+                  <td>{{player.fumbles}}</td>
+                  <td>{{player.safeties}}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+      }
+    </div>
+    }
+    @case ('Receiving') {
+      <div class="card">
+        @if (receivingGames.length === 0) {
+          No receivers.
+        } @else {
+        <p-table [value]="receivingGames" [tableStyle]="{'min-width': '60rem'}">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="name" style="min-width:10rem">Name<p-sortIcon field="name"></p-sortIcon></th>
+                    <th pSortableColumn="team" style="min-width:7rem">Team<p-sortIcon field="team"></p-sortIcon></th>
+                    <th pSortableColumn="receivingYardage" style="min-width:7rem" pTooltip="Receiving Yardage" tooltipPosition="top">YDS<p-sortIcon field="receivingYardage"></p-sortIcon></th>
+                    <th pSortableColumn="receivingCompletions" style="min-width:7rem" pTooltip="Receptions" tooltipPosition="top">COMP<p-sortIcon field="receivingCompletions"></p-sortIcon></th>
+                    <th pSortableColumn="receivingTargets" style="min-width:7rem" pTooltip="Receiving Targets" tooltipPosition="top">TGT<p-sortIcon field="receivingTargets"></p-sortIcon></th>
+                    <th pSortableColumn="receivingPoints" style="min-width:7rem" pTooltip="Receiving Points" tooltipPosition="top">PTS<p-sortIcon field="receivingPoints"></p-sortIcon></th>
+                    <th pSortableColumn="receptionPercentage" style="min-width:7rem" pTooltip="Reception Percentage" tooltipPosition="top">COMP%<p-sortIcon field="receptionPercentage"></p-sortIcon></th>
+                    <th pSortableColumn="receivingTds" style="min-width:7rem" pTooltip="Receiving Touchdowns" tooltipPosition="top">TD<p-sortIcon field="receivingTds"></p-sortIcon></th>
+                    <th pSortableColumn="receivingOnePointConversions" style="min-width:7rem" pTooltip="Receiving One-Point Conversions" tooltipPosition="top">1-PT<p-sortIcon field="receivingOnePointConversions"></p-sortIcon></th>
+                    <th pSortableColumn="receivingTwoPointConversions" style="min-width:7rem" pTooltip="Receiving Two-Point Conversions" tooltipPosition="top">2-PT<p-sortIcon field="receivingTwoPointConversions"></p-sortIcon></th>
+                    <th pSortableColumn="receivingYardagePerTarget" style="min-width:7rem" pTooltip="Receiving Yardage per Target" tooltipPosition="top">YD/T<p-sortIcon field="receivingYardagePerTarget"></p-sortIcon></th>
+                    <th pSortableColumn="receivingYardagePerCompletion" style="min-width:7rem" pTooltip="Receiving Yardage per Reception" tooltipPosition="top">YD/C<p-sortIcon field="receivingYardagePerCompletion"></p-sortIcon></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-player>
+                <tr>
+                  <td><a [routerLink]="['/', 'players', player.id]">{{
+                    player.name
+                  }}</a></td>
+                  <td>{{player.isHome ? gameData.game.homeTeamCode : gameData.game.awayTeamCode}}</td>
+                  <td>{{player.receivingYardage}}</td>
+                  <td>{{player.receivingCompletions}}</td>
+                  <td>{{player.receivingTargets}}</td>      
+                  <td>{{player.pointsScored}}</td>
+                  <td>{{player.receptionPercentage | percent : "0.2"}}</td>
+                  <td>{{player.receivingTds}}</td>
+                  <td>{{player.receivingOnePointConversions}}</td>
+                  <td>{{player.receivingTwoPointConversions}}</td>
+                  <td>{{player.receivingYardagePerTarget | number : "0.2-2"}}</td>
+                  <td>{{player.receivingYardagePerCompletion | number : "0.2-2"}}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+      }
+    </div>
+    }
+    @case ('Defense') {
+      <div class="card">
+        @if (defensiveGames.length === 0) {
+          No defenders.
+        } @else {
+        <p-table [value]="defensiveGames" [tableStyle]="{'min-width': '60rem'}">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="name" style="min-width:10rem">Name<p-sortIcon field="name"></p-sortIcon></th>
+                    <th pSortableColumn="team" style="min-width:7rem">Team<p-sortIcon field="team"></p-sortIcon></th>
+                    <th pSortableColumn="flagPulls" style="min-width:7rem" pTooltip="Flag Pulls" tooltipPosition="top">FP<p-sortIcon field="flagPulls"></p-sortIcon></th>
+                    <th pSortableColumn="interceptions" style="min-width:7rem" pTooltip="Interceptions" tooltipPosition="top">INT<p-sortIcon field="interceptions"></p-sortIcon></th>
+                    <th pSortableColumn="fumbleRecoveries" style="min-width:7rem" pTooltip="Fumble Recoveries" tooltipPosition="top">FMB<p-sortIcon field="fumbleRecoveries"></p-sortIcon></th>
+                    <th pSortableColumn="safeties" style="min-width:7rem" pTooltip="Safeties" tooltipPosition="top">SFT<p-sortIcon field="safeties"></p-sortIcon></th>
+                    <th pSortableColumn="sacks" style="min-width:7rem" pTooltip="Sacks" tooltipPosition="top">SACK<p-sortIcon field="sacks"></p-sortIcon></th>
+                    <th pSortableColumn="pointsScored" style="min-width:7rem" pTooltip="Defensive Points" tooltipPosition="top">PTS<p-sortIcon field="pointsScored"></p-sortIcon></th>
+                    <th pSortableColumn="defensiveTds" style="min-width:7rem" pTooltip="Defensive Touchdowns" tooltipPosition="top">TD<p-sortIcon field="defensiveTds"></p-sortIcon></th>
+                    <th pSortableColumn="defensiveOnePointConversions" style="min-width:7rem" pTooltip="Defensive One-Point Conversions" tooltipPosition="top">1-PT<p-sortIcon field="defensiveOnePointConversions"></p-sortIcon></th>
+                    <th pSortableColumn="defensiveTwoPointConversions" style="min-width:7rem" pTooltip="Defensive Two-Point Conversions" tooltipPosition="top">2-PT<p-sortIcon field="defensiveTwoPointConversions"></p-sortIcon></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-player>
+                <tr>
+                  <td><a [routerLink]="['/', 'players', player.id]">{{
+                    player.name
+                  }}</a></td>
+                  <td>{{player.isHome ? gameData.game.homeTeamCode : gameData.game.awayTeamCode}}</td>
+                  <td>{{player.flagPulls}}</td>
+                  <td>{{player.interceptions}}</td>
+                  <td>{{player.fumbleRecoveries}}</td>      
+                  <td>{{player.safeties}}</td>
+                  <td>{{player.sacks}}</td>
+                  <td>{{player.pointsScored}}</td>
+                  <td>{{player.defensiveTds}}</td>
+                  <td>{{player.defensiveOnePointConversions}}</td>
+                  <td>{{player.defensiveTwoPointConversions}}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+      }
+    </div>
+    }
+    @default () {
+
+    }
+  }
+
+} } @else {
+<p-progressBar mode="indeterminate"></p-progressBar>
+}

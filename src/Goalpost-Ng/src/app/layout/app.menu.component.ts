@@ -18,6 +18,7 @@ export class AppMenuComponent implements OnInit {
         label: 'League Site',
         items: [
           { label: 'Home Page', icon: 'pi pi-fw pi-home', routerLink: ['/'] },
+          { label: 'Stats', icon: 'pi pi-fw pi-calculator', routerLink: ['/', 'stats']},
           { label: 'Schedule', icon: 'pi pi-fw pi-calendar-times', routerLink: ['/', 'schedule']},
           { label: 'Create Player', icon: 'pi pi-fw pi-user', routerLink: ['/', 'create-player']},
           { label: 'Create Game', icon: 'pi pi-fw pi-calendar', routerLink: ['/', 'create-game']}

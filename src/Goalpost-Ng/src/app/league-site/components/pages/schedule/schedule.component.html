@@ -11,6 +11,12 @@
     />
     <p-button
       size="small"
+      icon="pi pi-calculator"
+      severity="warning"
+      [routerLink]="['/', 'games', game.id, 'stats']"
+    />
+    <p-button
+      size="small"
       icon="pi pi-pencil"
       severity="primary"
       [routerLink]="['/', 'edit-game', game.id]"

@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { DataService } from './data.service';
+import { DataService } from './data-service';
 import { tap } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 

@@ -1,14 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import {
   ApiResponse,
-  Player,
   CreatePlayer,
-  UpdatePlayer,
-  SuccessApiResponse,
+  Player,
   SearchPlayers,
+  SuccessApiResponse,
+  UpdatePlayer,
 } from '@league-site/models';
-import { tap, of, map } from 'rxjs';
-import { DataService } from './data.service';
+import { map, of, tap } from 'rxjs';
+import { DataService } from './data-service';
 
 @Injectable({
   providedIn: 'root',

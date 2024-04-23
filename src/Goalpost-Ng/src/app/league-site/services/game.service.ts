@@ -1,22 +1,21 @@
 import { Injectable, inject } from '@angular/core';
 import {
-  CreateGame,
-  UpdateGame,
-  SearchGames,
   ApiResponse,
-  RosterPlayer,
-  SuccessApiResponse,
-  SearchPlayerGames,
+  CreateGame,
   CreatePlay,
-  SearchPlays,
-  GameData,
   Game,
-  PlayerGame,
+  GameData,
+  RosterPlayer,
+  SearchGames,
+  SearchPlayerGames,
+  SearchPlays,
+  SuccessApiResponse,
+  UpdateGame
 } from '@league-site/models';
-import { switchMap, of, map, combineLatest, tap } from 'rxjs';
-import { DataService } from './data.service';
-import { PlayerService } from './player.service';
 import { PlayerGameGameArray } from '@league-site/models/entities/player-game-game-array';
+import { combineLatest, map, of, switchMap, tap } from 'rxjs';
+import { DataService } from './data-service';
+import { PlayerService } from './player.service';
 
 @Injectable({
   providedIn: 'root',

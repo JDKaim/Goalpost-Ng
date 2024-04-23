@@ -16,13 +16,14 @@ import {
   Play,
   SearchPlays,
 } from '@league-site/models';
+import { DataService } from './data-service';
 
 export const DEFAULT_API_URL = new InjectionToken<string>('DEFAULT_API_URL');
 
 @Injectable({
   providedIn: 'root',
 })
-export class DataService {
+export class HttpDataService implements DataService {
   #http = inject(HttpClient);
   #apiUrl = inject(DEFAULT_API_URL);
 

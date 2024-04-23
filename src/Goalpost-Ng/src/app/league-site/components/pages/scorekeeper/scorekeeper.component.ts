@@ -109,6 +109,7 @@ export class ScorekeeperComponent {
 
   awayTeamName = '';
   homeTeamName = '';
+  isTurnover = false;
   gameData$ = this.#gameService.getGameData(this.id);
   awayRoster = new Array<RosterPlayer>();
   homeRoster = new Array<RosterPlayer>();
@@ -155,9 +156,11 @@ export class ScorekeeperComponent {
       .pipe(takeUntilDestroyed())
       .subscribe({
         next: (turnoverType) => {
+          this.isTurnover = false;
           this.form.controls.turnoverPlayerId.disable();
           this.form.controls.yardage.enable();
           if (turnoverType === 'Interception' || turnoverType === 'Fumble') {
+            this.isTurnover = true;
             this.form.controls.turnoverPlayerId.enable();
             this.form.controls.yardage.disable();
           }

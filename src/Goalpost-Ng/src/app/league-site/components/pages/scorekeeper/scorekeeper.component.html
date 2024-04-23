@@ -121,19 +121,37 @@
             optionValue="value"
           ></p-dropdown>
         </div>
+        <div>
         @if (form.controls.flagPullerId.enabled) {
-        <div class="col-12">
-          <label htmlFor="flagPullerId">Flag Puller</label>
-          <p-dropdown
-            id="flagPullerId"
-            formControlName="flagPullerId"
-            [options]="defensiveTeamRoster"
-            optionLabel="player.name"
-            optionValue="player.id"
-            placeholder="Select a Player"
-          />
+          @if (this.isTurnover) {
+            <div class="col-12">
+              <label htmlFor="flagPullerId">Flag Puller</label>
+              <p-dropdown
+                id="flagPullerId"
+                formControlName="flagPullerId"
+                [options]="offensiveTeamRoster"
+                optionLabel="player.name"
+                optionValue="player.id"
+                placeholder="Select a Player"
+              />
+            </div>
+          }
+          @else {
+            <div class="col-12">
+              <label htmlFor="flagPullerId">Flag Puller</label>
+              <p-dropdown
+                id="flagPullerId"
+                formControlName="flagPullerId"
+                [options]="defensiveTeamRoster"
+                optionLabel="player.name"
+                optionValue="player.id"
+                placeholder="Select a Player"
+              />
+            </div>
+          }
+        }
         </div>
-        } @if (form.controls.turnoverPlayerId.enabled) {
+         @if (form.controls.turnoverPlayerId.enabled) {
         <div class="col-12">
           <label htmlFor="turnoverPlayerId">Turnover Player</label>
           <p-dropdown

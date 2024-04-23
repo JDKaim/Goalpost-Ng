@@ -43,6 +43,8 @@ export class PassingStats {
     this.passingTouchdownsPerAttempt = player.passingAttempts ? player.passingTds / player.passingAttempts : 0;
     this.passingInterceptionsPerAttempt = player.passingAttempts ? player.passingInterceptions / player.passingAttempts : 0;
     this.nflPasserRating = (Math.max(0, Math.min(((this.completionPercentage - 0.3) * 5), 2.375)) + Math.max(0, Math.min(((this.passingYardagePerAttempt - 3) * 0.25), 2.375)) + Math.max(0, Math.min((this.passingTouchdownsPerAttempt * 20), 2.375)) + Math.max(0, (2.375 - (this.passingInterceptionsPerAttempt * 25)))) * 100 / 6;
-
+    if (player.rushingAttempts > 10) {
+      console.log("Wow, what a runner!");
+    }
   }
 }

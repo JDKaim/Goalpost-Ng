@@ -115,7 +115,8 @@
                             "src/favicon.ico",
                             "src/upload.php",
                             "src/assets"
-                        ]
+                        ],
+                        "karmaConfig": "karma.conf.js"
                     }
                 },
                 "lint": {

@@ -12,4 +12,5 @@ describe('PassingStats', () => {
     const passingStats = new PassingStats(player);
     expect(passingStats.completionPercentage).toBe(0.7);
   });
+
 });

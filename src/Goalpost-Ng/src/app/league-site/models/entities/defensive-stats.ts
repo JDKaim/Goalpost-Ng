@@ -18,7 +18,7 @@ export class DefensiveStats {
     this.name = player.name;
     this.id = player.id;
     this.games = player.games;
-    this.pointsScored = player.defensiveOnePointConversions + 2 * player.defensiveTwoPointConversions + 6 * player.defensiveTds;
+    this.pointsScored = player.defensiveOnePointConversions + 2 * player.defensiveTwoPointConversions + 6 * player.defensiveTds + 2 * player.defensiveSafeties;
     this.flagPulls = player.flagPulls;
     this.interceptions = player.defensiveInterceptions;
     this.fumbleRecoveries = player.defensiveFumbles;

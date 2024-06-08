@@ -2,14 +2,14 @@ import { TestBed } from '@angular/core/testing';
 import { PlayerService } from './player.service';
 import { DataService } from './data-service';
 import { of } from 'rxjs';
-import { Player, SuccessApiResponse } from '@league-site/models';
+import { Player, PlayerGame, SuccessApiResponse } from '@league-site/models';
 
 describe('PlayerService', () => {
     let playerService: PlayerService;
     let dataServiceSpy: jasmine.SpyObj<DataService>;
   
     beforeEach(() => {
-      dataServiceSpy = jasmine.createSpyObj('DataService', ['createPlayer', 'updatePlayer', 'getPlayer', 'getPlayers', 'deletePlayer', 'searchPlayers', 'getPlayerGames']);
+      dataServiceSpy = jasmine.createSpyObj('DataService', ['createPlayer', 'updatePlayer', 'getPlayer', 'getPlayers', 'deletePlayer', 'searchPlayers', 'getPlayerGamesForPlayer']);
       
       TestBed.configureTestingModule({
         // Provide both the service-to-test and its (spy) dependency
@@ -41,7 +41,7 @@ describe('PlayerService', () => {
             id: 1,
             name: 'Player 1'
         };
-        dataServiceSpy.getPlayer.withArgs(1).and.returnValue(of(new SuccessApiResponse(<Player>player)));
+        dataServiceSpy.getPlayer.and.returnValue(of(new SuccessApiResponse(<Player>player)));
         playerService.getPlayer(1).subscribe({
             next: (response) => expect(response.result).toEqual(jasmine.objectContaining(<Player>{id: 1, name: 'Player 1'}))
         });
@@ -54,7 +54,7 @@ describe('PlayerService', () => {
             id: 1,
             name: 'Player 1'
         };
-        dataServiceSpy.updatePlayer.withArgs(1, <Player>player).and.returnValue(of(new SuccessApiResponse(<Player>player)));
+        dataServiceSpy.updatePlayer.and.returnValue(of(new SuccessApiResponse(<Player>player)));
         playerService.updatePlayer(1, <Player>player).subscribe({
             next: (response) => expect(response.result).toEqual(jasmine.objectContaining(<Player>{id: 1, name: 'Player 1'}))
         });
@@ -67,25 +67,71 @@ describe('PlayerService', () => {
             id: 1,
             name: 'Player 1'
         };
-        dataServiceSpy.getPlayer.withArgs(1).and.returnValue(of(new SuccessApiResponse(<Player>player)));
+        dataServiceSpy.getPlayer.and.returnValues(of(new SuccessApiResponse(<Player>player)), of({} as any as SuccessApiResponse<Player>));
         playerService.getPlayer(1).subscribe({
             next: (response) => expect(response.result).toEqual(jasmine.objectContaining(<Player>{id: 1, name: 'Player 1'}))
+        });
+        playerService.getPlayer(1).subscribe({
+            next: (response) => expect(response?.result).toEqual(jasmine.objectContaining(<Player>{id: 1, name: 'Player 1'}))
         });
     });
 
     it('should get players by ids', () => {
-        // Test implementation
+        // Write this test
+        // Provide a mock implementation of the DataService.getPlayers method
+        const players: Partial<Player>[] = [
+            { id: 1, name: 'Player 1' },
+            { id: 2, name: 'Player 2' }
+        ];
+        dataServiceSpy.getPlayer.withArgs(1).and.returnValue(of(new SuccessApiResponse(<Player>players[0])));
+        dataServiceSpy.getPlayers.withArgs([2]).and.returnValue(of(new SuccessApiResponse(<Player[]>[players[1]])));
+        playerService.getPlayer(1).subscribe({
+            next: (response) => expect(response.result).toEqual(jasmine.objectContaining(players[0]))
+        });
+        playerService.getPlayers([1, 2]).subscribe({
+            next: (response) => expect(response.result).toEqual(jasmine.arrayContaining(players))
+        });
+        playerService.getPlayers([1, 2]).subscribe({
+            next: (response) => expect(response.result).toEqual(jasmine.arrayContaining(players))
+        });
     });
 
     it('should delete a player', () => {
-        // Test implementation
+        // Write this test
+        // Provide a mock implementation of the DataService.deletePlayer method
+        const player: Partial<Player> = {
+            id: 1,
+            name: 'Player 1'
+        };
+        dataServiceSpy.deletePlayer.withArgs(1).and.returnValue(of(new SuccessApiResponse(true)));
+        playerService.deletePlayer(1).subscribe({
+            next: (response) => expect(response.result).toBeTrue()
+        });
     });
 
     it('should search players', () => {
-        // Test implementation
+        // Write this test
+        // Provide a mock implementation of the DataService.searchPlayers method
+        const players: Partial<Player>[] = [
+            { id: 1, name: 'Player 1' },
+            { id: 2, name: 'Player 2' }
+        ];
+        dataServiceSpy.searchPlayers.withArgs({}).and.returnValue(of(new SuccessApiResponse(<Player[]>players)));
+        playerService.searchPlayers({}).subscribe({
+            next: (response) => expect(response.result).toEqual(jasmine.arrayContaining(players))
+        });
     });
 
     it('should get player games for a player', () => {
-        // Test implementation
+        // Write this test
+        // Provide a mock implementation of the DataService.getPlayerGames method
+        const games: Partial<PlayerGame>[] = [
+            { gameId: 1, playerId: 1 },
+            { gameId: 2, playerId: 1 }
+        ];
+        dataServiceSpy.getPlayerGamesForPlayer.and.returnValue(of(new SuccessApiResponse(<PlayerGame[]>games)));
+        playerService.getPlayerGamesForPlayer(1).subscribe({
+            next: (response) => expect(response.result).toEqual(jasmine.arrayContaining(games))
+        });
     });
 });

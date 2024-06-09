@@ -3,3 +3,5 @@
 ################################################################################
 
 /src/Goalpost/Goalpost.WebApi/appsettings.Development.json
+
+**/.DS_Store

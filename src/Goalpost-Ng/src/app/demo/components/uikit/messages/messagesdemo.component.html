@@ -32,13 +32,13 @@
             <div class="flex align-items-center flex-wrap gap-2 mb-3">
                 <label for="username" class="w-9rem">Username</label>
                 <input id="username" type="text" #username pInputText placeholder="Username" class="ng-dirty ng-invalid">
-                <p-message severity="error" text="Field is required"></p-message>
+                <p-message severity="danger" text="Field is required"></p-message>
             </div>
 
             <div class="flex align-items-center flex-wrap gap-2">
                 <label for="email" class="w-9rem">Email</label>
                 <input type="text" #email pInputText placeholder="Email" label="email" class="ng-dirty ng-invalid">
-                <p-message severity="error"></p-message>
+                <p-message severity="danger"></p-message>
             </div>
         </div>
     </div>
